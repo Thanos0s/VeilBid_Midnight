@@ -1,0 +1,47 @@
+pragma language_version >=0.22;
+
+import CompactStandardLibrary;
+
+export enum AuctionState {
+  OPEN,
+  CLOSED
+}
+
+// Ledger state - all public on-chain
+export ledger state: AuctionState;
+export ledger taskId: Bytes<32>;          // NFT token identifier
+export ledger bidCount: Counter;
+export ledger winner: Maybe<Bytes<32>>;
+export ledger winningPrice: Maybe<Uint<64>>;
+export ledger royaltyBps: Uint<64>;       // royalty in basis points (e.g. 500 = 5%)
+export ledger creatorKey: Bytes<32>;      // creator public key for royalty
+
+constructor(id: Bytes<32>, royaltyBasisPoints: Uint<64>, creator: Bytes<32>) {
+  state = AuctionState.OPEN;
+  taskId = disclose(id);
+  royaltyBps = disclose(royaltyBasisPoints);
+  creatorKey = disclose(creator);
+  winner = none<Bytes<32>>();
+  winningPrice = none<Uint<64>>();
+}
+
+// Witnesses - private data provided by user browser, never disclosed
+witness myBidAmount(): Uint<64>;
+
+export circuit submitBid(): [] {
+  assert(state == AuctionState.OPEN, "Auction is not open for bids");
+  const bid = myBidAmount();
+  bidCount.increment(1);
+}
+
+export circuit closeAuction(secretKey: Bytes<32>, price: Uint<64>): [] {
+  assert(state == AuctionState.OPEN, "Auction already closed");
+  const key = agentPublicKey(secretKey);
+  winner = disclose(some<Bytes<32>>(key));
+  winningPrice = disclose(some<Uint<64>>(price));
+  state = AuctionState.CLOSED;
+}
+
+export circuit agentPublicKey(sk: Bytes<32>): Bytes<32> {
+  return persistentHash<Vector<2, Bytes<32>>>([pad(32, "veilbid:pk:"), sk]);
+}
