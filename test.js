@@ -12,9 +12,9 @@ test('VeilBid: auction state machine compiles and exports correctly', async () =
     return;
   }
   assert.ok(contract.Contract, 'Contract export should exist');
-  assert.ok(contract.Contract.AuctionState, 'AuctionState enum should be exported');
-  assert.strictEqual(typeof contract.Contract.AuctionState.OPEN, 'number', 'AuctionState.OPEN should be a number');
-  assert.strictEqual(typeof contract.Contract.AuctionState.CLOSED, 'number', 'AuctionState.CLOSED should be a number');
+  assert.ok(contract.AuctionState, 'AuctionState enum should be exported');
+  assert.strictEqual(typeof contract.AuctionState.OPEN, 'number', 'AuctionState.OPEN should be a number');
+  assert.strictEqual(typeof contract.AuctionState.CLOSED, 'number', 'AuctionState.CLOSED should be a number');
 });
 
 test('VeilBid: bid count starts at zero', async () => {
