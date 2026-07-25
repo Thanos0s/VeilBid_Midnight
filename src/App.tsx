@@ -231,11 +231,13 @@ function BidModal({
   onClose,
   contract,
   isConnected,
+  onPurchase,
 }: {
   listing: NFTListing;
   onClose: () => void;
   contract: any;
   isConnected: boolean;
+  onPurchase?: (nftId: string) => void;
 }) {
   const [bidAmount, setBidAmount] = useState(String(listing.currentBid + 50));
   const [isSubmitting, setIsSubmitting] = useState(false);
@@ -313,6 +315,7 @@ function BidModal({
       const hash = 'buynow_' + Math.random().toString(36).substring(2, 14);
       setTxHash(hash);
       setStatus(`✅ NFT purchased! Transaction: ${hash}`);
+      if (onPurchase) onPurchase(listing.id);
     } catch (e: any) {
       setError(e.message || 'Purchase failed');
     } finally {
@@ -656,6 +659,10 @@ function MyBidsPanel({ onClose }: { onClose: () => void }) {
 // ── Main App ──
 export default function App() {
   const { isConnected, isConnecting, unshieldedAddress, walletName, error, contract, balances, connectWallet, disconnectWallet, deployVeilBid } = useMidnight();
+    const [activeView, setActiveView] = useState<'marketplace' | 'wallet'>('marketplace');
+  const [ownedNfts, setOwnedNfts] = useState<string[]>(() => {
+    try { return JSON.parse(localStorage.getItem('veilbid_owned_nfts') || '[]'); } catch { return []; }
+  });
   const [selectedListing, setSelectedListing] = useState<NFTListing | null>(null);
   const [showWalletModal, setShowWalletModal] = useState(false);
   const [showDeployModal, setShowDeployModal] = useState(false);
@@ -721,6 +728,12 @@ export default function App() {
               )}
 
               {isConnected && (
+                <button className={`btn ${activeView === 'wallet' ? 'btn-primary' : 'btn-ghost'} btn-sm`} onClick={() => setActiveView(activeView === 'wallet' ? 'marketplace' : 'wallet')}>
+                  👛 My Collection
+                </button>
+              )}
+
+              {isConnected && (
                 <button className="btn btn-secondary btn-sm" onClick={() => setShowDeployModal(true)}>
                   🚀 Deploy
                 </button>
@@ -741,176 +754,206 @@ export default function App() {
           </div>
         </nav>
 
-        {/* ── Hero ── */}
-        <section className="hero">
-          <motion.div initial={{ opacity: 0, y: 30 }} animate={{ opacity: 1, y: 0 }} transition={{ duration: 0.6 }}>
-            <div className="hero-eyebrow">
-              🛡️ Zero-Knowledge NFT Marketplace · Built on Midnight
-            </div>
-            <h1 className="hero-title">
-              Bid in the{' '}
-              <span className="hero-title-gradient">Shadows</span>.{' '}
-              Win in the Light.
-            </h1>
-            <p className="hero-subtitle">
-              The first NFT marketplace where your bids, identity, and strategy are completely private — verified by zero-knowledge proofs on the Midnight Network.
-            </p>
-            <div className="hero-cta">
-              <button className="btn btn-primary btn-lg" onClick={() => !isConnected && setShowWalletModal(true)} id="hero-cta-btn">
-                {isConnected ? '🎭 Explore Auctions' : '🔑 Get Started — Connect Wallet'}
-              </button>
-              <button className="btn btn-ghost btn-lg" onClick={() => window.open('https://docs.midnight.network', '_blank')}>
-                📖 How It Works
-              </button>
-            </div>
-
-            <div className="hero-stats">
-              {[
-                { value: `${stats.total}`, label: 'Live Auctions' },
-                { value: `${stats.sealed}`, label: 'Sealed Bids' },
-                { value: `${stats.volume.toLocaleString()}`, label: 'tNIGHT Volume' },
-                { value: '100%', label: 'Private by Design' },
-              ].map(({ value, label }) => (
-                <div key={label} className="hero-stat">
-                  <div className="hero-stat-value">{value}</div>
-                  <div className="hero-stat-label">{label}</div>
-                </div>
-              ))}
-            </div>
-          </motion.div>
-        </section>
-
-        {/* ── How It Works ── */}
-        <section className="section" style={{ paddingTop: 0 }}>
-          <div style={{ display: 'grid', gridTemplateColumns: 'repeat(3, 1fr)', gap: 16 }}>
-            {[
-              { icon: '🔒', step: '01', title: 'Seal Your Bid', desc: 'Your bid amount is kept private using a ZK witness. Only you know what you bid.' },
-              { icon: '⚡', step: '02', title: 'ZK Proof On-chain', desc: 'A zero-knowledge proof verifies your bid is valid without revealing the amount to anyone.' },
-              { icon: '🏆', step: '03', title: 'Private Settlement', desc: 'The winner is revealed using ZK proofs. Losing bids stay sealed forever.' },
-            ].map(({ icon, step, title, desc }) => (
-              <motion.div key={step} className="card" initial={{ opacity: 0, y: 20 }} animate={{ opacity: 1, y: 0 }} transition={{ delay: 0.1 }}>
-                <div style={{ display: 'flex', gap: 14, alignItems: 'flex-start' }}>
-                  <div style={{ fontSize: 28, flexShrink: 0 }}>{icon}</div>
-                  <div>
-                    <div style={{ fontSize: 10, color: 'var(--veil-purple)', fontWeight: 700, textTransform: 'uppercase', marginBottom: 4 }}>Step {step}</div>
-                    <div style={{ fontFamily: 'var(--font-display)', fontWeight: 700, fontSize: 15, marginBottom: 6 }}>{title}</div>
-                    <div style={{ fontSize: 12, color: 'var(--text-muted)', lineHeight: 1.6 }}>{desc}</div>
-                  </div>
-                </div>
-              </motion.div>
-            ))}
-          </div>
-        </section>
-
-        {/* ── Wallet Status Bar ── */}
-        {isConnected && balances && (
-          <section className="section" style={{ paddingTop: 0, paddingBottom: 0 }}>
-            <motion.div initial={{ opacity: 0 }} animate={{ opacity: 1 }} className="card"
-              style={{ display: 'flex', alignItems: 'center', gap: 20, flexWrap: 'wrap' }}>
-              <div style={{ display: 'flex', alignItems: 'center', gap: 8 }}>
-                <div style={{ width: 36, height: 36, borderRadius: 10, background: 'var(--grad-primary)', display: 'flex', alignItems: 'center', justifyContent: 'center', fontSize: 16 }}>
-                  {walletName === '1AM' ? '🦄' : '👛'}
-                </div>
-                <div>
-                  <div style={{ fontSize: 11, color: 'var(--text-dim)' }}>Connected · {walletName}</div>
-                  <div style={{ fontFamily: 'var(--font-mono)', fontSize: 12 }}>
-                    {unshieldedAddress?.substring(0, 10)}...{unshieldedAddress?.substring(unshieldedAddress.length - 6)}
-                  </div>
-                </div>
+        
+        {activeView === 'marketplace' ? (
+          <>
+            {/* ── Hero ── */}
+                    <section className="hero">
+                      <motion.div initial={{ opacity: 0, y: 30 }} animate={{ opacity: 1, y: 0 }} transition={{ duration: 0.6 }}>
+                        <div className="hero-eyebrow">
+                          🛡️ Zero-Knowledge NFT Marketplace · Built on Midnight
+                        </div>
+                        <h1 className="hero-title">
+                          Bid in the{' '}
+                          <span className="hero-title-gradient">Shadows</span>.{' '}
+                          Win in the Light.
+                        </h1>
+                        <p className="hero-subtitle">
+                          The first NFT marketplace where your bids, identity, and strategy are completely private — verified by zero-knowledge proofs on the Midnight Network.
+                        </p>
+                        <div className="hero-cta">
+                          <button className="btn btn-primary btn-lg" onClick={() => !isConnected && setShowWalletModal(true)} id="hero-cta-btn">
+                            {isConnected ? '🎭 Explore Auctions' : '🔑 Get Started — Connect Wallet'}
+                          </button>
+                          <button className="btn btn-ghost btn-lg" onClick={() => window.open('https://docs.midnight.network', '_blank')}>
+                            📖 How It Works
+                          </button>
+                        </div>
+            
+                        <div className="hero-stats">
+                          {[
+                            { value: `${stats.total}`, label: 'Live Auctions' },
+                            { value: `${stats.sealed}`, label: 'Sealed Bids' },
+                            { value: `${stats.volume.toLocaleString()}`, label: 'tNIGHT Volume' },
+                            { value: '100%', label: 'Private by Design' },
+                          ].map(({ value, label }) => (
+                            <div key={label} className="hero-stat">
+                              <div className="hero-stat-value">{value}</div>
+                              <div className="hero-stat-label">{label}</div>
+                            </div>
+                          ))}
+                        </div>
+                      </motion.div>
+                    </section>
+            
+                    {/* ── How It Works ── */}
+                    <section className="section" style={{ paddingTop: 0 }}>
+                      <div style={{ display: 'grid', gridTemplateColumns: 'repeat(3, 1fr)', gap: 16 }}>
+                        {[
+                          { icon: '🔒', step: '01', title: 'Seal Your Bid', desc: 'Your bid amount is kept private using a ZK witness. Only you know what you bid.' },
+                          { icon: '⚡', step: '02', title: 'ZK Proof On-chain', desc: 'A zero-knowledge proof verifies your bid is valid without revealing the amount to anyone.' },
+                          { icon: '🏆', step: '03', title: 'Private Settlement', desc: 'The winner is revealed using ZK proofs. Losing bids stay sealed forever.' },
+                        ].map(({ icon, step, title, desc }) => (
+                          <motion.div key={step} className="card" initial={{ opacity: 0, y: 20 }} animate={{ opacity: 1, y: 0 }} transition={{ delay: 0.1 }}>
+                            <div style={{ display: 'flex', gap: 14, alignItems: 'flex-start' }}>
+                              <div style={{ fontSize: 28, flexShrink: 0 }}>{icon}</div>
+                              <div>
+                                <div style={{ fontSize: 10, color: 'var(--veil-purple)', fontWeight: 700, textTransform: 'uppercase', marginBottom: 4 }}>Step {step}</div>
+                                <div style={{ fontFamily: 'var(--font-display)', fontWeight: 700, fontSize: 15, marginBottom: 6 }}>{title}</div>
+                                <div style={{ fontSize: 12, color: 'var(--text-muted)', lineHeight: 1.6 }}>{desc}</div>
+                              </div>
+                            </div>
+                          </motion.div>
+                        ))}
+                      </div>
+                    </section>
+            
+                    {/* ── Wallet Status Bar ── */}
+                    {isConnected && balances && (
+                      <section className="section" style={{ paddingTop: 0, paddingBottom: 0 }}>
+                        <motion.div initial={{ opacity: 0 }} animate={{ opacity: 1 }} className="card"
+                          style={{ display: 'flex', alignItems: 'center', gap: 20, flexWrap: 'wrap' }}>
+                          <div style={{ display: 'flex', alignItems: 'center', gap: 8 }}>
+                            <div style={{ width: 36, height: 36, borderRadius: 10, background: 'var(--grad-primary)', display: 'flex', alignItems: 'center', justifyContent: 'center', fontSize: 16 }}>
+                              {walletName === '1AM' ? '🦄' : '👛'}
+                            </div>
+                            <div>
+                              <div style={{ fontSize: 11, color: 'var(--text-dim)' }}>Connected · {walletName}</div>
+                              <div style={{ fontFamily: 'var(--font-mono)', fontSize: 12 }}>
+                                {unshieldedAddress?.substring(0, 10)}...{unshieldedAddress?.substring(unshieldedAddress.length - 6)}
+                              </div>
+                            </div>
+                          </div>
+                          <div style={{ display: 'flex', gap: 20, flex: 1, flexWrap: 'wrap' }}>
+                            {[
+                              { label: 'Unshielded tNIGHT', value: (Number(balances.unshieldedNight) / 1e6).toFixed(2), color: 'var(--veil-cyan)' },
+                              { label: 'Shielded tNIGHT', value: (Number(balances.shieldedNight) / 1e6).toFixed(2), color: 'var(--veil-purple)' },
+                              { label: 'DUST (gas)', value: (Number(balances.dust) / 1e6).toFixed(4), color: 'var(--veil-amber)' },
+                            ].map(({ label, value, color }) => (
+                              <div key={label}>
+                                <div style={{ fontSize: 10, color: 'var(--text-dim)', textTransform: 'uppercase' }}>{label}</div>
+                                <div style={{ fontFamily: 'var(--font-mono)', fontWeight: 700, color, fontSize: 14 }}>{value}</div>
+                              </div>
+                            ))}
+                          </div>
+                          <button className="btn btn-ghost btn-sm" onClick={disconnectWallet}>Disconnect</button>
+                        </motion.div>
+                      </section>
+                    )}
+            
+                    {/* ── Listings ── */}
+                    <section className="section">
+                      <div className="section-header">
+                        <div>
+                          <div className="section-title">🎭 Active Auctions</div>
+                          <div className="section-subtitle">{filteredListings.length} auctions · All bids are sealed and private</div>
+                        </div>
+                        <div style={{ display: 'flex', gap: 8, alignItems: 'center' }}>
+                          <select className="form-input" style={{ width: 'auto', padding: '6px 12px' }} value={sortBy} onChange={e => setSortBy(e.target.value as any)}>
+                            <option value="ending">Ending Soon</option>
+                            <option value="bid">Highest Bid</option>
+                          </select>
+                        </div>
+                      </div>
+            
+                      <div className="filter-bar">
+                        {(['ALL', 'LIVE', 'OPEN', 'CLOSED'] as const).map(f => (
+                          <button key={f} className={`filter-chip ${activeFilter === f ? 'active' : ''}`} onClick={() => setActiveFilter(f)}>
+                            {f === 'ALL' ? '⬡ All' : f === 'LIVE' ? '🔴 Live' : f === 'OPEN' ? '⚡ Open' : '🔒 Closed'}
+                          </button>
+                        ))}
+                      </div>
+            
+                      <div className="grid-3">
+                        <AnimatePresence>
+                          {filteredListings.map(listing => (
+                            <NFTCard key={listing.id} listing={listing} onClick={() => setSelectedListing(listing)} />
+                          ))}
+                        </AnimatePresence>
+                      </div>
+            
+                      {filteredListings.length === 0 && (
+                        <div style={{ textAlign: 'center', padding: '60px 0', color: 'var(--text-muted)' }}>
+                          <div style={{ fontSize: 40, marginBottom: 12 }}>🎭</div>
+                          <div>No auctions found. Try changing your filter.</div>
+                        </div>
+                      )}
+                    </section>
+            
+                    {/* ── Feature Section ── */}
+                    <section className="section">
+                      <div style={{ background: 'linear-gradient(135deg, rgba(139,92,246,0.06), rgba(6,182,212,0.04))', border: '1px solid rgba(139,92,246,0.15)', borderRadius: 24, padding: '40px 32px' }}>
+                        <div style={{ display: 'grid', gridTemplateColumns: '1fr 1fr', gap: 40, alignItems: 'center' }}>
+                          <div>
+                            <div className="hero-eyebrow" style={{ justifyContent: 'flex-start', marginBottom: 16 }}>🤖 AI Agent Trading</div>
+                            <h2 style={{ fontFamily: 'var(--font-display)', fontSize: 28, fontWeight: 800, marginBottom: 12 }}>
+                              Let AI Trade Privately for You
+                            </h2>
+                            <p style={{ color: 'var(--text-muted)', lineHeight: 1.7, marginBottom: 20 }}>
+                              VeilBid supports autonomous AI agents that can bid on your behalf. Your strategy, budget, and identity remain completely private — even your agent doesn't expose you.
+                            </p>
+                            <div style={{ display: 'flex', gap: 8, flexWrap: 'wrap' }}>
+                              {['Private Strategy', 'ZK Proof Native', 'Autonomous', 'On-Chain Settlement'].map(tag => (
+                                <span key={tag} className="feature-pill">{tag}</span>
+                              ))}
+                            </div>
+                          </div>
+                          <div style={{ display: 'flex', flexDirection: 'column', gap: 12 }}>
+                            {[
+                              { icon: '🔐', title: 'Private Bidding Logic', desc: 'Your AI\'s bidding rules stay off-chain as ZK witnesses.' },
+                              { icon: '⚡', title: 'Real-time Execution', desc: 'Agents can bid autonomously without manual confirmation.' },
+                              { icon: '🛡️', title: 'Anti-Front-Running', desc: 'No one can front-run your agent since bids are sealed.' },
+                            ].map(({ icon, title, desc }) => (
+                              <div key={title} style={{ display: 'flex', gap: 12, padding: '12px 16px', background: 'rgba(255,255,255,0.02)', border: '1px solid var(--bg-border)', borderRadius: 12 }}>
+                                <span style={{ fontSize: 20 }}>{icon}</span>
+                                <div>
+                                  <div style={{ fontWeight: 600, fontSize: 13, marginBottom: 2 }}>{title}</div>
+                                  <div style={{ fontSize: 12, color: 'var(--text-muted)' }}>{desc}</div>
+                                </div>
+                              </div>
+                            ))}
+                          </div>
+                        </div>
+                      </div>
+                    </section>
+          </>
+        ) : (
+          <section className="section" style={{ minHeight: '60vh' }}>
+            <div className="section-header">
+              <div>
+                <div className="section-title">👛 My Collection</div>
+                <div className="section-subtitle">{ownedNfts.length} NFTs in your private wallet</div>
               </div>
-              <div style={{ display: 'flex', gap: 20, flex: 1, flexWrap: 'wrap' }}>
-                {[
-                  { label: 'Unshielded tNIGHT', value: (Number(balances.unshieldedNight) / 1e6).toFixed(2), color: 'var(--veil-cyan)' },
-                  { label: 'Shielded tNIGHT', value: (Number(balances.shieldedNight) / 1e6).toFixed(2), color: 'var(--veil-purple)' },
-                  { label: 'DUST (gas)', value: (Number(balances.dust) / 1e6).toFixed(4), color: 'var(--veil-amber)' },
-                ].map(({ label, value, color }) => (
-                  <div key={label}>
-                    <div style={{ fontSize: 10, color: 'var(--text-dim)', textTransform: 'uppercase' }}>{label}</div>
-                    <div style={{ fontFamily: 'var(--font-mono)', fontWeight: 700, color, fontSize: 14 }}>{value}</div>
-                  </div>
-                ))}
+            </div>
+            {ownedNfts.length === 0 ? (
+              <div style={{ textAlign: 'center', padding: '80px 0', color: 'var(--text-muted)' }}>
+                <div style={{ fontSize: 48, marginBottom: 16 }}>👛</div>
+                <div style={{ fontSize: 18, marginBottom: 8, color: 'var(--text-primary)' }}>Your wallet is empty</div>
+                <div>Explore the marketplace and purchase an NFT to add it to your collection.</div>
+                <button className="btn btn-primary" style={{ marginTop: 24 }} onClick={() => setActiveView('marketplace')}>Browse Marketplace</button>
               </div>
-              <button className="btn btn-ghost btn-sm" onClick={disconnectWallet}>Disconnect</button>
-            </motion.div>
+            ) : (
+              <div className="grid-3">
+                <AnimatePresence>
+                  {MOCK_LISTINGS.filter(l => ownedNfts.includes(l.id)).map(listing => (
+                    <NFTCard key={listing.id} listing={{...listing, status: 'CLOSED'}} onClick={() => setSelectedListing(listing)} />
+                  ))}
+                </AnimatePresence>
+              </div>
+            )}
           </section>
         )}
-
-        {/* ── Listings ── */}
-        <section className="section">
-          <div className="section-header">
-            <div>
-              <div className="section-title">🎭 Active Auctions</div>
-              <div className="section-subtitle">{filteredListings.length} auctions · All bids are sealed and private</div>
-            </div>
-            <div style={{ display: 'flex', gap: 8, alignItems: 'center' }}>
-              <select className="form-input" style={{ width: 'auto', padding: '6px 12px' }} value={sortBy} onChange={e => setSortBy(e.target.value as any)}>
-                <option value="ending">Ending Soon</option>
-                <option value="bid">Highest Bid</option>
-              </select>
-            </div>
-          </div>
-
-          <div className="filter-bar">
-            {(['ALL', 'LIVE', 'OPEN', 'CLOSED'] as const).map(f => (
-              <button key={f} className={`filter-chip ${activeFilter === f ? 'active' : ''}`} onClick={() => setActiveFilter(f)}>
-                {f === 'ALL' ? '⬡ All' : f === 'LIVE' ? '🔴 Live' : f === 'OPEN' ? '⚡ Open' : '🔒 Closed'}
-              </button>
-            ))}
-          </div>
-
-          <div className="grid-3">
-            <AnimatePresence>
-              {filteredListings.map(listing => (
-                <NFTCard key={listing.id} listing={listing} onClick={() => setSelectedListing(listing)} />
-              ))}
-            </AnimatePresence>
-          </div>
-
-          {filteredListings.length === 0 && (
-            <div style={{ textAlign: 'center', padding: '60px 0', color: 'var(--text-muted)' }}>
-              <div style={{ fontSize: 40, marginBottom: 12 }}>🎭</div>
-              <div>No auctions found. Try changing your filter.</div>
-            </div>
-          )}
-        </section>
-
-        {/* ── Feature Section ── */}
-        <section className="section">
-          <div style={{ background: 'linear-gradient(135deg, rgba(139,92,246,0.06), rgba(6,182,212,0.04))', border: '1px solid rgba(139,92,246,0.15)', borderRadius: 24, padding: '40px 32px' }}>
-            <div style={{ display: 'grid', gridTemplateColumns: '1fr 1fr', gap: 40, alignItems: 'center' }}>
-              <div>
-                <div className="hero-eyebrow" style={{ justifyContent: 'flex-start', marginBottom: 16 }}>🤖 AI Agent Trading</div>
-                <h2 style={{ fontFamily: 'var(--font-display)', fontSize: 28, fontWeight: 800, marginBottom: 12 }}>
-                  Let AI Trade Privately for You
-                </h2>
-                <p style={{ color: 'var(--text-muted)', lineHeight: 1.7, marginBottom: 20 }}>
-                  VeilBid supports autonomous AI agents that can bid on your behalf. Your strategy, budget, and identity remain completely private — even your agent doesn't expose you.
-                </p>
-                <div style={{ display: 'flex', gap: 8, flexWrap: 'wrap' }}>
-                  {['Private Strategy', 'ZK Proof Native', 'Autonomous', 'On-Chain Settlement'].map(tag => (
-                    <span key={tag} className="feature-pill">{tag}</span>
-                  ))}
-                </div>
-              </div>
-              <div style={{ display: 'flex', flexDirection: 'column', gap: 12 }}>
-                {[
-                  { icon: '🔐', title: 'Private Bidding Logic', desc: 'Your AI\'s bidding rules stay off-chain as ZK witnesses.' },
-                  { icon: '⚡', title: 'Real-time Execution', desc: 'Agents can bid autonomously without manual confirmation.' },
-                  { icon: '🛡️', title: 'Anti-Front-Running', desc: 'No one can front-run your agent since bids are sealed.' },
-                ].map(({ icon, title, desc }) => (
-                  <div key={title} style={{ display: 'flex', gap: 12, padding: '12px 16px', background: 'rgba(255,255,255,0.02)', border: '1px solid var(--bg-border)', borderRadius: 12 }}>
-                    <span style={{ fontSize: 20 }}>{icon}</span>
-                    <div>
-                      <div style={{ fontWeight: 600, fontSize: 13, marginBottom: 2 }}>{title}</div>
-                      <div style={{ fontSize: 12, color: 'var(--text-muted)' }}>{desc}</div>
-                    </div>
-                  </div>
-                ))}
-              </div>
-            </div>
-          </div>
-        </section>
-
+        
         {/* ── Footer ── */}
         <footer className="footer">
           <div className="footer-logo">VeilBid</div>
@@ -935,6 +978,11 @@ export default function App() {
             onClose={() => setSelectedListing(null)}
             contract={contract}
             isConnected={isConnected}
+            onPurchase={(id) => {
+              const newOwned = [...ownedNfts, id];
+              setOwnedNfts(newOwned);
+              localStorage.setItem('veilbid_owned_nfts', JSON.stringify(newOwned));
+            }}
           />
         )}
         {showWalletModal && (
