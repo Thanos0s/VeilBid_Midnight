@@ -294,8 +294,7 @@ export const useMidnight = () => {
         localStorage.removeItem('veilbid_wallet_id');
       }
     };
-    const t = setTimeout(tryReconnect, 800);
-    return () => clearTimeout(t);
+    tryReconnect();
   }, [setupConnection]);
 
   const connectWallet = useCallback(async (walletId?: string) => {
