@@ -753,7 +753,13 @@ export default function App() {
                           <div style={{ fontSize: '14px', fontWeight: 800, fontFamily: 'var(--font-mono)' }}>{nft.floor}</div>
                         </div>
                         <button
-                          onClick={() => { setSelectedNft(nft); setShowBidModal(true); }}
+                          onClick={() => {
+                            setSelectedNft(nft);
+                            setBidSuccessTx(null);
+                            setBidStep('idle');
+                            setBidAmount('');
+                            setShowBidModal(true);
+                          }}
                           style={{
                             padding: '8px 14px',
                             background: 'var(--green)',
