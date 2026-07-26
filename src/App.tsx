@@ -187,7 +187,8 @@ export default function App() {
         callTx: {
           submitBid: async () => {
             await new Promise(resolve => setTimeout(resolve, 2000));
-            return { txHash: 'tx_proof_submit_' + Math.random().toString(36).substring(2, 15) };
+            const randHex = Array.from({ length: 24 }, () => Math.floor(Math.random() * 16).toString(16)).join('');
+            return { txHash: '0xzk_' + randHex + '_midnight' };
           }
         }
       };
