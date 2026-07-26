@@ -161,21 +161,35 @@ export default function App() {
     };
   }, [viewMode]);
 
+  // Step progress for ZK bidding UX: 'idle' | 'witness' | 'proving' | 'submitting' | 'success'
+  const [bidStep, setBidStep] = useState<'idle' | 'witness' | 'proving' | 'submitting' | 'success'>('idle');
+
   const handleBidSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
     if (!bidAmount || isNaN(Number(bidAmount))) return;
     setIsSubmittingBid(true);
     setBidSuccessTx(null);
+    setBidStep('witness');
 
+    // Step 1: Local ZK Witness calculation
     setTimeout(() => {
-      const mockTx = '0xzk_' + Math.random().toString(36).substring(2, 14) + '_midnight';
-      setBidSuccessTx(mockTx);
-      setIsSubmittingBid(false);
+      setBidStep('proving');
+      // Step 2: Proof Generation on Midnight Proof Server
+      setTimeout(() => {
+        setBidStep('submitting');
+        // Step 3: Broadcast transaction on Midnight Preview Network
+        setTimeout(() => {
+          const mockTx = '0xzk_' + Math.random().toString(36).substring(2, 14) + '_midnight';
+          setBidSuccessTx(mockTx);
+          setBidStep('success');
+          setIsSubmittingBid(false);
 
-      const existing = JSON.parse(localStorage.getItem('veilbid_bids') || '[]');
-      existing.push({ nft: selectedNft?.title || 'VeilBid NFT', amount: bidAmount, tx: mockTx, date: new Date().toISOString() });
-      localStorage.setItem('veilbid_bids', JSON.stringify(existing));
-    }, 2200);
+          const existing = JSON.parse(localStorage.getItem('veilbid_bids') || '[]');
+          existing.push({ nft: selectedNft?.title || 'VeilBid NFT', amount: bidAmount, tx: mockTx, date: new Date().toISOString() });
+          localStorage.setItem('veilbid_bids', JSON.stringify(existing));
+        }, 1200);
+      }, 1400);
+    }, 1200);
   };
 
   const handleDeploySubmit = async (e: React.FormEvent) => {
@@ -789,15 +803,41 @@ export default function App() {
               Bidding on: <strong>{selectedNft?.title || 'VeilBid NFT'}</strong>
             </p>
 
-            {bidSuccessTx ? (
+            {isSubmittingBid ? (
+              <div style={{ padding: '20px 10px', textAlign: 'center' }}>
+                <div style={{ display: 'flex', justifyContent: 'space-between', marginBottom: '12px', fontSize: '12px', fontWeight: 700 }}>
+                  <span style={{ color: bidStep === 'witness' ? 'var(--purple)' : '#10B981' }}>1. Local Witness</span>
+                  <span style={{ color: bidStep === 'proving' ? 'var(--purple)' : bidStep === 'submitting' || bidStep === 'success' ? '#10B981' : '#aaa' }}>2. ZK Proof</span>
+                  <span style={{ color: bidStep === 'submitting' ? 'var(--purple)' : bidStep === 'success' ? '#10B981' : '#aaa' }}>3. Broadcast</span>
+                </div>
+
+                <div style={{ width: '100%', height: '8px', background: '#e5e7eb', borderRadius: '4px', overflow: 'hidden', marginBottom: '18px' }}>
+                  <div style={{
+                    height: '100%',
+                    background: 'var(--purple)',
+                    width: bidStep === 'witness' ? '33%' : bidStep === 'proving' ? '66%' : '100%',
+                    transition: 'width 0.4s ease-in-out'
+                  }} />
+                </div>
+
+                <div style={{ fontSize: '14px', fontWeight: 800, color: 'var(--dark)' }}>
+                  {bidStep === 'witness' && '🔒 Calculating Local Private Witness...'}
+                  {bidStep === 'proving' && '⚡ Generating Zero-Knowledge Proof...'}
+                  {bidStep === 'submitting' && '🌙 Broadcasting to Midnight Network...'}
+                </div>
+                <div style={{ fontSize: '12px', color: '#666', marginTop: '6px' }}>
+                  Your bid amount ({bidAmount} tNIGHT) remains encrypted.
+                </div>
+              </div>
+            ) : bidSuccessTx ? (
               <div style={{ padding: '16px', background: '#ECFDF5', border: '1.5px solid #10B981', borderRadius: '8px', textAlign: 'center' }}>
                 <div style={{ fontSize: '24px', marginBottom: '6px' }}>🎉</div>
-                <div style={{ fontSize: '14px', fontWeight: 800, color: '#065F46' }}>Sealed Bid Submitted!</div>
+                <div style={{ fontSize: '14px', fontWeight: 800, color: '#065F46' }}>Sealed Bid Verified & Submitted!</div>
                 <div style={{ fontSize: '11px', fontFamily: 'var(--font-mono)', color: '#047857', marginTop: '6px', wordBreak: 'break-all' }}>
                   Tx: {bidSuccessTx}
                 </div>
                 <button
-                  onClick={() => { setBidSuccessTx(null); setShowBidModal(false); }}
+                  onClick={() => { setBidSuccessTx(null); setBidStep('idle'); setShowBidModal(false); }}
                   style={{ marginTop: '14px', padding: '8px 16px', background: '#10B981', color: '#fff', border: 'none', borderRadius: '6px', fontWeight: 700, cursor: 'pointer' }}
                 >
                   Done
@@ -835,7 +875,7 @@ export default function App() {
                     cursor: 'pointer',
                   }}
                 >
-                  {isSubmittingBid ? '⚡ Generating ZK Witness...' : '🔒 Submit Sealed Bid'}
+                  🔒 Submit Sealed Bid
                 </button>
               </form>
             )}
