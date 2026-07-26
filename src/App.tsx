@@ -1,4 +1,4 @@
-import { useEffect, useState, useCallback } from 'react';
+import React, { useEffect, useState } from 'react';
 import { useMidnight } from './hooks/useMidnight';
 
 export default function App() {
@@ -6,13 +6,11 @@ export default function App() {
     isConnected,
     isConnecting,
     unshieldedAddress,
-    shieldedAddress,
-    walletName,
-    error: walletError,
+    walletError,
     connectWallet,
     disconnectWallet,
     deployVeilBid,
-  } = useMidnight();
+  } = useMidnight() as any;
 
   // Modals & UI state
   const [showWalletModal, setShowWalletModal] = useState(false);
@@ -79,15 +77,15 @@ export default function App() {
       const preview = document.getElementById('demo-preview');
       if (preview) {
         preview.innerHTML = `
-          <div class="demo-inner">
-            <div class="demo-card">
+          <div className="demo-inner">
+            <div className="demo-card">
               <h3>${d.title}</h3>
               <p>${d.desc}</p>
-              <span class="demo-tag">${d.tag}</span>
+              <span className="demo-tag">${d.tag}</span>
             </div>
-            <div class="zk-popup">
-              Processing ZK proof<span class="cursor"></span>
-              <div class="zk-popup-bar"></div>
+            <div className="zk-popup">
+              Processing ZK proof<span className="cursor"></span>
+              <div className="zk-popup-bar"></div>
             </div>
           </div>`;
       }
@@ -140,13 +138,11 @@ export default function App() {
     setIsSubmittingBid(true);
     setBidSuccessTx(null);
 
-    // Simulate ZK Witness & Bid Tx
     setTimeout(() => {
       const mockTx = '0xzk_' + Math.random().toString(36).substring(2, 14) + '_midnight';
       setBidSuccessTx(mockTx);
       setIsSubmittingBid(false);
       
-      // Store in local storage collection
       const existing = JSON.parse(localStorage.getItem('veilbid_bids') || '[]');
       existing.push({ amount: bidAmount, tx: mockTx, date: new Date().toISOString() });
       localStorage.setItem('veilbid_bids', JSON.stringify(existing));
@@ -160,11 +156,10 @@ export default function App() {
     setDeployResult(null);
 
     try {
-      if (isConnected) {
+      if (isConnected && deployVeilBid) {
         const res = await deployVeilBid(nftName, Number(royaltyBps));
         setDeployResult({ address: res.contractAddress, tx: res.txHash });
       } else {
-        // Fallback mock deployment
         setTimeout(() => {
           setDeployResult({
             address: '0xcontract_' + Math.random().toString(36).substring(2, 10),
@@ -375,212 +370,212 @@ export default function App() {
 
       {/* ── NAV ── */}
       <nav>
-        <a href="#" class="nav-logo"><div class="logo-box">🎭</div>VEILBID</a>
-        <div class="nav-links">
+        <a href="#" className="nav-logo"><div className="logo-box">🎭</div>VEILBID</a>
+        <div className="nav-links">
           <a href="#features">Features ↓</a>
           <a href="#how">How it works</a>
           <a href="#pricing">Pricing</a>
           <a href="https://github.com/Thanos0s/VeilBid_Midnight" target="_blank" rel="noreferrer">GitHub</a>
           <button onClick={() => setShowDeployModal(true)} style={{ background: 'none', border: 'none', font: 'inherit', color: '#5a5a5a', cursor: 'pointer', padding: '7px 12px', fontSize: '13px', fontWeight: 500 }}>Deploy Auction</button>
         </div>
-        <button onClick={() => isConnected ? disconnectWallet() : setShowWalletModal(true)} class="nav-cta">
+        <button onClick={() => isConnected ? disconnectWallet() : setShowWalletModal(true)} className="nav-cta">
           {isConnecting ? '⏳ Connecting...' : isConnected ? `🔑 ${truncateAddr(unshieldedAddress)}` : '🔑 Connect Wallet'}
         </button>
       </nav>
 
       {/* ── HERO ── */}
-      <section class="hero grid-bg" id="home">
-        <div class="deco deco-tl"><img src="/deco-mask.jpg" alt="" width="100%" /></div>
-        <div class="deco deco-bl"><img src="/deco-vault.jpg" alt="" width="100%" /></div>
-        <div class="deco deco-tr"><img src="/deco-gavel.jpg" alt="" width="100%" /></div>
-        <div class="hero-inner">
-          <div class="privacy-strip"><span class="priv-dot"></span>Zero-Knowledge Proofs · Midnight Preview Network</div>
-          <div class="badge-row">
-            <a href="#" class="badge-pill"><span style={{ fontSize: '18px' }}>🔒</span><span><span class="badge-pill-label">Privacy</span>100% Sealed Bids</span></a>
-            <a href="#" class="badge-pill"><span style={{ fontSize: '18px' }}>🌙</span><span><span class="badge-pill-label">Built on</span>Midnight Network</span></a>
+      <section className="hero grid-bg" id="home">
+        <div className="deco deco-tl"><img src="/deco-mask.jpg" alt="" width="100%" /></div>
+        <div className="deco deco-bl"><img src="/deco-vault.jpg" alt="" width="100%" /></div>
+        <div className="deco deco-tr"><img src="/deco-gavel.jpg" alt="" width="100%" /></div>
+        <div className="hero-inner">
+          <div className="privacy-strip"><span className="priv-dot"></span>Zero-Knowledge Proofs · Midnight Preview Network</div>
+          <div className="badge-row">
+            <a href="#" className="badge-pill"><span style={{ fontSize: '18px' }}>🔒</span><span><span className="badge-pill-label">Privacy</span>100% Sealed Bids</span></a>
+            <a href="#" className="badge-pill"><span style={{ fontSize: '18px' }}>🌙</span><span><span className="badge-pill-label">Built on</span>Midnight Network</span></a>
           </div>
-          <h1 class="hero-heading"><span class="accent">Bid</span> in the<br />shadows,</h1>
-          <div class="platform-line">
-            <div class="platform-slot">
-              <span class="platform-icon" id="platform-icon">🖼️</span>
+          <h1 className="hero-heading"><span className="accent">Bid</span> in the<br />shadows,</h1>
+          <div className="platform-line">
+            <div className="platform-slot">
+              <span className="platform-icon" id="platform-icon">🖼️</span>
               <span id="platform-text" style={{ color: '#5B5BD6' }}>win in the light.</span>
             </div>
           </div>
-          <p class="hero-sub">The first NFT marketplace where your bids, identity, and strategy are completely private — verified by zero-knowledge proofs on Midnight Network.</p>
-          <div class="hero-btns">
-            <button onClick={() => setShowBidModal(true)} class="btn-primary"><div class="zk-icon">🔒</div>Place Private Bid</button>
-            <a href="#how" class="btn-secondary">See how it works ↓</a>
+          <p className="hero-sub">The first NFT marketplace where your bids, identity, and strategy are completely private — verified by zero-knowledge proofs on Midnight Network.</p>
+          <div className="hero-btns">
+            <button onClick={() => setShowBidModal(true)} className="btn-primary"><div className="zk-icon">🔒</div>Place Private Bid</button>
+            <a href="#how" className="btn-secondary">See how it works ↓</a>
           </div>
         </div>
-        <div class="spin-badge" onClick={() => setShowBidModal(true)}>
-          <svg class="spin-text" viewBox="0 0 100 100">
+        <div className="spin-badge" onClick={() => setShowBidModal(true)}>
+          <svg className="spin-text" viewBox="0 0 100 100">
             <defs><path id="circle" d="M 50,50 m -36,0 a 36,36 0 1,1 72,0 a 36,36 0 1,1 -72,0" /></defs>
             <text fill="#0a0a0a" fontSize="8.5" fontWeight="900" fontFamily="var(--font-sans)">
               <textPath href="#circle" startOffset="0%">PRIVATE BIDS · ZK PROOFS · MIDNIGHT · </textPath>
             </text>
           </svg>
-          <div class="spin-inner">🎭</div>
+          <div className="spin-inner">🎭</div>
         </div>
       </section>
 
       {/* ── MARQUEE ── */}
-      <div class="marquee-section">
-        <div class="m-label">Every bid is sealed, every winner proven</div>
-        <div class="m-row">
-          <div class="m-fade-l"></div><div class="m-fade-r"></div>
-          <div class="m-track">
-            <span class="m-chip">🔒 Sealed Bids</span><span class="m-chip">🛡️ Zero-Knowledge Proofs</span><span class="m-chip">🎭 Anonymous Identity</span><span class="m-chip">🌙 Midnight Network</span><span class="m-chip">🤖 AI Agent Trading</span><span class="m-chip">💎 NFT Auctions</span><span class="m-chip">⚡ tNIGHT Tokens</span><span class="m-chip">🏆 Private Settlement</span><span class="m-chip">🔐 Anti-Front-Running</span><span class="m-chip">🖼️ Digital Art</span><span class="m-chip">💰 Royalties On-Chain</span>
-            <span class="m-chip">🔒 Sealed Bids</span><span class="m-chip">🛡️ Zero-Knowledge Proofs</span><span class="m-chip">🎭 Anonymous Identity</span><span class="m-chip">🌙 Midnight Network</span><span class="m-chip">🤖 AI Agent Trading</span><span class="m-chip">💎 NFT Auctions</span><span class="m-chip">⚡ tNIGHT Tokens</span><span class="m-chip">🏆 Private Settlement</span><span class="m-chip">🔐 Anti-Front-Running</span><span class="m-chip">🖼️ Digital Art</span><span class="m-chip">💰 Royalties On-Chain</span>
+      <div className="marquee-section">
+        <div className="m-label">Every bid is sealed, every winner proven</div>
+        <div className="m-row">
+          <div className="m-fade-l"></div><div className="m-fade-r"></div>
+          <div className="m-track">
+            <span className="m-chip">🔒 Sealed Bids</span><span className="m-chip">🛡️ Zero-Knowledge Proofs</span><span className="m-chip">🎭 Anonymous Identity</span><span className="m-chip">🌙 Midnight Network</span><span className="m-chip">🤖 AI Agent Trading</span><span className="m-chip">💎 NFT Auctions</span><span className="m-chip">⚡ tNIGHT Tokens</span><span className="m-chip">🏆 Private Settlement</span><span className="m-chip">🔐 Anti-Front-Running</span><span className="m-chip">🖼️ Digital Art</span><span className="m-chip">💰 Royalties On-Chain</span>
+            <span className="m-chip">🔒 Sealed Bids</span><span className="m-chip">🛡️ Zero-Knowledge Proofs</span><span className="m-chip">🎭 Anonymous Identity</span><span className="m-chip">🌙 Midnight Network</span><span className="m-chip">🤖 AI Agent Trading</span><span className="m-chip">💎 NFT Auctions</span><span className="m-chip">⚡ tNIGHT Tokens</span><span className="m-chip">🏆 Private Settlement</span><span className="m-chip">🔐 Anti-Front-Running</span><span className="m-chip">🖼️ Digital Art</span><span className="m-chip">💰 Royalties On-Chain</span>
           </div>
         </div>
       </div>
 
       {/* ── HOW IT WORKS ── */}
-      <section class="how-section grid-bg" id="how">
-        <h2 class="how-title">How to bid on <em>VeilBid</em></h2>
-        <p class="how-sub">One wallet connection puts zero-knowledge private auctions in your hands. Your bids stay sealed forever.</p>
-        <div class="how-layout">
-          <div class="feature-tabs" id="feature-tabs">
-            <button class="ftab active" data-idx="0"><div class="ftab-icon">🔑</div><span><span class="ftab-title">Connect your wallet</span><span class="ftab-desc">Link 1AM wallet to start bidding anonymously.</span></span><div class="ftab-progress"></div></button>
-            <button class="ftab" data-idx="1"><div class="ftab-icon">🔒</div><span><span class="ftab-title">Seal your bid amount</span><span class="ftab-desc">Your bid is hidden as a ZK witness. Nobody sees it.</span></span><div class="ftab-progress"></div></button>
-            <button class="ftab" data-idx="2"><div class="ftab-icon">⚡</div><span><span class="ftab-title">ZK proof generated</span><span class="ftab-desc">Proof verifies your bid is valid without revealing the amount.</span></span><div class="ftab-progress"></div></button>
-            <button class="ftab" data-idx="3"><div class="ftab-icon">🏆</div><span><span class="ftab-title">Private settlement</span><span class="ftab-desc">Winner revealed. Losing bids stay sealed forever.</span></span><div class="ftab-progress"></div></button>
-            <button class="ftab" data-idx="4"><div class="ftab-icon">🤖</div><span><span class="ftab-title">AI Agent trading</span><span class="ftab-desc">Let AI bid on your behalf, completely privately.</span></span><div class="ftab-progress"></div></button>
-            <button class="ftab" data-idx="5"><div class="ftab-icon">👛</div><span><span class="ftab-title">My Collection</span><span class="ftab-desc">View all your purchased NFTs in your private wallet.</span></span><div class="ftab-progress"></div></button>
+      <section className="how-section grid-bg" id="how">
+        <h2 className="how-title">How to bid on <em>VeilBid</em></h2>
+        <p className="how-sub">One wallet connection puts zero-knowledge private auctions in your hands. Your bids stay sealed forever.</p>
+        <div className="how-layout">
+          <div className="feature-tabs" id="feature-tabs">
+            <button className="ftab active" data-idx="0"><div className="ftab-icon">🔑</div><span><span className="ftab-title">Connect your wallet</span><span className="ftab-desc">Link 1AM wallet to start bidding anonymously.</span></span><div className="ftab-progress"></div></button>
+            <button className="ftab" data-idx="1"><div className="ftab-icon">🔒</div><span><span className="ftab-title">Seal your bid amount</span><span className="ftab-desc">Your bid is hidden as a ZK witness. Nobody sees it.</span></span><div className="ftab-progress"></div></button>
+            <button className="ftab" data-idx="2"><div className="ftab-icon">⚡</div><span><span className="ftab-title">ZK proof generated</span><span className="ftab-desc">Proof verifies your bid is valid without revealing the amount.</span></span><div className="ftab-progress"></div></button>
+            <button className="ftab" data-idx="3"><div className="ftab-icon">🏆</div><span><span className="ftab-title">Private settlement</span><span className="ftab-desc">Winner revealed. Losing bids stay sealed forever.</span></span><div className="ftab-progress"></div></button>
+            <button className="ftab" data-idx="4"><div className="ftab-icon">🤖</div><span><span className="ftab-title">AI Agent trading</span><span className="ftab-desc">Let AI bid on your behalf, completely privately.</span></span><div className="ftab-progress"></div></button>
+            <button className="ftab" data-idx="5"><div className="ftab-icon">👛</div><span><span className="ftab-title">My Collection</span><span className="ftab-desc">View all your purchased NFTs in your private wallet.</span></span><div className="ftab-progress"></div></button>
           </div>
-          <div class="demo-preview" id="demo-preview">
-            <div class="demo-inner">
-              <div class="demo-card"><h3>🔑 Connect your Wallet</h3><p>Link your 1AM wallet to VeilBid. Your identity is shielded from the very first step using Midnight's dual-state privacy layer.</p><span class="demo-tag">🌙 Midnight Preview Network</span></div>
-              <div class="zk-popup">Connecting 1AM wallet<span class="cursor"></span><div class="zk-popup-bar"></div></div>
+          <div className="demo-preview" id="demo-preview">
+            <div className="demo-inner">
+              <div className="demo-card"><h3>🔑 Connect your Wallet</h3><p>Link your 1AM wallet to VeilBid. Your identity is shielded from the very first step using Midnight's dual-state privacy layer.</p><span className="demo-tag">🌙 Midnight Preview Network</span></div>
+              <div className="zk-popup">Connecting 1AM wallet<span className="cursor"></span><div className="zk-popup-bar"></div></div>
             </div>
           </div>
         </div>
       </section>
 
       {/* ── FEATURES ── */}
-      <section class="section" style={{ background: '#FBF8F1', borderTop: '1.5px solid var(--dark)' }} id="features">
-        <div class="container">
-          <div class="sec-eyebrow">Built Different</div>
-          <h2 class="sec-title">Privacy isn't optional, <em>it's the foundation</em></h2>
-          <p class="sec-sub">Every feature in VeilBid is designed around one principle: your business is yours alone.</p>
-          <div class="feat-grid">
-            <div class="feat-card"><div class="feat-icon">🔒</div><div class="feat-title">Sealed Bids</div><div class="feat-desc">Your bid amount is kept private using a ZK witness. Only you know what you bid — ever.</div><span class="feat-tag">ZK Witness</span></div>
-            <div class="feat-card"><div class="feat-icon">🛡️</div><div class="feat-title">Anonymous Identity</div><div class="feat-desc">Your wallet address, bidding history, and portfolio are never exposed. Pure on-chain privacy.</div><span class="feat-tag">Shielded Addresses</span></div>
-            <div class="feat-card"><div class="feat-icon">⚡</div><div class="feat-title">ZK Proofs On-chain</div><div class="feat-desc">Every bid is verified by a zero-knowledge proof. Valid without revealing any sensitive data.</div><span class="feat-tag">Compact Contract</span></div>
-            <div class="feat-card"><div class="feat-icon">🤖</div><div class="feat-title">AI Agent Trading</div><div class="feat-desc">Autonomous agents bid on your behalf with zero exposure. Your strategy stays private even from your own agent.</div><span class="feat-tag">Autonomous + Private</span></div>
-            <div class="feat-card"><div class="feat-icon">🔐</div><div class="feat-title">Anti-Front-Running</div><div class="feat-desc">No one can see pending bids to front-run you. Sealed bids make MEV attacks structurally impossible.</div><span class="feat-tag">MEV Protected</span></div>
-            <div class="feat-card"><div class="feat-icon">💰</div><div class="feat-title">Creator Royalties</div><div class="feat-desc">Royalties enforced on-chain with configurable basis points. Artists always get paid what they're owed.</div><span class="night-tag">⚡ tNIGHT Tokens</span></div>
+      <section className="section" style={{ background: '#FBF8F1', borderTop: '1.5px solid var(--dark)' }} id="features">
+        <div className="container">
+          <div className="sec-eyebrow">Built Different</div>
+          <h2 className="sec-title">Privacy isn't optional, <em>it's the foundation</em></h2>
+          <p className="sec-sub">Every feature in VeilBid is designed around one principle: your business is yours alone.</p>
+          <div className="feat-grid">
+            <div className="feat-card"><div className="feat-icon">🔒</div><div className="feat-title">Sealed Bids</div><div className="feat-desc">Your bid amount is kept private using a ZK witness. Only you know what you bid — ever.</div><span className="feat-tag">ZK Witness</span></div>
+            <div className="feat-card"><div className="feat-icon">🛡️</div><div className="feat-title">Anonymous Identity</div><div className="feat-desc">Your wallet address, bidding history, and portfolio are never exposed. Pure on-chain privacy.</div><span className="feat-tag">Shielded Addresses</span></div>
+            <div className="feat-card"><div className="feat-icon">⚡</div><div className="feat-title">ZK Proofs On-chain</div><div className="feat-desc">Every bid is verified by a zero-knowledge proof. Valid without revealing any sensitive data.</div><span className="feat-tag">Compact Contract</span></div>
+            <div className="feat-card"><div className="feat-icon">🤖</div><div className="feat-title">AI Agent Trading</div><div className="feat-desc">Autonomous agents bid on your behalf with zero exposure. Your strategy stays private even from your own agent.</div><span className="feat-tag">Autonomous + Private</span></div>
+            <div className="feat-card"><div className="feat-icon">🔐</div><div className="feat-title">Anti-Front-Running</div><div className="feat-desc">No one can see pending bids to front-run you. Sealed bids make MEV attacks structurally impossible.</div><span className="feat-tag">MEV Protected</span></div>
+            <div className="feat-card"><div className="feat-icon">💰</div><div className="feat-title">Creator Royalties</div><div className="feat-desc">Royalties enforced on-chain with configurable basis points. Artists always get paid what they're owed.</div><span className="night-tag">⚡ tNIGHT Tokens</span></div>
           </div>
-          <div class="stats-bar">
-            <div class="stat-cell"><div class="stat-val">100%</div><div class="stat-lbl">Private by design</div></div>
-            <div class="stat-cell"><div class="stat-val">0</div><div class="stat-lbl">Bids ever exposed</div></div>
-            <div class="stat-cell"><div class="stat-val" style={{ color: 'var(--purple)' }}>ZK</div><div class="stat-lbl">Proof verified</div></div>
-            <div class="stat-cell"><div class="stat-val">🌙</div><div class="stat-lbl">Midnight Preview Network</div></div>
+          <div className="stats-bar">
+            <div className="stat-cell"><div className="stat-val">100%</div><div className="stat-lbl">Private by design</div></div>
+            <div className="stat-cell"><div className="stat-val">0</div><div className="stat-lbl">Bids ever exposed</div></div>
+            <div className="stat-cell"><div className="stat-val" style={{ color: 'var(--purple)' }}>ZK</div><div className="stat-lbl">Proof verified</div></div>
+            <div className="stat-cell"><div className="stat-val">🌙</div><div className="stat-lbl">Midnight Preview Network</div></div>
           </div>
         </div>
       </section>
 
       {/* ── TESTIMONIALS ── */}
-      <section class="section" style={{ background: 'var(--cream)', borderTop: '1.5px solid var(--dark)' }}>
-        <div class="container">
-          <div class="sec-eyebrow">What collectors say</div>
-          <h2 class="sec-title">Serious traders <em>demand privacy</em></h2>
-          <div class="testi-grid">
-            <div class="testi-card"><div class="t-stars">★★★★★</div><p class="t-text">"For the first time I can bid on high-value NFTs without whales watching my wallet and front-running me. VeilBid is the only marketplace I trust."</p><div class="t-author"><div class="av" style={{ background: 'var(--green)' }}>K</div><div><div class="a-name">KryptNight.eth</div><div class="a-role">High-Value Collector</div></div></div></div>
-            <div class="testi-card"><div class="t-stars">★★★★★</div><p class="t-text">"As an artist, I finally have a platform where royalties are guaranteed and my buyers stay anonymous. This is what Web3 was supposed to be."</p><div class="t-author"><div class="av" style={{ background: '#c4b5fd' }}>V</div><div><div class="a-name">VoidArtist</div><div class="a-role">Digital Artist · 12 NFTs sold</div></div></div></div>
-            <div class="testi-card"><div class="t-stars">★★★★★</div><p class="t-text">"The AI agent feature is mind-blowing. My bot bids autonomously with a private strategy that nobody can copy. Absolutely zero information leakage."</p><div class="t-author"><div class="av" style={{ background: '#fde68a' }}>A</div><div><div class="a-name">AlgoTrader_M</div><div class="a-role">Quantitative NFT Trader</div></div></div></div>
+      <section className="section" style={{ background: 'var(--cream)', borderTop: '1.5px solid var(--dark)' }}>
+        <div className="container">
+          <div className="sec-eyebrow">What collectors say</div>
+          <h2 className="sec-title">Serious traders <em>demand privacy</em></h2>
+          <div className="testi-grid">
+            <div className="testi-card"><div className="t-stars">★★★★★</div><p className="t-text">"For the first time I can bid on high-value NFTs without whales watching my wallet and front-running me. VeilBid is the only marketplace I trust."</p><div className="t-author"><div className="av" style={{ background: 'var(--green)' }}>K</div><div><div className="a-name">KryptNight.eth</div><div className="a-role">High-Value Collector</div></div></div></div>
+            <div className="testi-card"><div className="t-stars">★★★★★</div><p className="t-text">"As an artist, I finally have a platform where royalties are guaranteed and my buyers stay anonymous. This is what Web3 was supposed to be."</p><div className="t-author"><div className="av" style={{ background: '#c4b5fd' }}>V</div><div><div className="a-name">VoidArtist</div><div className="a-role">Digital Artist · 12 NFTs sold</div></div></div></div>
+            <div className="testi-card"><div className="t-stars">★★★★★</div><p className="t-text">"The AI agent feature is mind-blowing. My bot bids autonomously with a private strategy that nobody can copy. Absolutely zero information leakage."</p><div className="t-author"><div className="av" style={{ background: '#fde68a' }}>A</div><div><div className="a-name">AlgoTrader_M</div><div className="a-role">Quantitative NFT Trader</div></div></div></div>
           </div>
         </div>
       </section>
 
       {/* ── PRICING ── */}
-      <section class="section" style={{ background: '#FBF8F1', borderTop: '1.5px solid var(--dark)' }} id="pricing">
-        <div class="container">
-          <div class="sec-eyebrow">Pricing</div>
-          <h2 class="sec-title">Start <em>free</em>, bid privately</h2>
-          <p class="sec-sub">All plans include full ZK proof privacy. No plan ever exposes your bids.</p>
-          <div class="price-grid">
-            <div class="price-card">
-              <div class="price-plan">Explorer</div>
-              <div class="price-amount">Free</div>
-              <div class="price-per">on Preview Network · tNIGHT tokens</div>
-              <div class="price-div"></div>
-              <ul class="price-feats">
-                <li class="price-feat"><span class="p-ck">✓</span>Unlimited sealed bids</li>
-                <li class="price-feat"><span class="p-ck">✓</span>ZK proof verified</li>
-                <li class="price-feat"><span class="p-ck">✓</span>Anonymous identity</li>
-                <li class="price-feat"><span class="p-ck">✓</span>My Collection wallet</li>
+      <section className="section" style={{ background: '#FBF8F1', borderTop: '1.5px solid var(--dark)' }} id="pricing">
+        <div className="container">
+          <div className="sec-eyebrow">Pricing</div>
+          <h2 className="sec-title">Start <em>free</em>, bid privately</h2>
+          <p className="sec-sub">All plans include full ZK proof privacy. No plan ever exposes your bids.</p>
+          <div className="price-grid">
+            <div className="price-card">
+              <div className="price-plan">Explorer</div>
+              <div className="price-amount">Free</div>
+              <div className="price-per">on Preview Network · tNIGHT tokens</div>
+              <div className="price-div"></div>
+              <ul className="price-feats">
+                <li className="price-feat"><span className="p-ck">✓</span>Unlimited sealed bids</li>
+                <li className="price-feat"><span className="p-ck">✓</span>ZK proof verified</li>
+                <li className="price-feat"><span className="p-ck">✓</span>Anonymous identity</li>
+                <li className="price-feat"><span className="p-ck">✓</span>My Collection wallet</li>
               </ul>
-              <button onClick={() => setShowBidModal(true)} class="bpp" style={{ background: '#fff' }}>Explore for Free</button>
+              <button onClick={() => setShowBidModal(true)} className="bpp" style={{ background: '#fff' }}>Explore for Free</button>
             </div>
-            <div class="price-card feat">
-              <div class="price-plan">Collector Pro</div>
-              <div class="price-amount" style={{ color: '#fff' }}>$19</div>
-              <div class="price-per">/ month · Mainnet access</div>
-              <div class="price-div"></div>
-              <ul class="price-feats">
-                <li class="price-feat"><span class="p-ck">✓</span>Everything in Explorer</li>
-                <li class="price-feat"><span class="p-ck">✓</span>Real NIGHT token bidding</li>
-                <li class="price-feat"><span class="p-ck">✓</span>AI Agent support</li>
-                <li class="price-feat"><span class="p-ck">✓</span>Priority bid settlement</li>
-                <li class="price-feat"><span class="p-ck">✓</span>Portfolio analytics (private)</li>
+            <div className="price-card feat">
+              <div className="price-plan">Collector Pro</div>
+              <div className="price-amount" style={{ color: '#fff' }}>$19</div>
+              <div className="price-per">/ month · Mainnet access</div>
+              <div className="price-div"></div>
+              <ul className="price-feats">
+                <li className="price-feat"><span className="p-ck">✓</span>Everything in Explorer</li>
+                <li className="price-feat"><span className="p-ck">✓</span>Real NIGHT token bidding</li>
+                <li className="price-feat"><span className="p-ck">✓</span>AI Agent support</li>
+                <li className="price-feat"><span className="p-ck">✓</span>Priority bid settlement</li>
+                <li className="price-feat"><span className="p-ck">✓</span>Portfolio analytics (private)</li>
               </ul>
-              <button onClick={() => setShowBidModal(true)} class="bpp">Start Free Trial</button>
+              <button onClick={() => setShowBidModal(true)} className="bpp">Start Free Trial</button>
             </div>
-            <div class="price-card">
-              <div class="price-plan">Institution</div>
-              <div class="price-amount">Custom</div>
-              <div class="price-per">/ month · enterprise</div>
-              <div class="price-div"></div>
-              <ul class="price-feats">
-                <li class="price-feat"><span class="p-ck">✓</span>Everything in Pro</li>
-                <li class="price-feat"><span class="p-ck">✓</span>Custom AI agent strategies</li>
-                <li class="price-feat"><span class="p-ck">✓</span>White-label options</li>
-                <li class="price-feat"><span class="p-ck">✓</span>Dedicated support</li>
+            <div className="price-card">
+              <div className="price-plan">Institution</div>
+              <div className="price-amount">Custom</div>
+              <div className="price-per">/ month · enterprise</div>
+              <div className="price-div"></div>
+              <ul className="price-feats">
+                <li className="price-feat"><span className="p-ck">✓</span>Everything in Pro</li>
+                <li className="price-feat"><span className="p-ck">✓</span>Custom AI agent strategies</li>
+                <li className="price-feat"><span className="p-ck">✓</span>White-label options</li>
+                <li className="price-feat"><span className="p-ck">✓</span>Dedicated support</li>
               </ul>
-              <button onClick={() => alert('Contacting VeilBid Institution Support...')} class="bpp" style={{ background: '#fff' }}>Contact Us</button>
+              <button onClick={() => alert('Contacting VeilBid Institution Support...')} className="bpp" style={{ background: '#fff' }}>Contact Us</button>
             </div>
           </div>
         </div>
       </section>
 
       {/* ── FAQ ── */}
-      <section class="section" style={{ background: 'var(--cream)', borderTop: '1.5px solid var(--dark)' }}>
-        <div class="container">
-          <div class="sec-eyebrow">FAQ</div>
-          <h2 class="sec-title" style={{ textAlign: 'center' }}>Common <em>questions</em></h2>
-          <div class="faq-list">
-            <div class="faq-item"><div class="faq-q">Are my bids really private?<span class="faq-arr">↓</span></div><div class="faq-a"><div class="faq-a-in">Yes — completely. Your bid amount is stored as a ZK witness on the Midnight Network. Nobody, including VeilBid, can read it. Only you hold the secret key.</div></div></div>
-            <div class="faq-item"><div class="faq-q">What is Midnight Network?<span class="faq-arr">↓</span></div><div class="faq-a"><div class="faq-a-in">Midnight is a partner chain of Cardano built specifically for privacy-preserving smart contracts. It uses zero-knowledge proofs to verify computation without revealing data.</div></div></div>
-            <div class="faq-item"><div class="faq-q">What wallet do I need?<span class="faq-arr">↓</span></div><div class="faq-a"><div class="faq-a-in">You need the 1AM wallet — a browser extension designed for Midnight Network. It handles shielded transactions and ZK proof generation automatically.</div></div></div>
-            <div class="faq-item"><div class="faq-q">Can someone see who won an auction?<span class="faq-arr">↓</span></div><div class="faq-a"><div class="faq-a-in">The winning outcome is published on-chain but the winner's identity and the exact bid amounts of all other bidders remain permanently sealed.</div></div></div>
-            <div class="faq-item"><div class="faq-q">Is VeilBid open source?<span class="faq-arr">↓</span></div><div class="faq-a"><div class="faq-a-in">Yes! The smart contract and frontend are fully open source on GitHub at github.com/Thanos0s/VeilBid_Midnight. Audit, fork, and build on top of it freely.</div></div></div>
+      <section className="section" style={{ background: 'var(--cream)', borderTop: '1.5px solid var(--dark)' }}>
+        <div className="container">
+          <div className="sec-eyebrow">FAQ</div>
+          <h2 className="sec-title" style={{ textAlign: 'center' }}>Common <em>questions</em></h2>
+          <div className="faq-list">
+            <div className="faq-item"><div className="faq-q">Are my bids really private?<span className="faq-arr">↓</span></div><div className="faq-a"><div className="faq-a-in">Yes — completely. Your bid amount is stored as a ZK witness on the Midnight Network. Nobody, including VeilBid, can read it. Only you hold the secret key.</div></div></div>
+            <div className="faq-item"><div className="faq-q">What is Midnight Network?<span className="faq-arr">↓</span></div><div className="faq-a"><div className="faq-a-in">Midnight is a partner chain of Cardano built specifically for privacy-preserving smart contracts. It uses zero-knowledge proofs to verify computation without revealing data.</div></div></div>
+            <div className="faq-item"><div className="faq-q">What wallet do I need?<span className="faq-arr">↓</span></div><div className="faq-a"><div className="faq-a-in">You need the 1AM wallet — a browser extension designed for Midnight Network. It handles shielded transactions and ZK proof generation automatically.</div></div></div>
+            <div className="faq-item"><div className="faq-q">Can someone see who won an auction?<span className="faq-arr">↓</span></div><div className="faq-a"><div className="faq-a-in">The winning outcome is published on-chain but the winner's identity and the exact bid amounts of all other bidders remain permanently sealed.</div></div></div>
+            <div className="faq-item"><div className="faq-q">Is VeilBid open source?<span className="faq-arr">↓</span></div><div className="faq-a"><div className="faq-a-in">Yes! The smart contract and frontend are fully open source on GitHub at github.com/Thanos0s/VeilBid_Midnight. Audit, fork, and build on top of it freely.</div></div></div>
           </div>
         </div>
       </section>
 
       {/* ── CTA ── */}
-      <section class="cta-section grid-bg">
-        <h2 class="cta-title">Bid in the shadows.<br /><em>Win in the light.</em></h2>
-        <p class="cta-sub">Join the first truly private NFT marketplace. Your bids, identity, and secrets — forever yours.</p>
+      <section className="cta-section grid-bg">
+        <h2 className="cta-title">Bid in the shadows.<br /><em>Win in the light.</em></h2>
+        <p className="cta-sub">Join the first truly private NFT marketplace. Your bids, identity, and secrets — forever yours.</p>
         <div style={{ display: 'flex', gap: '12px', justifyContent: 'center', flexWrap: 'wrap' }}>
-          <button onClick={() => setShowBidModal(true)} class="btn-primary"><div class="zk-icon">🔒</div>Place Your First Private Bid</button>
-          <a href="https://github.com/Thanos0s/VeilBid_Midnight" target="_blank" rel="noreferrer" class="btn-secondary">⭐ Star on GitHub</a>
+          <button onClick={() => setShowBidModal(true)} className="btn-primary"><div className="zk-icon">🔒</div>Place Your First Private Bid</button>
+          <a href="https://github.com/Thanos0s/VeilBid_Midnight" target="_blank" rel="noreferrer" className="btn-secondary">⭐ Star on GitHub</a>
         </div>
       </section>
 
       <footer>
-        <div class="foot-in">
+        <div className="foot-in">
           <div>
-            <div style={{ display: 'flex', alignItems: 'center', gap: '10px', fontWeight: 900, fontSize: '15px' }}><div class="logo-box">🎭</div>VEILBID</div>
-            <p class="foot-desc">The first privacy-first NFT marketplace on Midnight Network. Your bids, identity, and strategy are sealed forever.</p>
-            <div style={{ marginTop: '14px' }}><div class="midnight-badge">🌙 Built on Midnight Network</div></div>
+            <div style={{ display: 'flex', alignItems: 'center', gap: '10px', fontWeight: 900, fontSize: '15px' }}><div className="logo-box">🎭</div>VEILBID</div>
+            <p className="foot-desc">The first privacy-first NFT marketplace on Midnight Network. Your bids, identity, and strategy are sealed forever.</p>
+            <div style={{ marginTop: '14px' }}><div className="midnight-badge">🌙 Built on Midnight Network</div></div>
           </div>
-          <div><div class="foot-ct">Marketplace</div><ul class="foot-ls"><li><a href="#features">Browse Auctions</a></li><li><a href="#how">My Collection</a></li><li><button onClick={() => setShowDeployModal(true)} style={{ background: 'none', border: 'none', color: '#5a5a5a', cursor: 'pointer', padding: 0, font: 'inherit' }}>Create Auction</button></li><li><a href="#features">AI Agent</a></li></ul></div>
-          <div><div class="foot-ct">Developers</div><ul class="foot-ls"><li><a href="https://github.com/Thanos0s/VeilBid_Midnight" target="_blank" rel="noreferrer">GitHub</a></li><li><a href="#">Documentation</a></li><li><a href="#">Contract ABI</a></li><li><a href="https://midnight.network" target="_blank" rel="noreferrer">Midnight Docs</a></li></ul></div>
-          <div><div class="foot-ct">Legal</div><ul class="foot-ls"><li><a href="#">Privacy Policy</a></li><li><a href="#">Terms of Service</a></li><li><a href="#">Cookie Policy</a></li></ul></div>
+          <div><div className="foot-ct">Marketplace</div><ul className="foot-ls"><li><a href="#features">Browse Auctions</a></li><li><a href="#how">My Collection</a></li><li><button onClick={() => setShowDeployModal(true)} style={{ background: 'none', border: 'none', color: '#5a5a5a', cursor: 'pointer', padding: 0, font: 'inherit' }}>Create Auction</button></li><li><a href="#features">AI Agent</a></li></ul></div>
+          <div><div className="foot-ct">Developers</div><ul className="foot-ls"><li><a href="https://github.com/Thanos0s/VeilBid_Midnight" target="_blank" rel="noreferrer">GitHub</a></li><li><a href="#">Documentation</a></li><li><a href="#">Contract ABI</a></li><li><a href="https://midnight.network" target="_blank" rel="noreferrer">Midnight Docs</a></li></ul></div>
+          <div><div className="foot-ct">Legal</div><ul className="foot-ls"><li><a href="#">Privacy Policy</a></li><li><a href="#">Terms of Service</a></li><li><a href="#">Cookie Policy</a></li></ul></div>
         </div>
-        <div class="foot-bot">
+        <div className="foot-bot">
           <span>© 2026 VeilBid. All rights reserved. Built on <strong>Midnight Preview Network</strong>.</span>
           <span>🔒 Zero-Knowledge · 🌙 Midnight · 🤖 AI Ready</span>
         </div>
@@ -588,9 +583,9 @@ export default function App() {
 
       {/* ── WALLET MODAL ── */}
       {showWalletModal && (
-        <div class="modal-overlay" onClick={() => setShowWalletModal(false)}>
-          <div class="modal-card" onClick={e => e.stopPropagation()}>
-            <button class="modal-close" onClick={() => setShowWalletModal(false)}>✕</button>
+        <div className="modal-overlay" onClick={() => setShowWalletModal(false)}>
+          <div className="modal-card" onClick={e => e.stopPropagation()}>
+            <button className="modal-close" onClick={() => setShowWalletModal(false)}>✕</button>
             <h3 style={{ fontSize: '20px', fontWeight: 800, marginBottom: '8px' }}>Connect Midnight Wallet</h3>
             <p style={{ fontSize: '13.5px', color: '#5a5a5a', marginBottom: '20px' }}>
               Connect your 1AM wallet to interact with VeilBid's Zero-Knowledge private auction smart contract.
@@ -618,8 +613,8 @@ export default function App() {
                 fontSize: '15px',
                 cursor: 'pointer',
                 display: 'flex',
-                align-items: 'center',
-                justify-content: 'center',
+                alignItems: 'center',
+                justifyContent: 'center',
                 gap: '10px',
               }}
             >
@@ -631,9 +626,9 @@ export default function App() {
 
       {/* ── BID MODAL ── */}
       {showBidModal && (
-        <div class="modal-overlay" onClick={() => setShowBidModal(false)}>
-          <div class="modal-card" onClick={e => e.stopPropagation()}>
-            <button class="modal-close" onClick={() => setShowBidModal(false)}>✕</button>
+        <div className="modal-overlay" onClick={() => setShowBidModal(false)}>
+          <div className="modal-card" onClick={e => e.stopPropagation()}>
+            <button className="modal-close" onClick={() => setShowBidModal(false)}>✕</button>
             <h3 style={{ fontSize: '20px', fontWeight: 800, marginBottom: '6px' }}>🔒 Place Sealed Private Bid</h3>
             <p style={{ fontSize: '13px', color: '#5a5a5a', marginBottom: '16px' }}>
               Your bid amount will be cryptographically sealed as a Zero-Knowledge witness before submission.
@@ -655,7 +650,7 @@ export default function App() {
               </div>
             ) : (
               <form onSubmit={handleBidSubmit}>
-                <label style={{ fontSize: '12px', fontWeight: 700, textTransform: uppercaseText('uppercase'), color: '#888' }}>
+                <label style={{ fontSize: '12px', fontWeight: 700, textTransform: 'uppercase', color: '#888' }}>
                   Bid Amount (tNIGHT)
                 </label>
                 <input
@@ -663,7 +658,7 @@ export default function App() {
                   placeholder="e.g. 250"
                   value={bidAmount}
                   onChange={e => setBidAmount(e.target.value)}
-                  class="modal-input"
+                  className="modal-input"
                   required
                 />
                 <div style={{ fontSize: '11px', color: '#6B7280', marginBottom: '16px', display: 'flex', alignItems: 'center', gap: '4px' }}>
@@ -695,9 +690,9 @@ export default function App() {
 
       {/* ── DEPLOY MODAL ── */}
       {showDeployModal && (
-        <div class="modal-overlay" onClick={() => setShowDeployModal(false)}>
-          <div class="modal-card" onClick={e => e.stopPropagation()}>
-            <button class="modal-close" onClick={() => setShowDeployModal(false)}>✕</button>
+        <div className="modal-overlay" onClick={() => setShowDeployModal(false)}>
+          <div className="modal-card" onClick={e => e.stopPropagation()}>
+            <button className="modal-close" onClick={() => setShowDeployModal(false)}>✕</button>
             <h3 style={{ fontSize: '20px', fontWeight: 800, marginBottom: '6px' }}>🚀 Deploy New Private Auction</h3>
             <p style={{ fontSize: '13px', color: '#5a5a5a', marginBottom: '16px' }}>
               Deploy a new VeilBid Compact contract instance on the Midnight Preview Network.
@@ -724,7 +719,7 @@ export default function App() {
                   placeholder="e.g. Shadow Bloom #007"
                   value={nftName}
                   onChange={e => setNftName(e.target.value)}
-                  class="modal-input"
+                  className="modal-input"
                   required
                 />
 
@@ -734,7 +729,7 @@ export default function App() {
                   placeholder="500"
                   value={royaltyBps}
                   onChange={e => setRoyaltyBps(e.target.value)}
-                  class="modal-input"
+                  className="modal-input"
                   required
                 />
 
@@ -763,8 +758,4 @@ export default function App() {
       )}
     </div>
   );
-}
-
-function uppercaseText(val: string) {
-  return val as any;
 }
