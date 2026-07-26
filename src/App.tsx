@@ -168,6 +168,18 @@ export default function App() {
   const handleBidSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
     if (!bidAmount || isNaN(Number(bidAmount))) return;
+    
+    if (!isConnected) {
+      alert('Please connect your 1AM wallet first.');
+      setShowWalletModal(true);
+      return;
+    }
+
+    if (!contract || !contract.callTx) {
+      alert('Midnight contract instance is not loaded. Try reconnecting your wallet.');
+      return;
+    }
+
     setIsSubmittingBid(true);
     setBidSuccessTx(null);
     setBidStep('witness');
@@ -177,27 +189,11 @@ export default function App() {
       await new Promise(r => setTimeout(r, 1000));
       setBidStep('proving');
 
-      // Use actual contract instance or fallback to mock contract structured like reference project
-      const activeContract = contract || {
-        providers: {
-          privateStateProvider: {
-            set: async () => {}
-          }
-        },
-        callTx: {
-          submitBid: async () => {
-            await new Promise(resolve => setTimeout(resolve, 2000));
-            const randHex = Array.from({ length: 24 }, () => Math.floor(Math.random() * 16).toString(16)).join('');
-            return { txHash: '0xzk_' + randHex + '_midnight' };
-          }
-        }
-      };
-
       // Update private state with keys & bidding values
-      if (activeContract.providers?.privateStateProvider?.set) {
+      if (contract.providers?.privateStateProvider?.set) {
         const dummyKey = new Uint8Array(32);
         crypto.getRandomValues(dummyKey);
-        await activeContract.providers.privateStateProvider.set('veilbid-state', {
+        await contract.providers.privateStateProvider.set('veilbid-state', {
           secretKey: dummyKey,
           bidAmount: BigInt(bidAmount)
         });
@@ -206,8 +202,12 @@ export default function App() {
       setBidStep('submitting');
       
       // Call ZK circuit callTx method on contract (Same as Midnight Project)
-      const txResult = await activeContract.callTx.submitBid();
-      const realTxHash = txResult?.txHash || txResult?.public?.txId || 'tx_' + Math.random().toString(36).substring(2, 15);
+      const txResult = await contract.callTx.submitBid();
+      const realTxHash = txResult?.txHash || txResult?.public?.txId;
+      
+      if (!realTxHash) {
+        throw new Error('Transaction submission did not return a valid transaction hash.');
+      }
 
       setBidSuccessTx(realTxHash);
       setBidStep('success');
