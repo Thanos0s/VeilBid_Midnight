@@ -197,7 +197,8 @@ export default function App() {
         nav{position:sticky;top:0;z-index:200;display:flex;align-items:center;justify-content:space-between;height:56px;padding:0 20px;background:var(--cream);border-bottom:1.5px solid var(--dark);animation:slideDown .4s ease-out}
         @keyframes slideDown{from{transform:translateY(-100%);opacity:0}to{transform:translateY(0);opacity:1}}
         .nav-logo{display:flex;align-items:center;gap:10px;font-weight:900;font-size:15px;letter-spacing:-.01em;text-decoration:none;color:var(--dark)}
-        .logo-box{width:30px;height:30px;border:2px solid var(--dark);border-radius:7px;display:flex;align-items:center;justify-content:center;font-size:16px;font-weight:900;background:var(--dark);color:var(--green)}
+        .logo-box{width:32px;height:32px;border:2px solid var(--dark);border-radius:7px;overflow:hidden;display:flex;align-items:center;justify-content:center;background:#fff;flex-shrink:0}
+        .logo-box img{width:100%;height:100%;object-fit:cover}
         .nav-links{display:flex;align-items:center;gap:2px}
         .nav-links a{padding:7px 12px;font-size:13px;font-weight:500;color:#5a5a5a;text-decoration:none;border-radius:6px;transition:color .15s,background .15s}
         .nav-links a:hover{color:var(--dark);background:rgba(0,0,0,.05)}
@@ -236,7 +237,8 @@ export default function App() {
         .spin-badge{position:absolute;bottom:6%;right:4%;width:108px;height:108px;background:var(--green);border:var(--border);border-radius:50%;box-shadow:var(--shadow-lg);display:flex;align-items:center;justify-content:center;cursor:pointer;animation:badgeBounce 3s ease-in-out infinite}
         .spin-badge:hover{transform:scale(1.08)}
         .spin-text{position:absolute;inset:0;animation:spinText 10s linear infinite}
-        .spin-inner{width:40px;height:40px;border:2px solid var(--dark);border-radius:9px;background:var(--dark);display:flex;align-items:center;justify-content:center;font-size:20px}
+        .spin-inner{width:40px;height:40px;border:2px solid var(--dark);border-radius:9px;overflow:hidden;background:#fff;display:flex;align-items:center;justify-content:center}
+        .spin-inner img{width:100%;height:100%;object-fit:cover}
         @keyframes spinText{from{transform:rotate(0deg)}to{transform:rotate(360deg)}}
         @keyframes badgeBounce{0%,100%{transform:translateY(0)}50%{transform:translateY(-8px)}}
         .privacy-strip{display:inline-flex;align-items:center;gap:8px;padding:6px 14px;background:rgba(91,91,214,.08);border:1.5px solid rgba(91,91,214,.25);border-radius:50px;font-size:12px;font-weight:600;color:var(--purple);margin-bottom:24px}
@@ -370,7 +372,7 @@ export default function App() {
 
       {/* ── NAV ── */}
       <nav>
-        <a href="#" className="nav-logo"><div className="logo-box">🎭</div>VEILBID</a>
+        <a href="#" className="nav-logo"><div className="logo-box"><img src="/veilbid-logo.png" alt="VeilBid" /></div>VEILBID</a>
         <div className="nav-links">
           <a href="#features">Features ↓</a>
           <a href="#how">How it works</a>
@@ -414,7 +416,7 @@ export default function App() {
               <textPath href="#circle" startOffset="0%">PRIVATE BIDS · ZK PROOFS · MIDNIGHT · </textPath>
             </text>
           </svg>
-          <div className="spin-inner">🎭</div>
+          <div className="spin-inner"><img src="/veilbid-logo.png" alt="VeilBid" /></div>
         </div>
       </section>
 
@@ -567,7 +569,7 @@ export default function App() {
       <footer>
         <div className="foot-in">
           <div>
-            <div style={{ display: 'flex', alignItems: 'center', gap: '10px', fontWeight: 900, fontSize: '15px' }}><div className="logo-box">🎭</div>VEILBID</div>
+            <div style={{ display: 'flex', alignItems: 'center', gap: '10px', fontWeight: 900, fontSize: '15px' }}><div className="logo-box"><img src="/veilbid-logo.png" alt="VeilBid" /></div>VEILBID</div>
             <p className="foot-desc">The first privacy-first NFT marketplace on Midnight Network. Your bids, identity, and strategy are sealed forever.</p>
             <div style={{ marginTop: '14px' }}><div className="midnight-badge">🌙 Built on Midnight Network</div></div>
           </div>
