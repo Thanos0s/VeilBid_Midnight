@@ -7,7 +7,7 @@ const NETWORK_CONFIG = {
   node: 'https://rpc.preview.midnight.network',
   proofServer: 'http://localhost:6300',
   // Deploy a new VeilBid contract and set its address here
-  contractAddress: localStorage.getItem('veilbid_contract_address') || '',
+  contractAddress: localStorage.getItem('veilbid_contract_address') || '0x7f4e91bc8d3c52a09b4ef13a68d02c89f54a011d',
 };
 
 // ── Types ──
