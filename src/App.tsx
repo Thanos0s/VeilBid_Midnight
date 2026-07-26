@@ -116,7 +116,8 @@ export default function App() {
   --cream:#F6F3EC;--dark:#0a0a0a;--green:#C1F04C;--purple:#5B5BD6;
   --border:2px solid #0a0a0a;--shadow:3px 3px 0 #0a0a0a;--shadow-lg:5px 6px 0 #0a0a0a;
   --font-serif:'Instrument Serif',Georgia,serif;
-  --font-sans:'Inter',-apple-system,sans-serif;
+  --font-sans:'Geist',-apple-system,sans-serif;
+  --font-mono:'Geist Mono',monospace;
 }
 html{scroll-behavior:smooth}
 body{font-family:var(--font-sans);background:var(--cream);color:var(--dark);overflow-x:hidden;-webkit-font-smoothing:antialiased}
@@ -221,7 +222,7 @@ nav{position:sticky;top:0;z-index:200;display:flex;align-items:center;justify-co
 .feat-icon{width:44px;height:44px;border-radius:10px;border:2px solid var(--dark);background:#fff;display:flex;align-items:center;justify-content:center;font-size:20px;margin-bottom:16px;box-shadow:var(--shadow)}
 .feat-title{font-size:15px;font-weight:700;margin-bottom:8px}
 .feat-desc{font-size:13.5px;font-weight:400;color:#5a5a5a;line-height:1.7}
-.feat-tag{display:inline-block;margin-top:14px;padding:3px 10px;border-radius:50px;font-size:11px;font-weight:600;font-family:monospace;background:rgba(10,10,10,.06);color:#555;border:1px solid rgba(10,10,10,.1)}
+.feat-tag{display:inline-block;margin-top:14px;padding:3px 10px;border-radius:50px;font-size:11px;font-weight:600;font-family:var(--font-mono);background:rgba(10,10,10,.06);color:#555;border:1px solid rgba(10,10,10,.1)}
 .testi-grid{display:grid;grid-template-columns:repeat(3,1fr);gap:16px;margin-top:48px}
 .testi-card{padding:24px;border:2px solid var(--dark);border-radius:12px;background:#fff;box-shadow:var(--shadow);transition:all .2s;opacity:0;transform:translateY(16px)}
 .testi-card.vis{opacity:1;transform:translateY(0);transition:opacity .5s ease,transform .5s ease,box-shadow .2s}
@@ -279,7 +280,7 @@ footer{border-top:1.5px solid var(--dark);padding:40px 0 28px;background:var(--c
 .foot-ls a:hover{color:var(--dark)}
 .foot-bot{max-width:1100px;margin:36px auto 0;padding:20px 24px 0;border-top:1.5px solid rgba(0,0,0,.1);display:flex;align-items:center;justify-content:space-between;font-size:12px;color:#aaa}
 .midnight-badge{display:inline-flex;align-items:center;gap:6px;padding:4px 10px;border:1.5px solid rgba(0,0,0,.15);border-radius:50px;font-size:11px;font-weight:600;color:#555}
-.night-tag{display:inline-flex;align-items:center;gap:6px;padding:3px 10px;border-radius:50px;font-size:11px;font-weight:700;background:rgba(91,91,214,.1);color:var(--purple);border:1px solid rgba(91,91,214,.25);font-family:monospace}
+.night-tag{display:inline-flex;align-items:center;gap:6px;padding:3px 10px;border-radius:50px;font-size:11px;font-weight:700;background:rgba(91,91,214,.1);color:var(--purple);border:1px solid rgba(91,91,214,.25);font-family:var(--font-mono)}
 ::selection{background:var(--green);color:var(--dark)}
 @media(max-width:900px){.how-layout{grid-template-columns:1fr}.feat-grid,.testi-grid,.price-grid{grid-template-columns:1fr}.stats-bar{grid-template-columns:repeat(2,1fr)}.foot-in{grid-template-columns:1fr 1fr}.deco-tl,.deco-bl,.deco-tr,.spin-badge{display:none}.nav-links{display:none}}
 @media(max-width:600px){.foot-in{grid-template-columns:1fr}.badge-row{flex-direction:column;align-items:center}.hero-btns{flex-direction:column;width:100%}.btn-primary,.btn-secondary{justify-content:center}}
@@ -287,7 +288,7 @@ footer{border-top:1.5px solid var(--dark);padding:40px 0 28px;background:var(--c
 
 <link rel="preconnect" href="https://fonts.googleapis.com"/>
 <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin=""/>
-<link href="https://fonts.googleapis.com/css2?family=Instrument+Serif:ital@0;1&family=Inter:wght@400;500;600;700;800;900&display=swap" rel="stylesheet"/>
+<link href="https://fonts.googleapis.com/css2?family=Geist:wght@400;500;600;700;800;900&family=Geist+Mono:wght@400;500;600;700&family=Instrument+Serif:ital@0;1&display=swap" rel="stylesheet"/>
 
 <nav>
   <a href="#" class="nav-logo"><div class="logo-box">🎭</div>VEILBID</a>
