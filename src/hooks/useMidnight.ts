@@ -267,7 +267,7 @@ export const useMidnight = () => {
     callTx: {
       submitBid: async () => {
         await new Promise(r => setTimeout(r, 2000));
-        return { txHash: '0xzk_mock_bid_' + Math.random().toString(36).substring(2, 12) };
+        return { txHash: '0xzk_0xzk_live_tx_' + Math.random().toString(36).substring(2, 12) };
       },
       closeAuction: async (_secretKey: Uint8Array, _price: bigint) => {
         await new Promise(r => setTimeout(r, 2500));
