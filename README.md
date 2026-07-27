@@ -15,7 +15,8 @@ VeilBid is the first NFT marketplace built on the [Midnight Network](https://mid
 ## 📜 Verified Deployed Smart Contract
 
 - **Network**: Midnight Preview / Preprod Network
-- **Contract Address**: 39e69c51dfd27d63f8e0e489b86e33669e701a7cae83f6248fb220f985924b4
+- **Contract Address**: https://preview.midnightexplorer.com/contracts/0xb39e69c51dfd27d63f8e0e489b86e33669e701a7cae83f6248fb220f985924b4
+- ## b39e69c51dfd27d63f8e0e489b86e33669e701a7cae83f6248fb220f985924b4
 - **Compact Contract Code**: [contracts/auction.compact](file:///home/kidss/VeilBid/contracts/auction.compact)
 - **Indexer Endpoint**: https://indexer.preview.midnight.network/api/v4/graphql
 - **RPC Node**: https://rpc.preview.midnight.network
