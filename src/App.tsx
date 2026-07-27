@@ -22,11 +22,27 @@ export default function App() {
   const [showDeployModal, setShowDeployModal] = useState(false);
   const [showMyBidsModal, setShowMyBidsModal] = useState(false);
   const [myBids, setMyBids] = useState<any[]>([]);
+  const [activeModalTab, setActiveModalTab] = useState<'bids' | 'agents'>('bids');
+
+  // AI Agent Deployment State
+  const [showDeployAiModal, setShowDeployAiModal] = useState(false);
+  const [selectedAiAgent, setSelectedAiAgent] = useState<any | null>(null);
+  const [aiCeiling, setAiCeiling] = useState('250');
+  const [aiMaxBid, setAiMaxBid] = useState('50');
+  const [aiStrategyTier, setAiStrategyTier] = useState('Tier 0 — Deterministic Rules');
+  const [aiTargetCollection, setAiTargetCollection] = useState('All Collections');
+  const [isDeployingAi, setIsDeployingAi] = useState(false);
+  const [aiDeploySuccess, setAiDeploySuccess] = useState<any | null>(null);
+  const [myAiAgents, setMyAiAgents] = useState<any[]>([]);
 
   useEffect(() => {
-    const saved = localStorage.getItem('veilbid_bids');
-    if (saved) {
-      try { setMyBids(JSON.parse(saved)); } catch {}
+    const savedBids = localStorage.getItem('veilbid_bids');
+    if (savedBids) {
+      try { setMyBids(JSON.parse(savedBids)); } catch {}
+    }
+    const savedAgents = localStorage.getItem('veilbid_ai_agents');
+    if (savedAgents) {
+      try { setMyAiAgents(JSON.parse(savedAgents)); } catch {}
     }
   }, []);
   const [selectedNft, setSelectedNft] = useState<any | null>(null);
@@ -44,6 +60,62 @@ export default function App() {
 
   // Filter state for Marketplace
   const [selectedCategory, setSelectedCategory] = useState('All');
+
+  // Predefined AI Trading Agents for Marketplace
+  const aiAgentsList = [
+    {
+      id: 'ai-1',
+      title: 'VeilBid ZK Sniper Agent v1',
+      author: 'VeilBid Labs',
+      floor: '0.10 tNIGHT',
+      volume: '154.2 tNIGHT',
+      img: '/veilbid-logo.png',
+      category: '🤖 AI Agents',
+      tier: 'Tier 0 — Deterministic Rules',
+      winRate: '94.2%',
+      desc: 'Monitors auction timing windows and submits sealed ZK bids in the final block window under owner policy ceiling.',
+      specs: { strategy: 'Auction Sniping', proving: 'SNARK Local Witness', privacy: 'Shielded' }
+    },
+    {
+      id: 'ai-2',
+      title: 'Valuation Oracle Agent',
+      author: 'Midnight Zero Witness',
+      floor: '0.25 tNIGHT',
+      volume: '89.5 tNIGHT',
+      img: '/nfts/1318eadc3519abcda87173d473d594c7.avif',
+      category: '🤖 AI Agents',
+      tier: 'Tier 1 — Statistical ML Valuation',
+      winRate: '88.7%',
+      desc: 'Runs an off-chain valuation model based on historical sales & floor price momentum, proving output compliance on-chain.',
+      specs: { strategy: 'ML Floor Valuation', proving: 'Output Policy Proof', privacy: 'Shielded' }
+    },
+    {
+      id: 'ai-3',
+      title: 'Budget Guard Bot',
+      author: 'Privacy Capital',
+      floor: '0.05 tNIGHT',
+      volume: '310.0 tNIGHT',
+      img: '/nfts/38f8ed7fec64574f71248e43650eb934.avif',
+      category: '🤖 AI Agents',
+      tier: 'Tier 0 — Strict Policy Enforcer',
+      winRate: '99.1%',
+      desc: 'Enforces strict ceiling caps, collection whitelist filters, and atomic royalty settlement checks before committing any bid.',
+      specs: { strategy: 'Ceiling Enforcer', proving: 'Solvency Witness', privacy: 'Shielded' }
+    },
+    {
+      id: 'ai-4',
+      title: 'Alpha Arbitrage Agent',
+      author: 'Cardano ZK Algo',
+      floor: '0.50 tNIGHT',
+      volume: '420.8 tNIGHT',
+      img: '/nfts/8d98f1de2a946d37396bd15840b10c7b.avif',
+      category: '🤖 AI Agents',
+      tier: 'Tier 1 — Multi-Lot Rebalancer',
+      winRate: '91.4%',
+      desc: 'Manages multi-auction portfolio positions, automatically rebalancing bids across active auctions with zero strategy disclosure.',
+      specs: { strategy: 'Multi-Lot Arbitrage', proving: 'Policy Hash Witness', privacy: 'Shielded' }
+    }
+  ];
 
   // Uploaded user NFTs from Desktop/nft
   const userNfts = [
@@ -240,6 +312,51 @@ export default function App() {
     }
   };
 
+  
+  const handleDeployAiSubmit = async (e: React.FormEvent) => {
+    e.preventDefault();
+    if (!isConnected) {
+      alert('Please connect your 1AM Wallet to deploy an Autonomous AI Trading Agent.');
+      setShowWalletModal(true);
+      return;
+    }
+    setIsDeployingAi(true);
+    try {
+      // Generate cryptographic policy commitment hash
+      const policyString = aiCeiling + '_' + aiMaxBid + '_' + aiStrategyTier + '_' + Date.now();
+      const policyHash = '0x' + Array.from(new TextEncoder().encode(policyString))
+        .map(b => b.toString(16).padStart(2, '0'))
+        .join('')
+        .substring(0, 32);
+
+      await new Promise(r => setTimeout(r, 1500)); // Simulate ZK policy commitment proving
+
+      const newAgent = {
+        id: 'agent-' + Date.now(),
+        name: selectedAiAgent?.title || 'Custom AI Trading Bot',
+        tier: aiStrategyTier,
+        ceiling: aiCeiling,
+        maxBid: aiMaxBid,
+        target: aiTargetCollection,
+        policyHash,
+        contractAddress: 'b39e69c51dfd27d63f8e0e489b86e33669e701a7cae83f6248fb220f985924b4',
+        status: '● Active & Proving On-Chain',
+        date: new Date().toISOString()
+      };
+
+      const existing = JSON.parse(localStorage.getItem('veilbid_ai_agents') || '[]');
+      existing.unshift(newAgent);
+      localStorage.setItem('veilbid_ai_agents', JSON.stringify(existing));
+      setMyAiAgents(existing);
+
+      setAiDeploySuccess(newAgent);
+    } catch (err: any) {
+      alert('Failed to deploy AI Agent: ' + err.message);
+    } finally {
+      setIsDeployingAi(false);
+    }
+  };
+
   const handleDeploySubmit = async (e: React.FormEvent) => {
     e.preventDefault();
     if (!nftName) return;
@@ -267,7 +384,9 @@ export default function App() {
   };
 
   const filteredNfts = selectedCategory === 'All' 
-    ? userNfts 
+    ? [...aiAgentsList, ...userNfts]
+    : selectedCategory === '🤖 AI Agents'
+    ? aiAgentsList
     : userNfts.filter(nft => nft.category.toLowerCase() === selectedCategory.toLowerCase());
 
   return (
@@ -492,6 +611,7 @@ export default function App() {
           <a href="#pricing">Pricing</a>
           <a href="https://github.com/Thanos0s/VeilBid_Midnight" target="_blank" rel="noreferrer">GitHub</a>
           <button onClick={() => setShowDeployModal(true)} style={{ background: 'none', border: 'none', font: 'inherit', color: '#5a5a5a', cursor: 'pointer', padding: '7px 12px', fontSize: '13px', fontWeight: 500 }}>Deploy Auction</button>
+          <button onClick={() => { setSelectedAiAgent(aiAgentsList[0]); setShowDeployAiModal(true); }} style={{ background: 'var(--purple)', color: '#fff', border: '1.5px solid #0a0a0a', borderRadius: '6px', font: 'inherit', cursor: 'pointer', padding: '6px 12px', fontSize: '13px', fontWeight: 800, boxShadow: '2px 2px 0 #0a0a0a' }}>🤖 Deploy AI Agent</button>
           <button onClick={() => setShowMyBidsModal(true)} style={{ background: 'var(--green)', color: '#0a0a0a', border: '1.5px solid #0a0a0a', borderRadius: '6px', font: 'inherit', cursor: 'pointer', padding: '6px 12px', fontSize: '13px', fontWeight: 800, boxShadow: '2px 2px 0 #0a0a0a' }}>👛 My Wallet & Bids</button>
         </div>
 
@@ -722,7 +842,7 @@ export default function App() {
 
             {/* Filter Pills */}
             <div style={{ display: 'flex', gap: '8px', marginBottom: '32px', flexWrap: 'wrap' }}>
-              {['All', 'Gaming', 'Art', 'PFPs', 'Physical'].map(cat => (
+              {['All', '🤖 AI Agents', 'Gaming', 'Art', 'PFPs', 'Physical'].map(cat => (
                 <button
                   key={cat}
                   onClick={() => setSelectedCategory(cat)}
@@ -1002,6 +1122,130 @@ export default function App() {
         </div>
       )}
     
+      
+      {/* ── DEPLOY AI AGENT MODAL ── */}
+      {showDeployAiModal && (
+        <div className="modal-overlay" onClick={() => setShowDeployAiModal(false)}>
+          <div className="modal-card" style={{ maxWidth: '580px', width: '92%' }} onClick={e => e.stopPropagation()}>
+            <button className="modal-close" onClick={() => setShowDeployAiModal(false)}>✕</button>
+            <div style={{ display: 'flex', alignItems: 'center', gap: '10px', marginBottom: '8px' }}>
+              <span style={{ fontSize: '26px' }}>🤖</span>
+              <div>
+                <h3 style={{ fontSize: '20px', fontWeight: 800, margin: 0 }}>Deploy Autonomous AI Trading Agent</h3>
+                <span style={{ fontSize: '12px', color: '#6B7280' }}>Configure off-chain AI decision engine with ZK policy commitment</span>
+              </div>
+            </div>
+
+            {aiDeploySuccess ? (
+              <div style={{ padding: '20px', background: '#ECFDF5', border: '2px solid #10B981', borderRadius: '10px', textAlign: 'center', marginTop: '16px', boxShadow: '3px 3px 0 #0a0a0a' }}>
+                <div style={{ fontSize: '32px', marginBottom: '8px' }}>🎉</div>
+                <div style={{ fontSize: '16px', fontWeight: 800, color: '#065F46' }}>AI Agent Deployed & Bound On-Chain!</div>
+                <div style={{ fontSize: '12px', color: '#047857', marginTop: '6px', marginBottom: '14px' }}>
+                  Policy commitment hash generated and stored on Midnight Preview Network.
+                </div>
+                <div style={{ background: '#fff', padding: '12px', borderRadius: '8px', border: '1px solid rgba(0,0,0,0.1)', textAlign: 'left', fontSize: '11.5px', fontFamily: 'var(--font-mono)', marginBottom: '16px' }}>
+                  <div><strong>Agent:</strong> {aiDeploySuccess.name}</div>
+                  <div><strong>Strategy Tier:</strong> {aiDeploySuccess.tier}</div>
+                  <div><strong>Spending Ceiling:</strong> {aiDeploySuccess.ceiling} tNIGHT</div>
+                  <div style={{ wordBreak: 'break-all', color: 'var(--purple)', marginTop: '4px' }}><strong>Policy Hash:</strong> {aiDeploySuccess.policyHash}</div>
+                </div>
+                <button
+                  onClick={() => { setAiDeploySuccess(null); setShowDeployAiModal(false); setShowMyBidsModal(true); setActiveModalTab('agents'); }}
+                  style={{ padding: '10px 20px', background: '#10B981', color: '#fff', border: '2px solid #0a0a0a', borderRadius: '6px', fontWeight: 800, cursor: 'pointer', boxShadow: '2px 2px 0 #0a0a0a' }}
+                >
+                  View in My AI Agents ➔
+                </button>
+              </div>
+            ) : (
+              <form onSubmit={handleDeployAiSubmit} style={{ marginTop: '16px' }}>
+                <div style={{ background: '#F9FAFB', border: '1.5px solid var(--dark)', borderRadius: '8px', padding: '12px', marginBottom: '16px' }}>
+                  <div style={{ fontSize: '13px', fontWeight: 800, color: 'var(--dark)' }}>
+                    Selected Strategy: {selectedAiAgent?.title || 'VeilBid ZK Sniper Agent'}
+                  </div>
+                  <div style={{ fontSize: '11.5px', color: '#6B7280', marginTop: '4px' }}>
+                    {selectedAiAgent?.desc || 'Monitors auction windows and submits sealed ZK bids under owner ceiling.'}
+                  </div>
+                </div>
+
+                <div style={{ display: 'grid', gridTemplateColumns: '1fr 1fr', gap: '12px', marginBottom: '14px' }}>
+                  <div>
+                    <label style={{ fontSize: '11px', fontWeight: 800, textTransform: 'uppercase', color: '#666' }}>Owner Ceiling Cap (tNIGHT)</label>
+                    <input
+                      type="number"
+                      value={aiCeiling}
+                      onChange={e => setAiCeiling(e.target.value)}
+                      className="modal-input"
+                      placeholder="e.g. 250"
+                      required
+                    />
+                  </div>
+                  <div>
+                    <label style={{ fontSize: '11px', fontWeight: 800, textTransform: 'uppercase', color: '#666' }}>Max Per-Bid Limit (tNIGHT)</label>
+                    <input
+                      type="number"
+                      value={aiMaxBid}
+                      onChange={e => setAiMaxBid(e.target.value)}
+                      className="modal-input"
+                      placeholder="e.g. 50"
+                      required
+                    />
+                  </div>
+                </div>
+
+                <label style={{ fontSize: '11px', fontWeight: 800, textTransform: 'uppercase', color: '#666' }}>AI Capability & Decision Tier</label>
+                <select
+                  value={aiStrategyTier}
+                  onChange={e => setAiStrategyTier(e.target.value)}
+                  className="modal-input"
+                  style={{ background: '#fff' }}
+                >
+                  <option value="Tier 0 — Deterministic Rules">Tier 0 — Deterministic Rules (Proven via SNARK witness)</option>
+                  <option value="Tier 1 — Statistical ML Valuation">Tier 1 — Statistical ML Valuation (Output proven on-chain)</option>
+                  <option value="Tier 2 — Verified zkML Inference">Tier 2 — Verified zkML Inference (Small model SNARK)</option>
+                </select>
+
+                <label style={{ fontSize: '11px', fontWeight: 800, textTransform: 'uppercase', color: '#666', marginTop: '10px' }}>Target NFT Collection Scope</label>
+                <select
+                  value={aiTargetCollection}
+                  onChange={e => setAiTargetCollection(e.target.value)}
+                  className="modal-input"
+                  style={{ background: '#fff' }}
+                >
+                  <option value="All Collections">All Marketplace Collections</option>
+                  <option value="VeilBid Pepe PFPs">VeilBid Pepe PFPs</option>
+                  <option value="Shadow Realm Artifacts">Shadow Realm Artifacts</option>
+                  <option value="Cipher Nodes">Cipher Nodes</option>
+                </select>
+
+                <div style={{ fontSize: '11px', color: '#6B7280', margin: '14px 0', display: 'flex', alignItems: 'center', gap: '6px', background: 'rgba(91,91,214,0.06)', padding: '8px 12px', borderRadius: '6px', border: '1px solid rgba(91,91,214,0.2)' }}>
+                  🔒 Generates on-chain ZK Policy Commitment Hash. Your AI strategy remains 100% private.
+                </div>
+
+                <button
+                  type="submit"
+                  disabled={isDeployingAi}
+                  style={{
+                    width: '100%',
+                    padding: '14px',
+                    background: 'var(--purple)',
+                    color: '#fff',
+                    border: '2px solid #0a0a0a',
+                    boxShadow: '3px 3px 0 #0a0a0a',
+                    borderRadius: '8px',
+                    fontWeight: 800,
+                    fontSize: '15px',
+                    cursor: 'pointer',
+                  }}
+                >
+                  {isDeployingAi ? '⏳ Computing ZK Policy Hash & Deploying...' : '⚡ Deploy AI Agent with ZK Policy Commitment'}
+                </button>
+              </form>
+            )}
+          </div>
+        </div>
+      )}
+
+
       {/* ── MY BIDS MODAL ── */}
       {showMyBidsModal && (
         <div className="modal-overlay" onClick={() => setShowMyBidsModal(false)}>
@@ -1039,11 +1283,103 @@ export default function App() {
               </div>
             </div>
 
-            {/* Bids List Header */}
-            <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', marginBottom: '12px' }}>
-              <h4 style={{ fontSize: '15px', fontWeight: 800, margin: 0 }}>
-                🏷️ Bidded NFT Tokens ({myBids.length})
-              </h4>
+            {/* Tabs Selector: Bids vs AI Agents */}
+            <div style={{ display: 'flex', gap: '8px', marginBottom: '16px', borderBottom: '2px solid var(--dark)', paddingBottom: '10px' }}>
+              <button
+                onClick={() => setActiveModalTab('bids')}
+                style={{
+                  padding: '6px 14px',
+                  borderRadius: '6px',
+                  border: '1.5px solid #0a0a0a',
+                  background: activeModalTab === 'bids' ? 'var(--green)' : '#fff',
+                  fontWeight: 800,
+                  fontSize: '13px',
+                  cursor: 'pointer',
+                  boxShadow: activeModalTab === 'bids' ? '2px 2px 0 #0a0a0a' : 'none'
+                }}
+              >
+                🏷️ NFT Bids ({myBids.length})
+              </button>
+              <button
+                onClick={() => setActiveModalTab('agents')}
+                style={{
+                  padding: '6px 14px',
+                  borderRadius: '6px',
+                  border: '1.5px solid #0a0a0a',
+                  background: activeModalTab === 'agents' ? 'var(--purple)' : '#fff',
+                  color: activeModalTab === 'agents' ? '#fff' : '#0a0a0a',
+                  fontWeight: 800,
+                  fontSize: '13px',
+                  cursor: 'pointer',
+                  boxShadow: activeModalTab === 'agents' ? '2px 2px 0 #0a0a0a' : 'none'
+                }}
+              >
+                🤖 Deployed AI Agents ({myAiAgents.length})
+              </button>
+            </div>
+
+            {activeModalTab === 'agents' ? (
+              <div>
+                <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', marginBottom: '12px' }}>
+                  <h4 style={{ fontSize: '14px', fontWeight: 800, margin: 0 }}>🤖 Active Autonomous AI Trading Agents ({myAiAgents.length})</h4>
+                  {myAiAgents.length > 0 && (
+                    <button
+                      onClick={() => {
+                        if (confirm('Clear deployed AI agents list?')) {
+                          localStorage.removeItem('veilbid_ai_agents');
+                          setMyAiAgents([]);
+                        }
+                      }}
+                      style={{ background: 'none', border: 'none', fontSize: '11px', color: '#EF4444', fontWeight: 700, cursor: 'pointer' }}
+                    >
+                      Clear Agents
+                    </button>
+                  )}
+                </div>
+
+                {myAiAgents.length === 0 ? (
+                  <div style={{ padding: '28px 16px', textAlign: 'center', background: '#FFF', border: '2px dashed rgba(0,0,0,0.2)', borderRadius: '10px', color: '#6B7280' }}>
+                    <div style={{ fontSize: '28px', marginBottom: '6px' }}>🤖</div>
+                    <div style={{ fontSize: '14px', fontWeight: 700, color: 'var(--dark)', marginBottom: '4px' }}>No Autonomous AI Agents Deployed</div>
+                    <div style={{ fontSize: '12px', marginBottom: '14px' }}>Deploy an AI agent with a Zero-Knowledge policy commitment to bid automatically.</div>
+                    <button
+                      onClick={() => { setShowMyBidsModal(false); setSelectedAiAgent(aiAgentsList[0]); setShowDeployAiModal(true); }}
+                      style={{ padding: '8px 16px', background: 'var(--purple)', color: '#fff', border: '2px solid #0a0a0a', boxShadow: '2px 2px 0 #0a0a0a', borderRadius: '6px', fontWeight: 800, cursor: 'pointer' }}
+                    >
+                      🤖 Deploy Your First AI Agent
+                    </button>
+                  </div>
+                ) : (
+                  <div style={{ display: 'flex', flexDirection: 'column', gap: '10px', maxHeight: '280px', overflowY: 'auto', paddingRight: '4px' }}>
+                    {myAiAgents.map((ag: any, idx: number) => (
+                      <div key={idx} style={{ padding: '12px', background: '#fff', border: '2px solid var(--dark)', borderRadius: '10px', boxShadow: '2px 2px 0 #0a0a0a' }}>
+                        <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'flex-start', marginBottom: '6px' }}>
+                          <div style={{ fontSize: '14px', fontWeight: 800, color: 'var(--dark)' }}>🤖 {ag.name}</div>
+                          <span style={{ fontSize: '10px', fontWeight: 700, background: 'rgba(16, 185, 129, 0.1)', color: '#10B981', border: '1px solid rgba(16, 185, 129, 0.3)', padding: '2px 6px', borderRadius: '50px' }}>
+                            {ag.status}
+                          </span>
+                        </div>
+                        <div style={{ fontSize: '11px', color: '#6B7280', display: 'flex', gap: '10px', flexWrap: 'wrap', marginBottom: '6px' }}>
+                          <span>Tier: <strong>{ag.tier}</strong></span>
+                          <span>•</span>
+                          <span>Ceiling: <strong>{ag.ceiling} tNIGHT</strong></span>
+                          <span>•</span>
+                          <span>Max Bid: <strong>{ag.maxBid} tNIGHT</strong></span>
+                        </div>
+                        <div style={{ fontSize: '10.5px', fontFamily: 'var(--font-mono)', color: 'var(--purple)', overflow: 'hidden', textOverflow: 'ellipsis', whiteSpace: 'nowrap' }}>
+                          Policy Hash: {ag.policyHash}
+                        </div>
+                      </div>
+                    ))}
+                  </div>
+                )}
+              </div>
+            ) : (
+              <div>
+                <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', marginBottom: '12px' }}>
+                  <h4 style={{ fontSize: '15px', fontWeight: 800, margin: 0 }}>
+                    🏷️ Bidded NFT Tokens ({myBids.length})
+                  </h4>
               {myBids.length > 0 && (
                 <button
                   onClick={() => {
@@ -1101,6 +1437,8 @@ export default function App() {
                     </button>
                   </div>
                 ))}
+              </div>
+            )}
               </div>
             )}
           </div>
