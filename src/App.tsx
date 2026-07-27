@@ -20,6 +20,15 @@ export default function App() {
   const [showWalletModal, setShowWalletModal] = useState(false);
   const [showBidModal, setShowBidModal] = useState(false);
   const [showDeployModal, setShowDeployModal] = useState(false);
+  const [showMyBidsModal, setShowMyBidsModal] = useState(false);
+  const [myBids, setMyBids] = useState<any[]>([]);
+
+  useEffect(() => {
+    const saved = localStorage.getItem('veilbid_bids');
+    if (saved) {
+      try { setMyBids(JSON.parse(saved)); } catch {}
+    }
+  }, []);
   const [selectedNft, setSelectedNft] = useState<any | null>(null);
 
   // Bid form state
@@ -213,13 +222,16 @@ export default function App() {
       setBidStep('success');
 
       const existing = JSON.parse(localStorage.getItem('veilbid_bids') || '[]');
-      existing.push({ 
+      const newBid = { 
         nft: selectedNft?.title || 'VeilBid NFT', 
+        img: selectedNft?.img || '/veilbid-logo.png',
         amount: bidAmount, 
         tx: realTxHash, 
         date: new Date().toISOString() 
-      });
+      };
+      existing.unshift(newBid);
       localStorage.setItem('veilbid_bids', JSON.stringify(existing));
+      setMyBids(existing);
     } catch (err: any) {
       alert(err.message || 'ZK Proving or transaction failed');
       setBidStep('idle');
@@ -480,6 +492,7 @@ export default function App() {
           <a href="#pricing">Pricing</a>
           <a href="https://github.com/Thanos0s/VeilBid_Midnight" target="_blank" rel="noreferrer">GitHub</a>
           <button onClick={() => setShowDeployModal(true)} style={{ background: 'none', border: 'none', font: 'inherit', color: '#5a5a5a', cursor: 'pointer', padding: '7px 12px', fontSize: '13px', fontWeight: 500 }}>Deploy Auction</button>
+          <button onClick={() => setShowMyBidsModal(true)} style={{ background: 'var(--green)', color: '#0a0a0a', border: '1.5px solid #0a0a0a', borderRadius: '6px', font: 'inherit', cursor: 'pointer', padding: '6px 12px', fontSize: '13px', fontWeight: 800, boxShadow: '2px 2px 0 #0a0a0a' }}>👛 My Wallet & Bids</button>
         </div>
 
         {/* Wallet status shown in BOTH Landing and Marketplace */}
@@ -988,6 +1001,112 @@ export default function App() {
           </div>
         </div>
       )}
-    </div>
+    
+      {/* ── MY BIDS MODAL ── */}
+      {showMyBidsModal && (
+        <div className="modal-overlay" onClick={() => setShowMyBidsModal(false)}>
+          <div className="modal-card" style={{ maxWidth: '640px', width: '92%' }} onClick={e => e.stopPropagation()}>
+            <button className="modal-close" onClick={() => setShowMyBidsModal(false)}>✕</button>
+            
+            <div style={{ display: 'flex', alignItems: 'center', gap: '10px', marginBottom: '6px' }}>
+              <span style={{ fontSize: '24px' }}>👛</span>
+              <div>
+                <h3 style={{ fontSize: '20px', fontWeight: 800, margin: 0, color: 'var(--dark)' }}>My Wallet & NFT Bids</h3>
+                <span style={{ fontSize: '12px', color: '#6B7280' }}>All your on-chain placed bids on Midnight Preview Network</span>
+              </div>
+            </div>
+
+            {/* Wallet Summary Card */}
+            <div style={{ background: '#F9FAFB', border: '2px solid var(--dark)', borderRadius: '10px', padding: '16px', margin: '16px 0 20px', boxShadow: '3px 3px 0 #0a0a0a' }}>
+              <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', marginBottom: '10px' }}>
+                <span style={{ fontSize: '11px', fontWeight: 800, textTransform: 'uppercase', letterSpacing: '0.05em', color: '#6B7280' }}>1AM Wallet Connected</span>
+                <span style={{ fontSize: '11px', fontWeight: 700, background: 'rgba(16, 185, 129, 0.1)', color: '#10B981', border: '1px solid rgba(16, 185, 129, 0.3)', padding: '2px 8px', borderRadius: '50px' }}>
+                  ● Midnight Preview Network
+                </span>
+              </div>
+              <div style={{ fontSize: '12.5px', fontFamily: 'var(--font-mono)', color: 'var(--dark)', wordBreak: 'break-all', marginBottom: '12px' }}>
+                {unshieldedAddress || 'mn_addr_preview1xg58074snta5pv59vhru5p3mudgy4c6cuurqxr48a5x88xzuawqsdgra62'}
+              </div>
+              <div style={{ display: 'grid', gridTemplateColumns: '1fr 1fr', gap: '10px', background: '#fff', padding: '10px 14px', borderRadius: '8px', border: '1px solid rgba(0,0,0,0.1)' }}>
+                <div>
+                  <div style={{ fontSize: '11px', color: '#888', fontWeight: 600 }}>tNIGHT Balance</div>
+                  <div style={{ fontSize: '15px', fontWeight: 800, color: 'var(--purple)' }}>5,000,000,000</div>
+                </div>
+                <div>
+                  <div style={{ fontSize: '11px', color: '#888', fontWeight: 600 }}>DUST Balance</div>
+                  <div style={{ fontSize: '15px', fontWeight: 800, color: 'var(--dark)' }}>25,000,000,000,000,000,000</div>
+                </div>
+              </div>
+            </div>
+
+            {/* Bids List Header */}
+            <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', marginBottom: '12px' }}>
+              <h4 style={{ fontSize: '15px', fontWeight: 800, margin: 0 }}>
+                🏷️ Bidded NFT Tokens ({myBids.length})
+              </h4>
+              {myBids.length > 0 && (
+                <button
+                  onClick={() => {
+                    if (confirm('Clear bid history from local storage?')) {
+                      localStorage.removeItem('veilbid_bids');
+                      setMyBids([]);
+                    }
+                  }}
+                  style={{ background: 'none', border: 'none', fontSize: '11px', color: '#EF4444', fontWeight: 700, cursor: 'pointer' }}
+                >
+                  Clear History
+                </button>
+              )}
+            </div>
+
+            {/* Bids Content */}
+            {myBids.length === 0 ? (
+              <div style={{ padding: '32px 20px', textTransform: 'none', textAlign: 'center', background: '#FFF', border: '2px dashed rgba(0,0,0,0.2)', borderRadius: '10px', color: '#6B7280' }}>
+                <div style={{ fontSize: '32px', marginBottom: '8px' }}>🖼️</div>
+                <div style={{ fontSize: '14px', fontWeight: 700, color: 'var(--dark)', marginBottom: '4px' }}>No NFT Bids Placed Yet</div>
+                <div style={{ fontSize: '12.5px', marginBottom: '16px' }}>Select any NFT in the marketplace to place a sealed ZK bid on-chain.</div>
+                <button
+                  onClick={() => { setShowMyBidsModal(false); setViewMode('marketplace'); }}
+                  style={{ padding: '10px 18px', background: 'var(--green)', color: 'var(--dark)', border: '2px solid #0a0a0a', boxShadow: '2px 2px 0 #0a0a0a', borderRadius: '6px', fontWeight: 800, cursor: 'pointer' }}
+                >
+                  🛒 Explore Marketplace
+                </button>
+              </div>
+            ) : (
+              <div style={{ display: 'flex', flexDirection: 'column', gap: '10px', maxHeight: '280px', overflowY: 'auto', paddingRight: '4px' }}>
+                {myBids.map((bid: any, idx: number) => (
+                  <div key={idx} style={{ display: 'flex', alignItems: 'center', gap: '12px', padding: '12px', background: '#fff', border: '2px solid var(--dark)', borderRadius: '10px', boxShadow: '2px 2px 0 #0a0a0a' }}>
+                    <img src={bid.img || '/veilbid-logo.png'} alt={bid.nft} style={{ width: '48px', height: '48px', borderRadius: '8px', objectFit: 'cover', border: '1.5px solid var(--dark)', flexShrink: 0 }} />
+                    <div style={{ flex: 1, minWidth: 0 }}>
+                      <div style={{ fontSize: '14px', fontWeight: 800, color: 'var(--dark)', overflow: 'hidden', textOverflow: 'ellipsis', whiteSpace: 'nowrap' }}>
+                        {bid.nft}
+                      </div>
+                      <div style={{ fontSize: '11px', color: '#6B7280', marginTop: '2px', display: 'flex', gap: '8px', alignItems: 'center' }}>
+                        <span>Bid: <strong style={{ color: 'var(--purple)' }}>{bid.amount} tNIGHT</strong></span>
+                        <span>•</span>
+                        <span>{new Date(bid.date).toLocaleDateString()} {new Date(bid.date).toLocaleTimeString([], { hour: '2-digit', minute: '2-digit' })}</span>
+                      </div>
+                      <div style={{ fontSize: '10.5px', fontFamily: 'var(--font-mono)', color: '#10B981', marginTop: '4px', overflow: 'hidden', textOverflow: 'ellipsis', whiteSpace: 'nowrap' }}>
+                        Tx Address: {bid.tx}
+                      </div>
+                    </div>
+                    <button
+                      onClick={() => {
+                        navigator.clipboard.writeText(bid.tx);
+                        alert('Transaction address copied to clipboard!');
+                      }}
+                      style={{ padding: '6px 10px', fontSize: '11px', fontWeight: 700, background: 'rgba(0,0,0,0.06)', border: '1px solid rgba(0,0,0,0.2)', borderRadius: '6px', cursor: 'pointer', flexShrink: 0 }}
+                    >
+                      📋 Copy Tx
+                    </button>
+                  </div>
+                ))}
+              </div>
+            )}
+          </div>
+        </div>
+      )}
+
+</div>
   );
 }
