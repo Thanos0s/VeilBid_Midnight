@@ -4,11 +4,29 @@
 
 VeilBid is the first NFT marketplace built on the [Midnight Network](https://midnight.network) where bids, bidder identities, and trading strategies are fully private — verified by Zero-Knowledge proofs.
 
-![VeilBid](https://img.shields.io/badge/Network-Midnight%20Preview-8b5cf6?style=for-the-badge)
-![ZK](https://img.shields.io/badge/Privacy-Zero--Knowledge-10b981?style=for-the-badge)
-![React](https://img.shields.io/badge/Frontend-React%2018-61dafb?style=for-the-badge)
+[![CI/CD](https://github.com/Thanos0s/VeilBid_Midnight/actions/workflows/ci.yml/badge.svg)](https://github.com/Thanos0s/VeilBid_Midnight/actions)
+![Network](https://img.shields.io/badge/Network-Midnight%20Preview-8b5cf6?style=for-the-badge)
+![Contract](https://img.shields.io/badge/Contract-b39e69c5...-10b981?style=for-the-badge)
+[![X Profile](https://img.shields.io/badge/X-@VeilBid-1DA1F2?style=for-the-badge&logo=x)](https://x.com/VeilBid)
 
 ---
+
+
+## 📜 Verified Deployed Smart Contract
+
+- **Network**: Midnight Preview / Preprod Network
+- **Contract Address**: 39e69c51dfd27d63f8e0e489b86e33669e701a7cae83f6248fb220f985924b4
+- **Compact Contract Code**: [contracts/auction.compact](file:///home/kidss/VeilBid/contracts/auction.compact)
+- **Indexer Endpoint**: https://indexer.preview.midnight.network/api/v4/graphql
+- **RPC Node**: https://rpc.preview.midnight.network
+
+---
+
+## 📹 Demo Video
+
+Watch the live MVP demo video of VeilBid in action with 1AM Wallet and Zero-Knowledge proofs:
+- 🎬 **Demo Video**: [Watch VeilBid MVP Demo](https://x.com/VeilBid) *(Insert your video link here)*
+
 
 ## 🛡️ How It Works
 
