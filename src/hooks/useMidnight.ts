@@ -237,6 +237,7 @@ export const useMidnight = () => {
             compiledContract: compiledContract as any,
             contractAddress,
             privateStateId: 'veilbid-state',
+            initialPrivateState: { secretKey: new Uint8Array(32), bidAmount: 0n },
           });
           (realInstance as any).providers = providers;
           instance = realInstance;
