@@ -235,18 +235,13 @@ export default function App() {
     setDeployResult(null);
 
     try {
-      if (isConnected && deployVeilBid) {
-        const res = await deployVeilBid(nftName, Number(royaltyBps));
-        setDeployResult({ address: res.contractAddress, tx: res.txHash });
-      } else {
-        setTimeout(() => {
-          setDeployResult({
-            address: '0xcontract_' + Math.random().toString(36).substring(2, 10),
-            tx: '0xdeploy_' + Math.random().toString(36).substring(2, 12),
-          });
-          setIsDeploying(false);
-        }, 2000);
+      if (!isConnected || !deployVeilBid) {
+        alert('Please connect your 1AM wallet on Midnight Preview Network first.');
+        setIsDeploying(false);
+        return;
       }
+      const res = await deployVeilBid(nftName, Number(royaltyBps));
+      setDeployResult({ address: res.contractAddress, tx: res.txHash });
     } catch {
       setIsDeploying(false);
     } finally {

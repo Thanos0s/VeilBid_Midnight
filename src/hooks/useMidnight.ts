@@ -1,16 +1,16 @@
 import { useState, useCallback, useEffect } from 'react';
 
-// ── Network Config (Preview Only) ──
+// â”€â”€ Network Config (Preview Only) â”€â”€
 const NETWORK_CONFIG = {
   indexer: 'https://indexer.preview.midnight.network/api/v4/graphql',
   indexerWS: 'wss://indexer.preview.midnight.network/api/v4/graphql/ws',
   node: 'https://rpc.preview.midnight.network',
   proofServer: 'http://localhost:6300',
   // Deploy a new VeilBid contract and set its address here
-  contractAddress: localStorage.getItem('veilbid_contract_address') || '0x7f4e91bc8d3c52a09b4ef13a68d02c89f54a011d',
+  contractAddress: localStorage.getItem('veilbid_contract_address') || 'b39e69c51dfd27d63f8e0e489b86e33669e701a7cae83f6248fb220f985924b4',
 };
 
-// ── Types ──
+// â”€â”€ Types â”€â”€
 export interface WalletState {
   isConnected: boolean;
   isConnecting: boolean;
@@ -26,7 +26,7 @@ export interface WalletState {
   } | null;
 }
 
-// ── Browser-native ZkConfigProvider ──
+// â”€â”€ Browser-native ZkConfigProvider â”€â”€
 class BrowserZkConfigProvider {
   async getZKIR(circuitId: string): Promise<any> {
     const res = await fetch(`/managed/zkir/${circuitId}.bzkir`);
@@ -68,7 +68,7 @@ class BrowserZkConfigProvider {
   }
 }
 
-// ── Browser Private State Provider (localStorage) ──
+// â”€â”€ Browser Private State Provider (localStorage) â”€â”€
 const browserPrivateStateProvider = {
   contractAddress: null as string | null,
   setContractAddress: function(address: any) {
@@ -113,7 +113,7 @@ const browserPrivateStateProvider = {
   },
 };
 
-// ── Build contract providers from wallet API ──
+// â”€â”€ Build contract providers from wallet API â”€â”€
 async function buildProviders(api: any) {
   const [
     { indexerPublicDataProvider },
@@ -160,7 +160,7 @@ async function buildProviders(api: any) {
   };
 }
 
-// ── Main Hook ──
+// â”€â”€ Main Hook â”€â”€
 export const useMidnight = () => {
   const [state, setState] = useState<WalletState>({
     isConnected: false,
@@ -231,27 +231,20 @@ export const useMidnight = () => {
         );
 
         const contractAddress = localStorage.getItem('veilbid_contract_address') || NETWORK_CONFIG.contractAddress;
-        let instance;
+        let instance: any = null;
         if (contractAddress) {
-          try {
-            const realInstance = await findDeployedContract(providers as any, {
-              compiledContract: compiledContract as any,
-              contractAddress,
-              privateStateId: 'veilbid-state',
-            });
-            (realInstance as any).providers = providers;
-            instance = realInstance;
-          } catch (e: any) {
-            console.warn('Contract load failed, using mock:', e.message);
-            instance = createMockContract(providers);
-          }
-        } else {
-          instance = createMockContract(providers);
+          const realInstance = await findDeployedContract(providers as any, {
+            compiledContract: compiledContract as any,
+            contractAddress,
+            privateStateId: 'veilbid-state',
+          });
+          (realInstance as any).providers = providers;
+          instance = realInstance;
         }
 
         setState(prev => ({ ...prev, contract: instance }));
       } catch (e: any) {
-        console.warn('Contract binding skipped:', e.message);
+        console.error('Contract binding failed:', e.message);
       }
     } catch (e: any) {
       setState(prev => ({
@@ -261,20 +254,6 @@ export const useMidnight = () => {
       }));
     }
   }, []);
-
-  const createMockContract = (providers: any) => ({
-    providers,
-    callTx: {
-      submitBid: async () => {
-        await new Promise(r => setTimeout(r, 2000));
-        return { txHash: '0xzk_0xzk_live_tx_' + Math.random().toString(36).substring(2, 12) };
-      },
-      closeAuction: async (_secretKey: Uint8Array, _price: bigint) => {
-        await new Promise(r => setTimeout(r, 2500));
-        return { txHash: 'mock_close_' + Math.random().toString(36).substring(2, 12) };
-      },
-    }
-  });
 
   // Auto-reconnect
   useEffect(() => {
