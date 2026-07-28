@@ -26,7 +26,7 @@ VeilBid is the first NFT marketplace built on the [Midnight Network](https://mid
 ## 📹 Demo Video
 
 Watch the live MVP demo video of VeilBid in action with 1AM Wallet and Zero-Knowledge proofs:
-- 🎬 **Demo Video**: [Watch VeilBid MVP Demo](https://x.com/VeilBid) *(Insert your video link here)*
+- 🎬 **Demo Video**: https://drive.google.com/file/d/1LB1p27jzefUPYO13GZWGl7IbReox2sNF/view?usp=sharing
 
 
 ## 🛡️ How It Works
