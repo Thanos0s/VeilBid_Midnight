@@ -15,6 +15,7 @@ export default function App() {
 
   // View state: 'landing' vs 'marketplace'
   const [viewMode, setViewMode] = useState<'landing' | 'marketplace'>('landing');
+  const [navOpen, setNavOpen] = useState(false);
 
   // Modals & UI state
   const [showWalletModal, setShowWalletModal] = useState(false);
@@ -590,19 +591,125 @@ export default function App() {
         .modal-input{width:100%;padding:12px 14px;border:2px solid var(--dark);border-radius:8px;font-size:14px;font-family:var(--font-mono);margin-top:8px;margin-bottom:16px;outline:none;background:#fff;color:var(--dark)}
         .modal-input:focus{border-color:var(--purple)}
         @keyframes fadeIn{from{opacity:0}to{opacity:1}}
+
+        /* =============================================
+           MOBILE RESPONSIVE STYLES
+           ============================================= */
+
+        /* ---- Nav desktop links hidden on mobile ---- */
+        .nav-links{display:flex;align-items:center;gap:4px}
+        @media(max-width:768px){.nav-links{display:none}}
+
+        /* ---- Mobile nav drawer ---- */
+        .nav-mobile-drawer{display:none;flex-direction:column;width:100%;border-top:1px solid rgba(0,0,0,0.08);padding:8px 0 12px;gap:4px;background:var(--cream)}
+        .nav-mobile-drawer.open{display:flex}
+        .nav-mobile-drawer button,.nav-mobile-drawer a{display:block;width:100%;text-align:left;padding:11px 14px;font-size:14px;font-weight:600;color:#444;background:none;border:none;border-radius:6px;cursor:pointer;font-family:inherit;text-decoration:none;transition:background .15s}
+        .nav-mobile-drawer button:hover,.nav-mobile-drawer a:hover{background:rgba(0,0,0,0.06)}
+        .nav-ham{display:none;background:none;border:none;cursor:pointer;font-size:22px;padding:4px 6px;line-height:1;color:var(--dark)}
+        @media(max-width:768px){.nav-ham{display:flex;align-items:center;justify-content:center}}
+
+        /* ---- Nav layout on mobile ---- */
+        @media(max-width:768px){
+          nav{height:auto;flex-wrap:wrap;padding:10px 14px;gap:0;align-items:center}
+          nav>a.nav-logo{flex:1}
+          nav>.nav-cta{font-size:11px;padding:7px 10px;gap:4px}
+        }
+
+        /* ---- Hero ---- */
+        @media(max-width:768px){
+          .hero{padding:32px 16px 56px;min-height:auto}
+          .hero-inner{max-width:100%}
+          .hero-heading{font-size:clamp(36px,9vw,52px)}
+          .platform-line{font-size:clamp(26px,7vw,40px)}
+          .hero-sub{font-size:14px !important;line-height:1.6}
+          .hero-btns{flex-direction:column;gap:10px;align-items:stretch}
+          .hero-btns a,.hero-btns button{width:100% !important;justify-content:center}
+          .badge-row{gap:8px}
+          .spin-badge{width:72px;height:72px;bottom:3%;right:2%}
+        }
+
+        /* ---- How it works ---- */
+        @media(max-width:768px){
+          .how-layout{grid-template-columns:1fr !important;padding:0 16px}
+        }
+
+        /* ---- Feature grid ---- */
+        @media(max-width:768px){.feat-grid{grid-template-columns:1fr !important;gap:12px}}
+
+        /* ---- Testimonials ---- */
+        @media(max-width:768px){.testi-grid{grid-template-columns:1fr !important;gap:12px}}
+
+        /* ---- Stats bar ---- */
+        @media(max-width:768px){
+          .stats-bar{grid-template-columns:1fr 1fr !important}
+          .stat-cell{padding:18px 12px !important}
+        }
+        @media(max-width:420px){
+          .stats-bar{grid-template-columns:1fr !important}
+          .stat-cell{border-right:none !important;border-bottom:1.5px solid rgba(0,0,0,.1)}
+        }
+
+        /* ---- Pricing grid ---- */
+        @media(max-width:768px){.price-grid{grid-template-columns:1fr !important;gap:12px}}
+
+        /* ---- Footer ---- */
+        @media(max-width:768px){
+          .foot-in{grid-template-columns:1fr 1fr !important;gap:20px}
+          .foot-bot{flex-direction:column !important;gap:8px;text-align:center}
+        }
+        @media(max-width:480px){.foot-in{grid-template-columns:1fr !important;gap:16px}}
+
+        /* ---- Section padding ---- */
+        @media(max-width:768px){
+          section{padding-left:16px !important;padding-right:16px !important}
+          .sec-title{font-size:clamp(20px,6vw,30px) !important}
+        }
+
+        /* ---- Marketplace layout ---- */
+        @media(max-width:768px){
+          .mp-container{padding:16px 12px}
+          .mp-topbar{flex-direction:column !important;align-items:flex-start !important;gap:10px !important;margin-bottom:16px !important}
+          .mp-layout{grid-template-columns:1fr !important}
+          .mp-sidebar{display:none !important}
+          .mp-nft-grid{grid-template-columns:repeat(2,1fr) !important;gap:12px !important}
+          .filter-pills{overflow-x:auto;flex-wrap:nowrap !important;padding-bottom:4px;-webkit-overflow-scrolling:touch;scrollbar-width:none}
+          .filter-pills::-webkit-scrollbar{display:none}
+          .neo-card-img{height:160px !important}
+        }
+        @media(max-width:420px){
+          .mp-nft-grid{grid-template-columns:1fr !important}
+        }
+
+        /* ---- Modals full-sheet on mobile ---- */
+        @media(max-width:768px){
+          .modal-overlay{padding:0;align-items:flex-end}
+          .modal-card{border-radius:20px 20px 0 0 !important;max-width:100% !important;width:100% !important;max-height:88vh;overflow-y:auto;margin:0 !important;
+            -webkit-overflow-scrolling:touch}
+        }
+
+        /* ---- AI deploy grid mobile ---- */
+        @media(max-width:768px){
+          .ai-deploy-grid{grid-template-columns:1fr !important}
+        }
+
+        /* ---- Global touch helpers ---- */
+        *{-webkit-tap-highlight-color:transparent}
+        body{overscroll-behavior-y:contain}
       `}</style>
 
       <link rel="preconnect" href="https://fonts.googleapis.com" />
       <link rel="preconnect" href="https://fonts.gstatic.com" crossOrigin="" />
       <link href="https://fonts.googleapis.com/css2?family=Geist:wght@400;500;600;700;800;900&family=Geist+Mono:wght@400;500;600;700&family=Instrument+Serif:ital@0;1&display=swap" rel="stylesheet" />
 
-      {/* ── SHARED TOP NAVIGATION (Exact prev UI) ── */}
+      {/* ── SHARED TOP NAVIGATION — MOBILE RESPONSIVE ── */}
       <nav>
-        <a href="#" className="nav-logo" onClick={(e) => { e.preventDefault(); setViewMode('landing'); }}>
+        {/* Logo */}
+        <a href="#" className="nav-logo" onClick={(e) => { e.preventDefault(); setViewMode('landing'); setNavOpen(false); }}>
           <div className="logo-box"><img src="/veilbid-logo.png" alt="VeilBid" /></div>
           VEILBID
         </a>
 
+        {/* Desktop links */}
         <div className="nav-links">
           <button onClick={() => setViewMode('landing')} style={{ background: viewMode === 'landing' ? 'rgba(0,0,0,0.08)' : 'none', fontWeight: viewMode === 'landing' ? 700 : 500 }}>Overview</button>
           <button onClick={() => setViewMode('marketplace')} style={{ background: viewMode === 'marketplace' ? 'var(--green)' : 'none', color: viewMode === 'marketplace' ? '#0a0a0a' : '#5a5a5a', border: viewMode === 'marketplace' ? '1.5px solid #0a0a0a' : 'none', fontWeight: 800 }}>🛒 Marketplace</button>
@@ -615,10 +722,28 @@ export default function App() {
           <button onClick={() => setShowMyBidsModal(true)} style={{ background: 'var(--green)', color: '#0a0a0a', border: '1.5px solid #0a0a0a', borderRadius: '6px', font: 'inherit', cursor: 'pointer', padding: '6px 12px', fontSize: '13px', fontWeight: 800, boxShadow: '2px 2px 0 #0a0a0a' }}>👛 My Wallet & Bids</button>
         </div>
 
-        {/* Wallet status shown in BOTH Landing and Marketplace */}
+        {/* Wallet CTA — always visible */}
         <button onClick={() => isConnected ? disconnectWallet() : setShowWalletModal(true)} className="nav-cta">
-          {isConnecting ? '⏳ Connecting...' : isConnected ? `🔑 ${truncateAddr(unshieldedAddress)}` : '🔑 Connect Wallet'}
+          {isConnecting ? '⏳...' : isConnected ? `🔑 ${truncateAddr(unshieldedAddress)}` : '🔑 Connect'}
         </button>
+
+        {/* Hamburger — mobile only */}
+        <button className="nav-ham" aria-label="Toggle menu" onClick={() => setNavOpen(o => !o)}>
+          {navOpen ? '✕' : '☰'}
+        </button>
+
+        {/* Mobile drawer */}
+        <div className={`nav-mobile-drawer${navOpen ? ' open' : ''}`}>
+          <button onClick={() => { setViewMode('landing'); setNavOpen(false); }} style={{ fontWeight: viewMode === 'landing' ? 800 : 600 }}>🏠 Overview</button>
+          <button onClick={() => { setViewMode('marketplace'); setNavOpen(false); }} style={{ fontWeight: viewMode === 'marketplace' ? 800 : 600 }}>🛒 Marketplace</button>
+          <a href="#features" onClick={() => setNavOpen(false)}>✨ Features</a>
+          <a href="#how" onClick={() => setNavOpen(false)}>⚙️ How it works</a>
+          <a href="#pricing" onClick={() => setNavOpen(false)}>💎 Pricing</a>
+          <a href="https://github.com/Thanos0s/VeilBid_Midnight" target="_blank" rel="noreferrer" onClick={() => setNavOpen(false)}>📦 GitHub</a>
+          <button onClick={() => { setShowDeployModal(true); setNavOpen(false); }}>🚀 Deploy Auction</button>
+          <button onClick={() => { setSelectedAiAgent(aiAgentsList[0]); setShowDeployAiModal(true); setNavOpen(false); }} style={{ color: 'var(--purple)', fontWeight: 800 }}>🤖 Deploy AI Agent</button>
+          <button onClick={() => { setShowMyBidsModal(true); setNavOpen(false); }} style={{ color: '#0a0a0a', fontWeight: 800, background: 'var(--green)', borderRadius: '8px', border: '1.5px solid #0a0a0a', margin: '4px 0' }}>👛 My Wallet & Bids</button>
+        </div>
       </nav>
 
       {viewMode === 'landing' ? (
@@ -827,7 +952,7 @@ export default function App() {
         <div className="grid-bg" style={{ minHeight: 'calc(100vh - 56px)', paddingBottom: '80px' }}>
           <div className="mp-container">
             {/* Header Title */}
-            <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'flex-end', marginBottom: '24px' }}>
+            <div className="mp-topbar" style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'flex-end', marginBottom: '24px' }}>
               <div>
                 <span style={{ fontSize: '11px', fontWeight: 700, textTransform: 'uppercase', letterSpacing: '0.1em', color: '#888' }}>Live Auctions</span>
                 <h1 style={{ fontFamily: 'var(--font-serif)', fontSize: '48px', fontWeight: 400, color: 'var(--dark)' }}>VeilBid <em>Marketplace</em></h1>
@@ -841,7 +966,7 @@ export default function App() {
             <input placeholder="🔍 Search uploaded NFTs, collections, and ZK contracts..." className="mp-search" />
 
             {/* Filter Pills */}
-            <div style={{ display: 'flex', gap: '8px', marginBottom: '32px', flexWrap: 'wrap' }}>
+            <div className="filter-pills" style={{ display: 'flex', gap: '8px', marginBottom: '32px', flexWrap: 'wrap' }}>
               {['All', '🤖 AI Agents', 'Gaming', 'Art', 'PFPs', 'Physical'].map(cat => (
                 <button
                   key={cat}
@@ -864,9 +989,9 @@ export default function App() {
             </div>
 
             {/* Main Layout: NFT Grid + Sidebar */}
-            <div style={{ display: 'grid', gridTemplateColumns: '1fr 340px', gap: '24px' }}>
+            <div className="mp-layout" style={{ display: 'grid', gridTemplateColumns: '1fr 340px', gap: '24px' }}>
               {/* Grid of uploaded Desktop NFTs */}
-              <div style={{ display: 'grid', gridTemplateColumns: 'repeat(3, 1fr)', gap: '20px' }}>
+              <div className="mp-nft-grid" style={{ display: 'grid', gridTemplateColumns: 'repeat(3, 1fr)', gap: '20px' }}>
                 {filteredNfts.map(nft => (
                   <div key={nft.id} className="neo-card">
                     <img src={nft.img} alt={nft.title} className="neo-card-img" />
@@ -909,7 +1034,7 @@ export default function App() {
               </div>
 
               {/* Sidebar Trending Collections */}
-              <div style={{ background: '#fff', border: '2px solid #0a0a0a', borderRadius: '12px', padding: '24px', boxShadow: 'var(--shadow)', height: 'fit-content' }}>
+              <div className="mp-sidebar" style={{ background: '#fff', border: '2px solid #0a0a0a', borderRadius: '12px', padding: '24px', boxShadow: 'var(--shadow)', height: 'fit-content' }}>
                 <h3 style={{ fontSize: '16px', fontWeight: 800, marginBottom: '16px', borderBottom: '1.5px solid #0a0a0a', paddingBottom: '10px' }}>
                   🔥 Trending Collections
                 </h3>
