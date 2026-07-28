@@ -7,13 +7,14 @@ VeilBid is the first NFT marketplace built on the [Midnight Network](https://mid
 [![CI/CD](https://github.com/Thanos0s/VeilBid_Midnight/actions/workflows/ci.yml/badge.svg)](https://github.com/Thanos0s/VeilBid_Midnight/actions)
 ![Network](https://img.shields.io/badge/Network-Midnight%20Preview-8b5cf6?style=for-the-badge)
 ![Contract](https://img.shields.io/badge/Contract-b39e69c5...-10b981?style=for-the-badge)
-[![X Profile](https://img.shields.io/badge/X-@VeilBid-1DA1F2?style=for-the-badge&logo=x)](https://x.com/VeilBid)
+[![X Profile](https://img.shields.io/badge/X-@VeilBid-1DA1F2?style=for-the-badge&logo=x)](https://x.com/Veil_Bid)
 
 ---
 
 
 ## 📜 Verified Deployed Smart Contract
 
+- **X Profile**: https://x.com/Veil_Bid
 - **Network**: Midnight Preview / Preprod Network
 - **Contract Address**: https://preview.midnightexplorer.com/contracts/0xb39e69c51dfd27d63f8e0e489b86e33669e701a7cae83f6248fb220f985924b4
 - ## b39e69c51dfd27d63f8e0e489b86e33669e701a7cae83f6248fb220f985924b4
