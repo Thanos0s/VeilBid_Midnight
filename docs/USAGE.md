@@ -158,7 +158,8 @@ Paste any transaction hash into [Midnight Explorer](https://preview.midnightexpl
 | Contract on Explorer | https://preview.midnightexplorer.com/contracts/0xb39e69c51dfd27d63f8e0e489b86e33669e701a7cae83f6248fb220f985924b4 |
 | 1AM Wallet | https://1am.space |
 | Midnight Faucet | https://faucet.midnight.network |
-| X / Twitter | https://x.com/VeilBid |
+| Demo Video | https://drive.google.com/file/d/1LB1p27jzefUPYO13GZWGl7IbReox2sNF/view?usp=sharing |
+| X / Twitter | https://x.com/Veil_Bid |
 
 ---
 

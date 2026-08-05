@@ -7,7 +7,7 @@ VeilBid is the first NFT marketplace built on the [Midnight Network](https://mid
 [![CI/CD](https://github.com/Thanos0s/VeilBid_Midnight/actions/workflows/ci.yml/badge.svg)](https://github.com/Thanos0s/VeilBid_Midnight/actions)
 ![Network](https://img.shields.io/badge/Network-Midnight%20Preview-8b5cf6?style=for-the-badge)
 ![Contract](https://img.shields.io/badge/Contract-b39e69c5...-10b981?style=for-the-badge)
-[![X Profile](https://img.shields.io/badge/X-@VeilBid-1DA1F2?style=for-the-badge&logo=x)](https://x.com/VeilBid)
+[![X Profile](https://img.shields.io/badge/X-@Veil__Bid-1DA1F2?style=for-the-badge&logo=x)](https://x.com/Veil_Bid)
 
 ---
 
@@ -38,7 +38,8 @@ Connect your [1AM Wallet](https://1am.space) on **Midnight Preview Network**, br
 
 Watch the full 5-minute live MVP demo:
 
-- 🎬 **[Watch VeilBid MVP Demo →](https://x.com/VeilBid)** *(link updates once uploaded)*
+- 🎬 **[Watch VeilBid MVP Demo on Google Drive →](https://drive.google.com/file/d/1LB1p27jzefUPYO13GZWGl7IbReox2sNF/view?usp=sharing)**
+- 🐦 **[Follow @Veil_Bid on X →](https://x.com/Veil_Bid)**
 
 ---
 
@@ -194,4 +195,4 @@ MIT License — see [LICENSE](LICENSE)
 
 ---
 
-*Built with ❤️ on [Midnight Network](https://midnight.network) · Zero-Knowledge · Privacy-First · [@VeilBid](https://x.com/VeilBid)*
+*Built with ❤️ on [Midnight Network](https://midnight.network) · Zero-Knowledge · Privacy-First · [@Veil_Bid](https://x.com/Veil_Bid)*
