@@ -8,17 +8,39 @@ if (typeof globalThis !== 'undefined') {
 
 import { useState, useCallback, useEffect } from 'react';
 
-// â”€â”€ Network Config (Preview Only) â”€â”€
-const NETWORK_CONFIG = {
-  indexer: 'https://indexer.preview.midnight.network/api/v4/graphql',
-  indexerWS: 'wss://indexer.preview.midnight.network/api/v4/graphql/ws',
-  node: 'https://rpc.preview.midnight.network',
-  proofServer: 'http://localhost:6300',
-  // Deploy a new VeilBid contract and set its address here
-  contractAddress: localStorage.getItem('veilbid_contract_address') || 'b39e69c51dfd27d63f8e0e489b86e33669e701a7cae83f6248fb220f985924b4',
+// ── Network Configurations (Preprod + Preview) ──
+type NetworkName = 'preprod' | 'preview';
+
+const NETWORK_CONFIGS: Record<NetworkName, {
+  indexer: string;
+  indexerWS: string;
+  node: string;
+  proofServer: string;
+  contractAddress: string;
+}> = {
+  preprod: {
+    indexer: 'https://indexer.preprod.midnight.network/api/v4/graphql',
+    indexerWS: 'wss://indexer.preprod.midnight.network/api/v4/graphql/ws',
+    node: 'https://rpc.preprod.midnight.network',
+    proofServer: 'http://localhost:6300',
+    // Live VeilBid contract deployed on Preprod via 1AM wallet (2026-08-18)
+    contractAddress: '42bb41cdbf156cccef4b9800c0c7818b1dab80655156564ebc5a18be7495c4d3',
+  },
+  preview: {
+    indexer: 'https://indexer.preview.midnight.network/api/v4/graphql',
+    indexerWS: 'wss://indexer.preview.midnight.network/api/v4/graphql/ws',
+    node: 'https://rpc.preview.midnight.network',
+    proofServer: 'http://localhost:6300',
+    contractAddress: localStorage.getItem('veilbid_contract_address_preview') || 'b39e69c51dfd27d63f8e0e489b86e33669e701a7cae83f6248fb220f985924b4',
+  },
 };
 
-// â”€â”€ Types â”€â”€
+const getStoredNetwork = (): NetworkName => {
+  const val = localStorage.getItem('veilbid_network');
+  return val === 'preprod' || val === 'preview' ? val : 'preprod';
+};
+
+// ── Types ──
 export interface WalletState {
   isConnected: boolean;
   isConnecting: boolean;
@@ -34,7 +56,7 @@ export interface WalletState {
   } | null;
 }
 
-// â”€â”€ Browser-native ZkConfigProvider â”€â”€
+// ── Browser-native ZkConfigProvider ──
 class BrowserZkConfigProvider {
   async getZKIR(circuitId: string): Promise<any> {
     const res = await fetch(`/managed/zkir/${circuitId}.bzkir`);
@@ -76,7 +98,7 @@ class BrowserZkConfigProvider {
   }
 }
 
-// â”€â”€ Browser Private State Provider (localStorage) â”€â”€
+// ── Browser Private State Provider (localStorage) ──
 const browserPrivateStateProvider = {
   contractAddress: null as string | null,
   setContractAddress: function(address: any) {
@@ -121,8 +143,8 @@ const browserPrivateStateProvider = {
   },
 };
 
-// â”€â”€ Build contract providers from wallet API â”€â”€
-async function buildProviders(api: any) {
+// ── Build contract providers from wallet API ──
+async function buildProviders(api: any, networkConfig: typeof NETWORK_CONFIGS['preprod']) {
   const [
     { indexerPublicDataProvider },
     { httpClientProofProvider },
@@ -138,10 +160,10 @@ async function buildProviders(api: any) {
   ]);
 
   const zkConfigProvider = new BrowserZkConfigProvider();
-  const publicDataProvider = indexerPublicDataProvider(NETWORK_CONFIG.indexer, NETWORK_CONFIG.indexerWS);
+  const publicDataProvider = indexerPublicDataProvider(networkConfig.indexer, networkConfig.indexerWS);
   const proofProvider = (typeof api.getProvingProvider === 'function')
     ? createProofProvider(await api.getProvingProvider(zkConfigProvider.asKeyMaterialProvider()))
-    : httpClientProofProvider(NETWORK_CONFIG.proofServer, zkConfigProvider);
+    : httpClientProofProvider(networkConfig.proofServer, zkConfigProvider);
 
   const shieldedAddresses = await api.getShieldedAddresses();
 
@@ -168,8 +190,9 @@ async function buildProviders(api: any) {
   };
 }
 
-// â”€â”€ Main Hook â”€â”€
+// ── Main Hook ──
 export const useMidnight = () => {
+  const [networkName, setNetworkNameState] = useState<NetworkName>(getStoredNetwork);
   const [state, setState] = useState<WalletState>({
     isConnected: false,
     isConnecting: false,
@@ -180,6 +203,19 @@ export const useMidnight = () => {
     contract: null,
     balances: null,
   });
+
+  const activeConfig = NETWORK_CONFIGS[networkName];
+
+  const selectNetwork = useCallback((name: NetworkName) => {
+    setNetworkNameState(name);
+    localStorage.setItem('veilbid_network', name);
+    setState({
+      isConnected: false, isConnecting: false, unshieldedAddress: null,
+      shieldedAddress: null, walletName: null, error: null, contract: null, balances: null,
+    });
+    localStorage.removeItem('veilbid_wallet_connected');
+    localStorage.removeItem('veilbid_wallet_id');
+  }, []);
 
   const setupConnection = useCallback(async (api: any, walletName: string) => {
     try {
@@ -214,7 +250,7 @@ export const useMidnight = () => {
       localStorage.setItem('veilbid_wallet_connected', 'true');
       localStorage.setItem('veilbid_wallet_id', walletName);
 
-      // Lazy-load contract SDK
+      // Lazy-load contract SDK and bind to deployed contract
       try {
         const [
           { CompiledContract },
@@ -228,17 +264,21 @@ export const useMidnight = () => {
           import('../../public/managed/contract/index.js'),
         ]);
 
-        setNetworkId('preview');
+        // ✅ Set network to preprod/preview dynamically
+        setNetworkId(networkName);
 
-        const providers = await buildProviders(api);
-        const compiledContract = CompiledContract.make('veilbid', VeilBidContract.Contract).pipe(
+        const providers = await buildProviders(api, activeConfig);
+
+        // ✅ Contract name matches auction.compact compiled output
+        const compiledContract = CompiledContract.make('auction', VeilBidContract.Contract).pipe(
           CompiledContract.withWitnesses({
             myBidAmount: (context: any) => [context.privateState, context.privateState.bidAmount],
           }),
           CompiledContract.withCompiledFileAssets('/managed')
         );
 
-        const contractAddress = localStorage.getItem('veilbid_contract_address') || NETWORK_CONFIG.contractAddress;
+        // ✅ Use per-network stored address, fall back to hardcoded default
+        const contractAddress = localStorage.getItem(`veilbid_contract_address_${networkName}`) || activeConfig.contractAddress;
         let instance: any = null;
         if (contractAddress) {
           const realInstance = await findDeployedContract(providers as any, {
@@ -262,9 +302,9 @@ export const useMidnight = () => {
         error: e.message || 'Failed to connect wallet',
       }));
     }
-  }, []);
+  }, [networkName, activeConfig]);
 
-  // Auto-reconnect
+  // Auto-reconnect on page load
   useEffect(() => {
     const tryReconnect = async () => {
       if (localStorage.getItem('veilbid_wallet_connected') !== 'true') return;
@@ -273,8 +313,9 @@ export const useMidnight = () => {
       const walletEntry = (window as any).midnight?.[walletId];
       if (!walletEntry) return;
       try {
+        // ✅ Connect to the currently selected network (preprod or preview)
         const api = typeof walletEntry.connect === 'function'
-          ? await walletEntry.connect('preview')
+          ? await walletEntry.connect(networkName)
           : await walletEntry.enable();
         await setupConnection(api, walletId);
       } catch {
@@ -282,8 +323,9 @@ export const useMidnight = () => {
         localStorage.removeItem('veilbid_wallet_id');
       }
     };
-    tryReconnect();
-  }, [setupConnection]);
+    const timer = setTimeout(tryReconnect, 800);
+    return () => clearTimeout(timer);
+  }, [setupConnection, networkName]);
 
   const connectWallet = useCallback(async (walletId?: string) => {
     setState(prev => ({ ...prev, isConnecting: true, error: null }));
@@ -298,8 +340,9 @@ export const useMidnight = () => {
 
       if (!walletEntry) throw new Error('No compatible Midnight wallet found. Install the 1AM wallet.');
 
+      // ✅ Connect to the selected network (preprod or preview)
       const api = typeof walletEntry.connect === 'function'
-        ? await walletEntry.connect('preview')
+        ? await walletEntry.connect(networkName)
         : await walletEntry.enable();
 
       await setupConnection(api, targetId);
@@ -307,7 +350,7 @@ export const useMidnight = () => {
       setState(prev => ({ ...prev, isConnecting: false, error: e.message || 'Wallet connection failed' }));
       localStorage.removeItem('veilbid_wallet_connected');
     }
-  }, [setupConnection]);
+  }, [setupConnection, networkName]);
 
   const disconnectWallet = useCallback(() => {
     setState({
@@ -325,8 +368,9 @@ export const useMidnight = () => {
       const walletEntry = (window as any).midnight?.[walletId];
       if (!walletEntry) throw new Error('Wallet not connected');
 
+      // ✅ Connect to selected network
       const api = typeof walletEntry.connect === 'function'
-        ? await walletEntry.connect('preview')
+        ? await walletEntry.connect(networkName)
         : await walletEntry.enable();
 
       const [
@@ -341,51 +385,63 @@ export const useMidnight = () => {
         import('../../public/managed/contract/index.js'),
       ]);
 
-      setNetworkId('preview');
-      const providers = await buildProviders(api);
+      // ✅ Use dynamic network ID
+      setNetworkId(networkName);
+      const providers = await buildProviders(api, activeConfig);
 
-      const compiledContract = CompiledContract.make('veilbid', VeilBidContract.Contract).pipe(
+      // ✅ Contract name matches auction.compact
+      const compiledContract = CompiledContract.make('auction', VeilBidContract.Contract).pipe(
         CompiledContract.withWitnesses({
           myBidAmount: (context: any) => [context.privateState, context.privateState.bidAmount],
         }),
         CompiledContract.withCompiledFileAssets('/managed')
       );
 
-      // Create NFT token ID as 32 bytes
+      // Encode NFT token ID as 32 bytes
       const nftIdBytes = new Uint8Array(32);
-      const enc = new TextEncoder();
-      const encoded = enc.encode(nftTokenId.substring(0, 32));
+      const encoded = new TextEncoder().encode(nftTokenId.substring(0, 32));
       nftIdBytes.set(encoded);
 
-      // Creator key placeholder (will come from wallet in full impl)
+      // Random creator key (wallet-derived in full impl)
       const creatorKey = new Uint8Array(32);
       crypto.getRandomValues(creatorKey);
+
+      console.log('[VeilBid Deploy] Starting deployment on', networkName, '...');
 
       const deployed = await deployContract(providers as any, {
         compiledContract: compiledContract as any,
         privateStateId: 'veilbid-state',
         initialPrivateState: { secretKey: new Uint8Array(32), bidAmount: 0n },
-        args: [nftIdBytes, BigInt(royaltyBps), creatorKey],
+        args: [nftIdBytes],  // auction.compact constructor takes 1 arg: Bytes<32> id
       });
 
       const contractAddress = deployed.deployTxData.public.contractAddress;
-      localStorage.setItem('veilbid_contract_address', contractAddress);
+      const txHash = deployed.deployTxData.public.txHash;
+
+      console.log('🎉 [VeilBid Deploy] CONTRACT DEPLOYED!');
+      console.log('📋 Contract Address:', contractAddress);
+      console.log('🔗 TX Hash:', txHash);
+      console.log('🌐 Network:', networkName);
+
+      // ✅ Store per-network contract address
+      localStorage.setItem(`veilbid_contract_address_${networkName}`, contractAddress);
 
       const instance = deployed;
       (instance as any).providers = providers;
 
       setState(prev => ({ ...prev, contract: instance, isConnecting: false, error: null }));
-      return { contractAddress, txHash: deployed.deployTxData.public.txHash };
+      return { contractAddress, txHash };
     } catch (e: any) {
       setState(prev => ({ ...prev, isConnecting: false, error: e.message || 'Deployment failed' }));
       throw e;
     }
-  }, []);
+  }, [networkName, activeConfig]);
 
   return {
     ...state,
-    networkName: 'preview' as const,
-    networkConfig: NETWORK_CONFIG,
+    networkName,
+    networkConfig: activeConfig,
+    selectNetwork,
     connectWallet,
     disconnectWallet,
     deployVeilBid,
