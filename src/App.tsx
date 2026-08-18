@@ -6,8 +6,10 @@ export default function App() {
     isConnected,
     isConnecting,
     unshieldedAddress,
-    walletError,
+    error: walletError,
     contract,
+    networkName,
+    selectNetwork,
     connectWallet,
     disconnectWallet,
     deployVeilBid,
@@ -366,7 +368,7 @@ export default function App() {
 
     try {
       if (!isConnected || !deployVeilBid) {
-        alert('Please connect your 1AM wallet on Midnight Preview Network first.');
+        alert('Please connect your 1AM wallet on Midnight Preprod Network first.');
         setIsDeploying(false);
         return;
       }
@@ -864,7 +866,7 @@ export default function App() {
                 <div className="price-card">
                   <div className="price-plan">Explorer</div>
                   <div className="price-amount">Free</div>
-                  <div className="price-per">on Preview Network · tNIGHT tokens</div>
+                  <div className="price-per">on Preprod Network · tNIGHT tokens</div>
                   <div className="price-div"></div>
                   <ul className="price-feats">
                     <li className="price-feat"><span className="p-ck">✓</span>Unlimited sealed bids</li>
@@ -942,7 +944,7 @@ export default function App() {
               <div><div className="foot-ct">Legal</div><ul className="foot-ls"><li><a href="#">Privacy Policy</a></li><li><a href="#">Terms of Service</a></li><li><a href="#">Cookie Policy</a></li></ul></div>
             </div>
             <div className="foot-bot">
-              <span>© 2026 VeilBid. All rights reserved. Built on <strong>Midnight Preview Network</strong>.</span>
+              <span>© 2026 VeilBid. All rights reserved. Built on <strong>Midnight Preprod Network</strong>.</span>
               <span>🔒 Zero-Knowledge · 🌙 Midnight · 🤖 AI Ready</span>
             </div>
           </footer>
@@ -1390,11 +1392,11 @@ export default function App() {
               <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', marginBottom: '10px' }}>
                 <span style={{ fontSize: '11px', fontWeight: 800, textTransform: 'uppercase', letterSpacing: '0.05em', color: '#6B7280' }}>1AM Wallet Connected</span>
                 <span style={{ fontSize: '11px', fontWeight: 700, background: 'rgba(16, 185, 129, 0.1)', color: '#10B981', border: '1px solid rgba(16, 185, 129, 0.3)', padding: '2px 8px', borderRadius: '50px' }}>
-                  ● Midnight Preview Network
+                  ● Midnight {networkName === 'preprod' ? 'Preprod' : 'Preview'} Network
                 </span>
               </div>
               <div style={{ fontSize: '12.5px', fontFamily: 'var(--font-mono)', color: 'var(--dark)', wordBreak: 'break-all', marginBottom: '12px' }}>
-                {unshieldedAddress || 'mn_addr_preview1xg58074snta5pv59vhru5p3mudgy4c6cuurqxr48a5x88xzuawqsdgra62'}
+                {unshieldedAddress || `mn_addr_${networkName}1xg58074snta5pv59vhru5p3mudgy4c6cuurqxr48a5x88xzuawqsdgra62`}
               </div>
               <div style={{ display: 'grid', gridTemplateColumns: '1fr 1fr', gap: '10px', background: '#fff', padding: '10px 14px', borderRadius: '8px', border: '1px solid rgba(0,0,0,0.1)' }}>
                 <div>
