@@ -270,11 +270,11 @@ export const useMidnight = () => {
         const providers = await buildProviders(api, activeConfig);
 
         // ✅ Contract name matches auction.compact compiled output
-        const compiledContract = CompiledContract.make('auction', VeilBidContract.Contract).pipe(
-          CompiledContract.withWitnesses({
+        const compiledContract = CompiledContract.make('auction', VeilBidContract.Contract as any).pipe(
+          (CompiledContract.withWitnesses as any)({
             myBidAmount: (context: any) => [context.privateState, context.privateState.bidAmount],
           }),
-          CompiledContract.withCompiledFileAssets('/managed')
+          (CompiledContract.withCompiledFileAssets as any)('/managed')
         );
 
         // ✅ Use per-network stored address, fall back to hardcoded default
@@ -390,11 +390,11 @@ export const useMidnight = () => {
       const providers = await buildProviders(api, activeConfig);
 
       // ✅ Contract name matches auction.compact
-      const compiledContract = CompiledContract.make('auction', VeilBidContract.Contract).pipe(
-        CompiledContract.withWitnesses({
+      const compiledContract = CompiledContract.make('auction', VeilBidContract.Contract as any).pipe(
+        (CompiledContract.withWitnesses as any)({
           myBidAmount: (context: any) => [context.privateState, context.privateState.bidAmount],
         }),
-        CompiledContract.withCompiledFileAssets('/managed')
+        (CompiledContract.withCompiledFileAssets as any)('/managed')
       );
 
       // Encode NFT token ID as 32 bytes
