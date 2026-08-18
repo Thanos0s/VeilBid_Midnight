@@ -38,6 +38,8 @@ export type Ledger = {
   readonly bidCount: bigint;
   readonly winner: { is_some: boolean, value: Uint8Array };
   readonly winningPrice: { is_some: boolean, value: bigint };
+  readonly royaltyBps: bigint;
+  readonly creatorKey: Uint8Array;
 }
 
 export type ContractReferenceLocations = any;
@@ -51,7 +53,9 @@ export declare class Contract<PS = any, W extends Witnesses<PS> = Witnesses<PS>>
   provableCircuits: ProvableCircuits<PS>;
   constructor(witnesses: W);
   initialState(context: __compactRuntime.ConstructorContext<PS>,
-               id_0: Uint8Array): __compactRuntime.ConstructorResult<PS>;
+               id_0: Uint8Array,
+               royaltyBasisPoints_0: bigint,
+               creator_0: Uint8Array): __compactRuntime.ConstructorResult<PS>;
 }
 
 export declare function ledger(state: __compactRuntime.StateValue | __compactRuntime.ChargedState): Ledger;
