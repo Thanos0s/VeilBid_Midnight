@@ -23,7 +23,8 @@ Connect your [1AM Wallet](https://1am.space) on **Midnight Preview Network**, br
 
 | Network | Contract Address | Indexer / Explorer |
 |---|---|---|
-| **Preprod** (Default) | `42bb41cdbf156cccef4b9800c0c7818b1dab80655156564ebc5a18be7495c4d3` | Verified via Preprod Indexer GraphQL |
+| **Preprod** (Default) | `42bb41cdbf156cccef4b9800c0c7818b1dab80655156564ebc5a18be7495c4d3` | Verified via Preprod Indexer GraphQL 
+(https://preprod.midnightexplorer.com/contracts/0x42bb41cdbf156cccef4b9800c0c7818b1dab80655156564ebc5a18be7495c4d3)|
 | **Preview** | `b39e69c51dfd27d63f8e0e489b86e33669e701a7cae83f6248fb220f985924b4` | [View on Midnight Preview Explorer](https://preview.midnightexplorer.com/contracts/0xb39e69c51dfd27d63f8e0e489b86e33669e701a7cae83f6248fb220f985924b4) |
 
 - **Preprod Indexer:** `https://indexer.preprod.midnight.network/api/v4/graphql`
