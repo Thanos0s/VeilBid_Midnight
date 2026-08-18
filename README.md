@@ -21,16 +21,16 @@ Connect your [1AM Wallet](https://1am.space) on **Midnight Preview Network**, br
 
 ## 📜 Verified Deployed Smart Contract
 
-| Field | Value |
-|---|---|
-| **Network** | Midnight Preview Network |
-| **Contract Address** | [`b39e69c51dfd27d63f8e0e489b86e33669e701a7cae83f6248fb220f985924b4`](https://preview.midnightexplorer.com/contracts/0xb39e69c51dfd27d63f8e0e489b86e33669e701a7cae83f6248fb220f985924b4) |
-| **Explorer** | [View on Midnight Preview Explorer](https://preview.midnightexplorer.com/contracts/0xb39e69c51dfd27d63f8e0e489b86e33669e701a7cae83f6248fb220f985924b4) |
-| **Indexer** | `https://indexer.preview.midnight.network/api/v4/graphql` |
-| **RPC Node** | `https://rpc.preview.midnight.network` |
-| **Contract Source** | [`contracts/auction.compact`](contracts/auction.compact) |
+| Network | Contract Address | Indexer / Explorer |
+|---|---|---|
+| **Preprod** (Default) | `42bb41cdbf156cccef4b9800c0c7818b1dab80655156564ebc5a18be7495c4d3` | Verified via Preprod Indexer GraphQL |
+| **Preview** | `b39e69c51dfd27d63f8e0e489b86e33669e701a7cae83f6248fb220f985924b4` | [View on Midnight Preview Explorer](https://preview.midnightexplorer.com/contracts/0xb39e69c51dfd27d63f8e0e489b86e33669e701a7cae83f6248fb220f985924b4) |
 
-> **Note**: This contract is deployed on **Midnight Preview Network** — Midnight's public test environment for developer builds. Preview is a distinct environment from Preprod, both maintained by the Midnight team as separate test stages.
+- **Preprod Indexer:** `https://indexer.preprod.midnight.network/api/v4/graphql`
+- **Preprod Node:** `https://rpc.preprod.midnight.network`
+- **Contract Source:** [`contracts/auction.compact`](contracts/auction.compact)
+
+> **Note**: The default network has been updated to **Midnight Preprod Network**. Dual-network switching is fully supported via the network dropdown in the top-right of the web app.
 
 ---
 
