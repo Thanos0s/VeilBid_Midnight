@@ -49,6 +49,16 @@ export default function App() {
   const [aiDeploySuccess, setAiDeploySuccess] = useState<any | null>(null);
   const [myAiAgents, setMyAiAgents] = useState<any[]>([]);
 
+  // Level 5 Full Moon Feedback Loop State
+  const [showFeedbackModal, setShowFeedbackModal] = useState(false);
+  const [feedbackRating, setFeedbackRating] = useState<number>(5);
+  const [feedbackCategory, setFeedbackCategory] = useState<'Bug Report' | 'ZK Proving Speed' | 'Wallet Connection' | 'UI/UX' | 'AI Agents'>('UI/UX');
+  const [feedbackCohort, setFeedbackCohort] = useState('Private Bidder');
+  const [feedbackMessage, setFeedbackMessage] = useState('');
+  const [feedbackCustomWallet, setFeedbackCustomWallet] = useState('');
+  const [feedbackSubmitted, setFeedbackSubmitted] = useState(false);
+  const [userFeedbacks, setUserFeedbacks] = useState<any[]>([]);
+
   useEffect(() => {
     const savedBids = localStorage.getItem('veilbid_bids');
     if (savedBids) {
@@ -58,7 +68,35 @@ export default function App() {
     if (savedAgents) {
       try { setMyAiAgents(JSON.parse(savedAgents)); } catch {}
     }
+    const savedFeedbacks = localStorage.getItem('veilbid_user_feedback');
+    if (savedFeedbacks) {
+      try { setUserFeedbacks(JSON.parse(savedFeedbacks)); } catch {}
+    }
   }, []);
+
+  const handleFeedbackSubmit = (e: React.FormEvent) => {
+    e.preventDefault();
+    if (!feedbackMessage.trim()) return;
+    const newEntry = {
+      id: 'fb-' + Date.now(),
+      rating: feedbackRating,
+      category: feedbackCategory,
+      cohort: feedbackCohort,
+      message: feedbackMessage.trim(),
+      wallet: feedbackCustomWallet || unshieldedAddress || 'Shielded Preprod Tester',
+      network: networkName,
+      date: new Date().toISOString()
+    };
+    const updated = [newEntry, ...userFeedbacks];
+    setUserFeedbacks(updated);
+    localStorage.setItem('veilbid_user_feedback', JSON.stringify(updated));
+    setFeedbackSubmitted(true);
+    setTimeout(() => {
+      setFeedbackSubmitted(false);
+      setShowFeedbackModal(false);
+      setFeedbackMessage('');
+    }, 1800);
+  };
   const [selectedNft, setSelectedNft] = useState<any | null>(null);
 
   // Bid form state
@@ -1265,6 +1303,7 @@ export default function App() {
           <button onClick={() => setShowDeployModal(true)} style={{ background: 'none', border: 'none', font: 'inherit', color: '#5a5a5a', cursor: 'pointer', padding: '6px 9px', fontSize: '12.5px', fontWeight: 600 }}>🚀 Deploy</button>
           <button onClick={() => { setSelectedAiAgent(aiAgentsList[0]); setShowDeployAiModal(true); }} style={{ background: 'var(--purple)', color: '#fff', border: '1.5px solid #0a0a0a', borderRadius: '6px', font: 'inherit', cursor: 'pointer', padding: '5px 10px', fontSize: '12px', fontWeight: 800, boxShadow: '2px 2px 0 #0a0a0a', whiteSpace: 'nowrap' }}>🤖 AI Agents</button>
           <button onClick={() => setShowMyBidsModal(true)} style={{ background: 'var(--green)', color: '#0a0a0a', border: '1.5px solid #0a0a0a', borderRadius: '6px', font: 'inherit', cursor: 'pointer', padding: '5px 10px', fontSize: '12px', fontWeight: 800, boxShadow: '2px 2px 0 #0a0a0a', whiteSpace: 'nowrap' }}>👛 My Bids</button>
+          <button onClick={() => setShowFeedbackModal(true)} style={{ background: '#fff', color: 'var(--dark)', border: '1.5px solid #0a0a0a', borderRadius: '6px', font: 'inherit', cursor: 'pointer', padding: '5px 10px', fontSize: '12px', fontWeight: 800, boxShadow: '2px 2px 0 #0a0a0a', whiteSpace: 'nowrap' }}>💬 Feedback</button>
         </div>
 
         {/* Right CTA cluster: Unified Network/Contract Badge + Wallet CTA + Hamburger */}
@@ -1427,6 +1466,7 @@ export default function App() {
           <button onClick={() => { setShowDeployModal(true); setNavOpen(false); }}>🚀 Deploy Auction</button>
           <button onClick={() => { setSelectedAiAgent(aiAgentsList[0]); setShowDeployAiModal(true); setNavOpen(false); }} style={{ color: 'var(--purple)', fontWeight: 800 }}>🤖 Deploy AI Agent</button>
           <button onClick={() => { setShowMyBidsModal(true); setNavOpen(false); }} style={{ color: '#0a0a0a', fontWeight: 800, background: 'var(--green)', borderRadius: '8px', border: '1.5px solid #0a0a0a', margin: '4px 0' }}>👛 My Wallet & Bids</button>
+          <button onClick={() => { setShowFeedbackModal(true); setNavOpen(false); }} style={{ color: '#0a0a0a', fontWeight: 800, background: '#fff', borderRadius: '8px', border: '1.5px solid #0a0a0a', margin: '4px 0' }}>💬 Level 5 Feedback Loop</button>
         </div>
       </nav>
 
@@ -2423,6 +2463,237 @@ export default function App() {
         </div>
       )}
 
-</div>
+      {/* Floating Level 5 Feedback Button */}
+      <button
+        onClick={() => setShowFeedbackModal(true)}
+        style={{
+          position: 'fixed',
+          bottom: '24px',
+          left: '24px',
+          zIndex: 180,
+          display: 'flex',
+          alignItems: 'center',
+          gap: '8px',
+          padding: '10px 16px',
+          background: 'var(--dark)',
+          color: 'var(--green)',
+          border: '2px solid var(--green)',
+          borderRadius: '50px',
+          boxShadow: '0 6px 18px rgba(0,0,0,0.3)',
+          fontFamily: 'var(--font-mono)',
+          fontSize: '12px',
+          fontWeight: 800,
+          cursor: 'pointer',
+          transition: 'transform 0.15s, box-shadow 0.15s',
+        }}
+        title="Submit structured feedback for Level 5 Preprod evaluation"
+      >
+        <span style={{ fontSize: '15px' }}>💬</span>
+        <span>Feedback Loop</span>
+        <span style={{
+          fontSize: '9px',
+          padding: '2px 6px',
+          borderRadius: '10px',
+          background: 'var(--green)',
+          color: 'var(--dark)',
+          fontWeight: 900
+        }}>L5</span>
+      </button>
+
+      {/* ── FEEDBACK MODAL (LEVEL 5 FULL MOON) ── */}
+      {showFeedbackModal && (
+        <div className="modal-overlay" onClick={() => setShowFeedbackModal(false)}>
+          <div className="modal-card" style={{ maxWidth: '520px' }} onClick={e => e.stopPropagation()}>
+            <button className="modal-close" onClick={() => setShowFeedbackModal(false)}>✕</button>
+
+            <div style={{ display: 'flex', alignItems: 'center', gap: '10px', marginBottom: '8px' }}>
+              <div style={{
+                width: '38px', height: '38px', borderRadius: '8px', background: 'var(--green)',
+                border: '2px solid var(--dark)', display: 'flex', alignItems: 'center', justifyContent: 'center',
+                fontSize: '18px', boxShadow: '2px 2px 0 #0a0a0a'
+              }}>
+                🌕
+              </div>
+              <div>
+                <h3 style={{ fontSize: '18px', fontWeight: 800, margin: 0 }}>
+                  Preprod Feedback Loop
+                </h3>
+                <div style={{ fontSize: '11.5px', color: '#666', fontFamily: 'var(--font-mono)' }}>
+                  Level 5 Full Moon · 50 User Cohort Program
+                </div>
+              </div>
+            </div>
+
+            {feedbackSubmitted ? (
+              <div style={{
+                padding: '36px 20px', textAlign: 'center', background: '#f0fdf4',
+                border: '2px solid #86efac', borderRadius: '10px', margin: '20px 0'
+              }}>
+                <div style={{ fontSize: '38px', marginBottom: '10px' }}>🎉</div>
+                <h4 style={{ fontSize: '16px', fontWeight: 800, color: '#166534', marginBottom: '6px' }}>
+                  Feedback Recorded!
+                </h4>
+                <p style={{ fontSize: '13px', color: '#15803d', margin: 0 }}>
+                  Thank you for contributing to VeilBid's Preprod feedback loop. Your inputs are logged into the Level 5 dossier.
+                </p>
+              </div>
+            ) : (
+              <form onSubmit={handleFeedbackSubmit} style={{ marginTop: '16px' }}>
+                {/* Rating Stars */}
+                <div style={{ marginBottom: '14px' }}>
+                  <label style={{ display: 'block', fontSize: '12px', fontWeight: 800, textTransform: 'uppercase', marginBottom: '6px', color: '#444' }}>
+                    Rate Your Experience
+                  </label>
+                  <div style={{ display: 'flex', gap: '8px', alignItems: 'center' }}>
+                    {[1, 2, 3, 4, 5].map(star => (
+                      <button
+                        key={star}
+                        type="button"
+                        onClick={() => setFeedbackRating(star)}
+                        style={{
+                          fontSize: '24px', background: 'none', border: 'none', cursor: 'pointer',
+                          padding: '2px', transform: feedbackRating >= star ? 'scale(1.15)' : 'scale(1)',
+                          transition: 'transform 0.1s'
+                        }}
+                      >
+                        {feedbackRating >= star ? '⭐' : '☆'}
+                      </button>
+                    ))}
+                    <span style={{ fontSize: '12px', fontWeight: 700, marginLeft: '8px', color: 'var(--purple)', fontFamily: 'var(--font-mono)' }}>
+                      {feedbackRating === 5 ? '5/5 Excellent' : `${feedbackRating}/5`}
+                    </span>
+                  </div>
+                </div>
+
+                {/* Category Pills */}
+                <div style={{ marginBottom: '14px' }}>
+                  <label style={{ display: 'block', fontSize: '12px', fontWeight: 800, textTransform: 'uppercase', marginBottom: '6px', color: '#444' }}>
+                    Category
+                  </label>
+                  <div style={{ display: 'flex', flexWrap: 'wrap', gap: '6px' }}>
+                    {(['UI/UX', 'ZK Proving Speed', 'Wallet Connection', 'AI Agents', 'Bug Report'] as const).map(cat => (
+                      <button
+                        key={cat}
+                        type="button"
+                        onClick={() => setFeedbackCategory(cat)}
+                        style={{
+                          padding: '5px 10px', fontSize: '11.5px', fontWeight: 700,
+                          borderRadius: '6px', border: '1.5px solid var(--dark)',
+                          background: feedbackCategory === cat ? 'var(--green)' : '#fff',
+                          boxShadow: feedbackCategory === cat ? '2px 2px 0 #0a0a0a' : 'none',
+                          cursor: 'pointer'
+                        }}
+                      >
+                        {cat}
+                      </button>
+                    ))}
+                  </div>
+                </div>
+
+                {/* User Cohort */}
+                <div style={{ marginBottom: '14px' }}>
+                  <label style={{ display: 'block', fontSize: '12px', fontWeight: 800, textTransform: 'uppercase', marginBottom: '6px', color: '#444' }}>
+                    Your Cohort
+                  </label>
+                  <select
+                    value={feedbackCohort}
+                    onChange={e => setFeedbackCohort(e.target.value)}
+                    style={{
+                      width: '100%', padding: '8px 10px', border: '2px solid var(--dark)',
+                      borderRadius: '6px', fontSize: '13px', background: '#fff', fontWeight: 600
+                    }}
+                  >
+                    <option value="Private Bidder">Private Bidder (Sealed Bids & Auctions)</option>
+                    <option value="NFT Creator">NFT Creator / Artist (Deploying Royalties)</option>
+                    <option value="AI Bot Operator">AI Agent Operator (Policy Hash & Bots)</option>
+                    <option value="Security / ZK Tester">Security & ZK Privacy Auditor</option>
+                  </select>
+                </div>
+
+                {/* Feedback Message */}
+                <div style={{ marginBottom: '14px' }}>
+                  <label style={{ display: 'block', fontSize: '12px', fontWeight: 800, textTransform: 'uppercase', marginBottom: '6px', color: '#444' }}>
+                    Observations & Suggestions *
+                  </label>
+                  <textarea
+                    rows={3}
+                    required
+                    value={feedbackMessage}
+                    onChange={e => setFeedbackMessage(e.target.value)}
+                    placeholder="Describe what went smoothly, any latency observed, or UI improvements you'd like to see..."
+                    style={{
+                      width: '100%', padding: '10px', border: '2px solid var(--dark)',
+                      borderRadius: '8px', fontSize: '13px', fontFamily: 'inherit', resize: 'vertical'
+                    }}
+                  />
+                </div>
+
+                {/* Wallet Reference */}
+                <div style={{ marginBottom: '18px' }}>
+                  <label style={{ display: 'block', fontSize: '11px', fontWeight: 700, textTransform: 'uppercase', marginBottom: '4px', color: '#666' }}>
+                    Tester Wallet Address (Optional)
+                  </label>
+                  <input
+                    type="text"
+                    value={feedbackCustomWallet || unshieldedAddress || ''}
+                    onChange={e => setFeedbackCustomWallet(e.target.value)}
+                    placeholder="mn_shielded_... or addr_test1..."
+                    style={{
+                      width: '100%', padding: '8px 10px', border: '1.5px solid #bbb',
+                      borderRadius: '6px', fontSize: '11.5px', fontFamily: 'var(--font-mono)'
+                    }}
+                  />
+                </div>
+
+                <div style={{ display: 'flex', gap: '10px', alignItems: 'center' }}>
+                  <button
+                    type="submit"
+                    style={{
+                      flex: 1, padding: '12px 18px', background: 'var(--green)', color: 'var(--dark)',
+                      border: '2px solid var(--dark)', borderRadius: '8px', fontWeight: 900,
+                      fontSize: '14px', boxShadow: '3px 3px 0 #0a0a0a', cursor: 'pointer'
+                    }}
+                  >
+                    Submit to Feedback Loop →
+                  </button>
+                  <button
+                    type="button"
+                    onClick={() => setShowFeedbackModal(false)}
+                    style={{
+                      padding: '12px 16px', background: '#fff', color: '#555',
+                      border: '1.5px solid #ccc', borderRadius: '8px', fontWeight: 700,
+                      fontSize: '13px', cursor: 'pointer'
+                    }}
+                  >
+                    Cancel
+                  </button>
+                </div>
+              </form>
+            )}
+
+            {/* Saved feedback preview */}
+            {userFeedbacks.length > 0 && !feedbackSubmitted && (
+              <div style={{ marginTop: '20px', borderTop: '1.5px dashed #ccc', paddingTop: '14px' }}>
+                <div style={{ fontSize: '11px', fontWeight: 800, textTransform: 'uppercase', color: '#888', marginBottom: '8px' }}>
+                  Recent Submissions on this Device ({userFeedbacks.length})
+                </div>
+                <div style={{ maxHeight: '120px', overflowY: 'auto', display: 'flex', flexDirection: 'column', gap: '6px' }}>
+                  {userFeedbacks.slice(0, 4).map((fb: any, i: number) => (
+                    <div key={i} style={{ padding: '6px 10px', background: '#faf8f5', borderRadius: '6px', border: '1px solid #ddd', fontSize: '11.5px' }}>
+                      <div style={{ display: 'flex', justifyContent: 'space-between', fontWeight: 700 }}>
+                        <span>{'⭐'.repeat(fb.rating)} · {fb.category}</span>
+                        <span style={{ color: '#888', fontSize: '10px' }}>{new Date(fb.date).toLocaleDateString()}</span>
+                      </div>
+                      <div style={{ color: '#444', marginTop: '2px' }}>"{fb.message}"</div>
+                    </div>
+                  ))}
+                </div>
+              </div>
+            )}
+          </div>
+        </div>
+      )}
+
+    </div>
   );
 }
