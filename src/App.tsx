@@ -577,7 +577,7 @@ export default function App() {
     : userNfts.filter(nft => nft.category.toLowerCase() === selectedCategory.toLowerCase());
 
   return (
-    <div>
+    <div style={{ width: '100%', maxWidth: '100vw', overflowX: 'hidden' }}>
       <style>{`
         *,*::before,*::after{box-sizing:border-box;margin:0;padding:0}
         :root{
@@ -587,8 +587,9 @@ export default function App() {
           --font-sans:'Geist',-apple-system,sans-serif;
           --font-mono:'Geist Mono',monospace;
         }
-        html{scroll-behavior:smooth}
-        body{font-family:var(--font-sans);background:var(--cream);color:var(--dark);overflow-x:hidden;-webkit-font-smoothing:antialiased}
+        html{scroll-behavior:smooth;width:100%;max-width:100vw;overflow-x:hidden}
+        body{font-family:var(--font-sans);background:var(--cream);color:var(--dark);overflow-x:hidden;width:100%;max-width:100vw;-webkit-font-smoothing:antialiased;-webkit-text-size-adjust:100%}
+        #root{width:100%;max-width:100vw;overflow-x:hidden}
         .grid-bg{background-color:var(--cream);background-image:linear-gradient(to right,rgba(120,100,80,.1) 1px,transparent 1px),linear-gradient(to bottom,rgba(120,100,80,.1) 1px,transparent 1px);background-size:24px 24px}
         nav{position:sticky;top:0;z-index:200;display:flex;align-items:center;justify-content:space-between;height:56px;padding:0 16px;background:var(--cream);border-bottom:1.5px solid var(--dark);animation:slideDown .4s ease-out;max-width:100vw;box-sizing:border-box}
         @keyframes slideDown{from{transform:translateY(-100%);opacity:0}to{transform:translateY(0);opacity:1}}
@@ -1153,7 +1154,7 @@ export default function App() {
         .nav-marketing{display:inline-flex;align-items:center;gap:2px}
         .nav-right{display:flex;align-items:center;gap:8px;flex-shrink:0}
         @media(max-width:1250px){.nav-marketing{display:none !important}}
-        @media(max-width:960px){.nav-links{display:none !important}}
+        @media(max-width:1080px){.nav-links{display:none !important}}
 
         /* ---- Mobile nav drawer ---- */
         .nav-mobile-drawer{display:none;flex-direction:column;width:100%;border-top:1.5px solid var(--dark);padding:16px 18px 24px;gap:6px;background:var(--cream)}
@@ -1161,10 +1162,10 @@ export default function App() {
         .nav-mobile-drawer button,.nav-mobile-drawer a{display:block;width:100%;text-align:left;padding:11px 14px;font-size:14px;font-weight:700;color:#222;background:none;border:none;border-radius:6px;cursor:pointer;font-family:inherit;text-decoration:none;transition:background .15s}
         .nav-mobile-drawer button:hover,.nav-mobile-drawer a:hover{background:rgba(0,0,0,0.06)}
         .nav-ham{display:none;background:none;border:none;cursor:pointer;font-size:22px;padding:4px 6px;line-height:1;color:var(--dark)}
-        @media(max-width:960px){.nav-ham{display:flex;align-items:center;justify-content:center}}
+        @media(max-width:1080px){.nav-ham{display:flex;align-items:center;justify-content:center}}
 
         /* ---- Nav layout on mobile ---- */
-        @media(max-width:960px){
+        @media(max-width:1080px){
           nav{height:56px !important;padding:0 12px;flex-wrap:nowrap !important;align-items:center}
           nav .nav-logo{font-size:13.5px;gap:6px}
           nav .logo-box{width:28px;height:28px}
@@ -1185,25 +1186,25 @@ export default function App() {
           }
         }
 
-        /* ---- Hero on mobile ---- */
-        @media(max-width:768px){
-          .hero{padding:24px 16px 40px;min-height:auto;overflow:hidden}
-          .hero-inner{max-width:100%;position:relative;z-index:5}
+        /* ---- Hero on mobile / tablet ---- */
+        @media(max-width:1080px){
+          .hero{padding:32px 16px 48px;min-height:calc(100vh - 56px);display:flex;flex-direction:column;justify-content:center;align-items:center;overflow:hidden}
+          .hero-inner{max-width:100%;position:relative;z-index:5;margin:auto 0}
           .deco{display:none !important}
           .spin-badge{display:none !important}
           .privacy-strip{font-size:11px;padding:5px 12px;margin-bottom:16px;white-space:normal;text-align:center}
           .badge-row{gap:8px;margin-bottom:18px}
           .badge-pill{padding:6px 10px;font-size:11px}
-          .hero-heading{font-size:clamp(32px,8.5vw,46px);margin-bottom:10px;line-height:1}
-          .platform-line{font-size:clamp(22px,6vw,30px);height:auto;margin-bottom:8px}
-          .hero-sub{font-size:13.5px !important;line-height:1.6;margin:12px auto 24px}
-          .hero-btns{flex-direction:column;gap:10px;align-items:stretch}
+          .hero-heading{font-size:clamp(32px,8vw,56px) !important;margin-bottom:12px;line-height:1.02}
+          .platform-line{font-size:clamp(20px,5.8vw,34px) !important;height:auto;margin-bottom:12px}
+          .hero-sub{font-size:14px !important;line-height:1.6;margin:12px auto 24px;max-width:92%}
+          .hero-btns{flex-direction:column;gap:12px;align-items:stretch;width:100%;max-width:320px;margin:0 auto}
           .hero-btns a,.hero-btns button{width:100% !important;justify-content:center;padding:12px 20px;font-size:15px}
         }
 
         /* ---- How it works ---- */
-        @media(max-width:768px){
-          .how-layout{grid-template-columns:1fr !important;padding:0 16px}
+        @media(max-width:1080px){
+          .how-layout{grid-template-columns:1fr !important;padding:0 16px !important}
           .demo-inner{padding:16px !important}
           .demo-card{padding:16px !important}
           .demo-metrics-grid{grid-template-columns:1fr !important}
@@ -1211,10 +1212,10 @@ export default function App() {
         }
 
         /* ---- Feature grid ---- */
-        @media(max-width:768px){.feat-grid{grid-template-columns:1fr !important;gap:12px}}
+        @media(max-width:1080px){.feat-grid{grid-template-columns:1fr !important;gap:12px}}
 
         /* ---- Testimonials ---- */
-        @media(max-width:768px){.testi-grid{grid-template-columns:1fr !important;gap:12px}}
+        @media(max-width:1080px){.testi-grid{grid-template-columns:1fr !important;gap:12px}}
 
         /* ---- Stats bar ---- */
         @media(max-width:768px){
@@ -1227,7 +1228,7 @@ export default function App() {
         }
 
         /* ---- Pricing grid ---- */
-        @media(max-width:768px){.price-grid{grid-template-columns:1fr !important;gap:12px}}
+        @media(max-width:1080px){.price-grid{grid-template-columns:1fr !important;gap:12px}}
 
         /* ---- Footer ---- */
         @media(max-width:768px){
@@ -1240,6 +1241,33 @@ export default function App() {
         @media(max-width:768px){
           section{padding-left:16px !important;padding-right:16px !important}
           .sec-title{font-size:clamp(20px,6vw,30px) !important}
+        }
+
+        /* ---- Floating Feedback Button ---- */
+        .floating-feedback-btn{
+          position:fixed;
+          bottom:24px;
+          left:24px;
+          z-index:180;
+          display:flex;
+          align-items:center;
+          gap:8px;
+          padding:10px 16px;
+          background:var(--dark);
+          color:var(--green);
+          border:2px solid var(--green);
+          border-radius:50px;
+          box-shadow:0 6px 18px rgba(0,0,0,0.3);
+          font-family:var(--font-mono);
+          font-size:12px;
+          font-weight:800;
+          cursor:pointer;
+          transition:transform 0.15s,box-shadow 0.15s;
+        }
+        .floating-feedback-btn:hover{transform:translateY(-2px);box-shadow:0 8px 22px rgba(0,0,0,0.4)}
+        .floating-feedback-btn .l5-pill{font-size:9px;padding:2px 6px;border-radius:10px;background:var(--green);color:var(--dark);font-weight:900}
+        @media(max-width:1080px){
+          .floating-feedback-btn{bottom:14px !important;left:14px !important;padding:7px 12px !important;font-size:11px !important;gap:6px !important;box-shadow:0 4px 12px rgba(0,0,0,0.25) !important}
         }
 
         /* ---- Marketplace layout ---- */
@@ -2466,38 +2494,12 @@ export default function App() {
       {/* Floating Level 5 Feedback Button */}
       <button
         onClick={() => setShowFeedbackModal(true)}
-        style={{
-          position: 'fixed',
-          bottom: '24px',
-          left: '24px',
-          zIndex: 180,
-          display: 'flex',
-          alignItems: 'center',
-          gap: '8px',
-          padding: '10px 16px',
-          background: 'var(--dark)',
-          color: 'var(--green)',
-          border: '2px solid var(--green)',
-          borderRadius: '50px',
-          boxShadow: '0 6px 18px rgba(0,0,0,0.3)',
-          fontFamily: 'var(--font-mono)',
-          fontSize: '12px',
-          fontWeight: 800,
-          cursor: 'pointer',
-          transition: 'transform 0.15s, box-shadow 0.15s',
-        }}
+        className="floating-feedback-btn"
         title="Submit structured feedback for Level 5 Preprod evaluation"
       >
         <span style={{ fontSize: '15px' }}>💬</span>
         <span>Feedback Loop</span>
-        <span style={{
-          fontSize: '9px',
-          padding: '2px 6px',
-          borderRadius: '10px',
-          background: 'var(--green)',
-          color: 'var(--dark)',
-          fontWeight: 900
-        }}>L5</span>
+        <span className="l5-pill">L5</span>
       </button>
 
       {/* ── FEEDBACK MODAL (LEVEL 5 FULL MOON) ── */}
