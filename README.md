@@ -4,10 +4,21 @@
 
 VeilBid is the first NFT marketplace built on the [Midnight Network](https://midnight.network) where bids, bidder identities, and trading strategies are fully private — verified by Zero-Knowledge proofs.
 
+[![Level 5 Full Moon](https://img.shields.io/badge/Midnight%20Hackathon-Level%205%20Full%20Moon-F59E0B?style=for-the-badge&logo=moon)](docs/LEVEL_5_SUBMISSION.md)
+![Network](https://img.shields.io/badge/Network-Midnight%20Preprod-10b981?style=for-the-badge)
+![Preprod Contract](https://img.shields.io/badge/Contract-42bb41cd...-8b5cf6?style=for-the-badge)
 [![CI/CD](https://github.com/Thanos0s/VeilBid_Midnight/actions/workflows/ci.yml/badge.svg)](https://github.com/Thanos0s/VeilBid_Midnight/actions)
-![Network](https://img.shields.io/badge/Network-Midnight%20Preview-8b5cf6?style=for-the-badge)
-![Contract](https://img.shields.io/badge/Contract-b39e69c5...-10b981?style=for-the-badge)
 [![X Profile](https://img.shields.io/badge/X-@Veil__Bid-1DA1F2?style=for-the-badge&logo=x)](https://x.com/Veil_Bid)
+
+---
+
+## 🌕 Level 5 — Full Moon Submission Highlights
+
+VeilBid has achieved the **Level 5 — Full Moon** milestone!
+- 🚀 **50 Preprod Users Onboarded & Verified**: Full directory of 50 verifiable wallet addresses across 4 cohorts in [`docs/PREPROD_USERS.md`](docs/PREPROD_USERS.md).
+- 🔄 **Living Feedback Loop**: Structured user feedback collection, prioritization matrix, and code iteration log in [`docs/FEEDBACK_LOOP.md`](docs/FEEDBACK_LOOP.md).
+- 🏆 **Submission Dossier**: Master checklist alignment and verification references in [`docs/LEVEL_5_SUBMISSION.md`](docs/LEVEL_5_SUBMISSION.md).
+- 🛠️ **In-App Feedback Widget**: Users can submit live feedback and ratings directly inside the dApp.
 
 ---
 
@@ -15,7 +26,7 @@ VeilBid is the first NFT marketplace built on the [Midnight Network](https://mid
 
 > **[🚀 Open VeilBid Live App →](https://veilbid-kappa.vercel.app)**
 
-Connect your [1AM Wallet](https://1am.space) on **Midnight Preview Network**, browse the marketplace, and place a real sealed ZK bid — all verifiable on-chain.
+Connect your [1AM Wallet](https://1am.space) on **Midnight Preprod Network** (or Preview), browse the marketplace, deploy autonomous AI trading bots, and place real sealed ZK bids — all verifiable on-chain.
 
 ---
 
@@ -23,33 +34,37 @@ Connect your [1AM Wallet](https://1am.space) on **Midnight Preview Network**, br
 
 | Network | Contract Address | Indexer / Explorer |
 |---|---|---|
-| **Preprod** (Default) | `42bb41cdbf156cccef4b9800c0c7818b1dab80655156564ebc5a18be7495c4d3` |(https://preprod.midnightexplorer.com/contracts/0x42bb41cdbf156cccef4b9800c0c7818b1dab80655156564ebc5a18be7495c4d3)|
+| **Preprod** (Default) | `42bb41cdbf156cccef4b9800c0c7818b1dab80655156564ebc5a18be7495c4d3` | [View on Midnight Preprod Explorer](https://preprod.midnightexplorer.com/contracts/0x42bb41cdbf156cccef4b9800c0c7818b1dab80655156564ebc5a18be7495c4d3) |
 | **Preview** | `b39e69c51dfd27d63f8e0e489b86e33669e701a7cae83f6248fb220f985924b4` | [View on Midnight Preview Explorer](https://preview.midnightexplorer.com/contracts/0xb39e69c51dfd27d63f8e0e489b86e33669e701a7cae83f6248fb220f985924b4) |
 
 - **Preprod Indexer:** `https://indexer.preprod.midnight.network/api/v4/graphql`
 - **Preprod Node:** `https://rpc.preprod.midnight.network`
 - **Contract Source:** [`contracts/auction.compact`](contracts/auction.compact)
 
-> **Note**: The default network has been updated to **Midnight Preprod Network**. Dual-network switching is fully supported via the network dropdown in the top-right of the web app.
+> **Note**: The default network is **Midnight Preprod Network**. Dual-network switching is fully supported via the network dropdown in the top-right of the web app.
 
 ---
 
 ## 📹 Demo Video
 
-Watch the full 5-minute live MVP demo:
+Watch the full live MVP demo:
 
 - 🎬 **[Watch VeilBid MVP Demo on Google Drive →](https://drive.google.com/file/d/1LB1p27jzefUPYO13GZWGl7IbReox2sNF/view?usp=sharing)**
 - 🐦 **[Follow @Veil_Bid on X →](https://x.com/Veil_Bid)**
 
 ---
 
-## 📖 Documentation
+## 📖 Documentation Suite
 
 | Document | Description |
 |---|---|
-| [README.md](README.md) | Project overview, setup, and architecture |
+| [docs/LEVEL_5_SUBMISSION.md](docs/LEVEL_5_SUBMISSION.md) | **Master Level 5 Full Moon Submission Dossier & Checklist** |
+| [docs/PREPROD_USERS.md](docs/PREPROD_USERS.md) | **Directory of 50 verified Preprod users and on-chain proofs** |
+| [docs/FEEDBACK_LOOP.md](docs/FEEDBACK_LOOP.md) | **Structured user feedback loop, prioritization & iteration log** |
+| [README.md](README.md) | Project overview, architecture, and developer setup |
 | [docs/USAGE.md](docs/USAGE.md) | Step-by-step user guide (non-technical) |
-| [contracts/auction.compact](contracts/auction.compact) | ZK auction smart contract source |
+| [PROPOSAL.md](PROPOSAL.md) | Comprehensive product definition and ZK privacy model |
+| [contracts/auction.compact](contracts/auction.compact) | ZK auction compact smart contract source |
 
 ---
 
