@@ -5,6 +5,8 @@ export default function App() {
   const {
     isConnected,
     isConnecting,
+    isContractLoading,
+    contractError,
     unshieldedAddress,
     error: walletError,
     contract,
@@ -18,6 +20,15 @@ export default function App() {
   // View state: 'landing' vs 'marketplace'
   const [viewMode, setViewMode] = useState<'landing' | 'marketplace'>('landing');
   const [navOpen, setNavOpen] = useState(false);
+  const [showNetworkMenu, setShowNetworkMenu] = useState(false);
+
+  useEffect(() => {
+    const handleClose = () => setShowNetworkMenu(false);
+    if (showNetworkMenu) {
+      window.addEventListener('click', handleClose);
+      return () => window.removeEventListener('click', handleClose);
+    }
+  }, [showNetworkMenu]);
 
   // Modals & UI state
   const [showWalletModal, setShowWalletModal] = useState(false);
@@ -171,16 +182,158 @@ export default function App() {
     }, 2800);
 
     const demoContents = [
-      { title: '🔑 Connect your Wallet', desc: 'Link your 1AM wallet to VeilBid. Your identity is shielded from the very first step using Midnight\'s dual-state privacy layer.', tag: '🌙 Midnight Preview Network' },
-      { title: '🔒 Seal Your Bid Amount', desc: 'Enter your bid amount privately. It\'s stored as a zero-knowledge witness — cryptographically hidden from every other participant.', tag: '🔒 ZK Witness Generated' },
-      { title: '⚡ ZK Proof Generated', desc: 'The Midnight Network generates a zero-knowledge proof verifying your bid is valid, above reserve, without revealing the actual amount.', tag: '✅ Proof Verified On-Chain' },
-      { title: '🏆 Private Settlement', desc: 'When the auction closes, the winner is determined. Losing bids are sealed permanently — no one learns what anyone else bid.', tag: '🏆 Winner Announced' },
-      { title: '🤖 AI Agent Trading', desc: 'Deploy an autonomous AI agent that bids on your behalf. Your strategy, budget, and identity remain completely private.', tag: '🤖 Strategy: Private' },
-      { title: '👛 My Collection', desc: 'All NFTs you\'ve purchased appear in your private wallet. Your collection is stored locally — only you can see what you own.', tag: '🔐 Private Ownership' },
+      {
+        step: 1,
+        icon: '🔑',
+        title: 'Connect Your 1AM Wallet',
+        subtitle: 'Zero-Knowledge Identity Initialization',
+        desc: 'Link your 1AM wallet to VeilBid. Your on-chain identity and Cardano balance are completely shielded using Midnight’s dual-state ZK architecture.',
+        status: 'Moonlight / Preprod',
+        tag: '🌙 Midnight Network',
+        shieldText: 'Shielded State Active',
+        zkAction: 'Initializing wallet keypair...',
+        metrics: [
+          { label: 'IDENTITY', val: 'Shielded (1AM)', highlight: false },
+          { label: 'ZK WITNESS', val: 'Initialized', highlight: true },
+          { label: 'WALLET EXPOSURE', val: '0.00% Public', highlight: false }
+        ]
+      },
+      {
+        step: 2,
+        icon: '🔒',
+        title: 'Seal Your Private Bid',
+        subtitle: 'Cryptographic Witness Generation',
+        desc: 'Enter any bid privately. The exact tNIGHT amount is converted into an off-chain zero-knowledge witness — mathematically unreadable to competitors and sellers.',
+        status: 'Witness Locked',
+        tag: '🔒 ZK Witness Created',
+        shieldText: 'Bid Amount Confidential',
+        zkAction: 'Encrypting witness commitment...',
+        metrics: [
+          { label: 'BID VALUE', val: '●●●●●● (Hidden)', highlight: false },
+          { label: 'CIRCUIT STATE', val: 'Compact Contract', highlight: true },
+          { label: 'MEV PROTECTION', val: '100% Protected', highlight: false }
+        ]
+      },
+      {
+        step: 3,
+        icon: '⚡',
+        title: 'ZK Proof Verified On-Chain',
+        subtitle: 'Halo2 / SNARK Non-Interactive Proof',
+        desc: 'Midnight Network compiles a succinct zero-knowledge proof verifying that your bid exceeds reserve and complies with contract constraints, revealing zero values.',
+        status: 'Proof Valid',
+        tag: '✅ Proof Verified',
+        shieldText: 'Succinct & Non-Interactive',
+        zkAction: 'Verifying proof constraints...',
+        metrics: [
+          { label: 'PROOF SYSTEM', val: 'Midnight zk-SNARK', highlight: false },
+          { label: 'VERIFICATION', val: 'Passed On-Chain', highlight: true },
+          { label: 'PROVING LATENCY', val: '~1.1s Client-Side', highlight: false }
+        ]
+      },
+      {
+        step: 4,
+        icon: '🏆',
+        title: 'Blind Auction Settlement',
+        subtitle: 'Fair Second-Price or Highest-Bid Resolution',
+        desc: 'When the timer expires, the contract evaluates the highest valid proof. Only the winning payout is settled — losing bids remain sealed on-chain forever.',
+        status: 'Settled Privately',
+        tag: '🏆 Winner Determined',
+        shieldText: 'Losing Bids Never Revealed',
+        zkAction: 'Resolving private escrow...',
+        metrics: [
+          { label: 'WINNER STATE', val: 'Proof Selected', highlight: false },
+          { label: 'LOSING BIDS', val: 'Permanently Sealed', highlight: true },
+          { label: 'PUBLIC REVEAL', val: 'Zero Info Leaked', highlight: false }
+        ]
+      },
+      {
+        step: 5,
+        icon: '🤖',
+        title: 'Autonomous AI Agent Bidding',
+        subtitle: 'Private Hedging & Strategy Execution',
+        desc: 'Deploy an autonomous AI agent with custom spending ceilings and sniper thresholds. Your strategy parameters execute via private smart contract functions.',
+        status: 'AI Daemon Active',
+        tag: '🤖 Policy Hash Locked',
+        shieldText: 'Autonomous Execution',
+        zkAction: 'Evaluating optimal bid curve...',
+        metrics: [
+          { label: 'AGENT LOGIC', val: 'Sniper / Value', highlight: false },
+          { label: 'POLICY HASH', val: '0x8f2a...c391', highlight: true },
+          { label: 'FRONT-RUN RISK', val: '0% Structural', highlight: false }
+        ]
+      },
+      {
+        step: 6,
+        icon: '👛',
+        title: 'Private Vault & Ownership',
+        subtitle: 'Encrypted NFT Assets in Keystore',
+        desc: 'All NFTs acquired through VeilBid settle directly into your private collection. View proofs of authenticity without public blockchain trackers indexing your portfolio.',
+        status: 'Vault Encrypted',
+        tag: '🔐 Private Keystore',
+        shieldText: 'Unindexable Portfolio',
+        zkAction: 'Updating local vault index...',
+        metrics: [
+          { label: 'OWNERSHIP PROOF', val: 'Valid & Verified', highlight: false },
+          { label: 'PORTFOLIO', val: '100% Confidential', highlight: true },
+          { label: 'TRANSFER PRIVACY', val: 'Dual-State ZK', highlight: false }
+        ]
+      }
     ];
 
     let activeTab = 0;
     let tabTimer: ReturnType<typeof setInterval>;
+
+    const renderDemoHtml = (d: typeof demoContents[0]) => `
+      <div class="demo-window-bar">
+        <div class="demo-window-dots">
+          <span class="d-dot dot-red"></span>
+          <span class="d-dot dot-yellow"></span>
+          <span class="d-dot dot-green"></span>
+        </div>
+        <div class="demo-window-title">veilbid://engine/zk-privacy-pipeline</div>
+        <div class="demo-window-step">STEP 0${d.step} / 06</div>
+      </div>
+      <div class="demo-inner">
+        <div class="demo-card">
+          <div class="demo-card-top">
+            <span class="demo-step-badge">STEP 0${d.step}</span>
+            <span class="demo-status-pill"><span class="demo-status-dot"></span>${d.status}</span>
+          </div>
+          <div class="demo-card-header">
+            <div class="demo-icon-box">${d.icon}</div>
+            <div>
+              <h3 class="demo-card-title">${d.title}</h3>
+              <div class="demo-card-subtitle">${d.subtitle}</div>
+            </div>
+          </div>
+          <p class="demo-card-desc">${d.desc}</p>
+          <div class="demo-metrics-grid">
+            ${d.metrics.map(m => `
+              <div class="demo-metric-box">
+                <span class="d-metric-lbl">${m.label}</span>
+                <span class="d-metric-val ${m.highlight ? 'highlight' : ''}">${m.val}</span>
+              </div>
+            `).join('')}
+          </div>
+          <div class="demo-card-footer">
+            <span class="demo-tag-pill">${d.tag}</span>
+            <span class="demo-shield-badge">🛡️ ${d.shieldText}</span>
+          </div>
+        </div>
+        <div class="zk-popup">
+          <div class="zk-popup-header">
+            <span class="zk-pulse-dot"></span>
+            <span class="zk-popup-title">ZK PROVER DAEMON</span>
+          </div>
+          <div class="zk-popup-status">
+            <span>${d.zkAction}</span><span class="cursor"></span>
+          </div>
+          <div class="zk-popup-bar-wrap">
+            <div class="zk-popup-bar"></div>
+          </div>
+        </div>
+      </div>
+    `;
 
     const activateTab = (idx: number) => {
       document.querySelectorAll('.ftab').forEach(t => t.classList.remove('active'));
@@ -190,18 +343,7 @@ export default function App() {
       const d = demoContents[idx];
       const preview = document.getElementById('demo-preview');
       if (preview) {
-        preview.innerHTML = `
-          <div className="demo-inner">
-            <div className="demo-card">
-              <h3>${d.title}</h3>
-              <p>${d.desc}</p>
-              <span className="demo-tag">${d.tag}</span>
-            </div>
-            <div className="zk-popup">
-              Processing ZK proof<span className="cursor"></span>
-              <div className="zk-popup-bar"></div>
-            </div>
-          </div>`;
+        preview.innerHTML = renderDemoHtml(d);
       }
     };
 
@@ -260,7 +402,11 @@ export default function App() {
     }
 
     if (!contract || !contract.callTx) {
-      alert('Midnight contract instance is not loaded. Try reconnecting your wallet.');
+      if (isContractLoading) {
+        alert(`Midnight contract instance is still initializing on ${networkName.toUpperCase()}... Please wait a moment and try again.`);
+      } else {
+        alert(`Midnight contract instance is not loaded on ${networkName.toUpperCase()}: ${contractError || 'Unable to connect to contract'}. Try switching network (Preprod/Preview) or reconnecting your wallet.`);
+      }
       return;
     }
 
@@ -406,15 +552,16 @@ export default function App() {
         html{scroll-behavior:smooth}
         body{font-family:var(--font-sans);background:var(--cream);color:var(--dark);overflow-x:hidden;-webkit-font-smoothing:antialiased}
         .grid-bg{background-color:var(--cream);background-image:linear-gradient(to right,rgba(120,100,80,.1) 1px,transparent 1px),linear-gradient(to bottom,rgba(120,100,80,.1) 1px,transparent 1px);background-size:24px 24px}
-        nav{position:sticky;top:0;z-index:200;display:flex;align-items:center;justify-content:space-between;height:56px;padding:0 20px;background:var(--cream);border-bottom:1.5px solid var(--dark);animation:slideDown .4s ease-out}
+        nav{position:sticky;top:0;z-index:200;display:flex;align-items:center;justify-content:space-between;height:56px;padding:0 16px;background:var(--cream);border-bottom:1.5px solid var(--dark);animation:slideDown .4s ease-out;max-width:100vw;box-sizing:border-box}
         @keyframes slideDown{from{transform:translateY(-100%);opacity:0}to{transform:translateY(0);opacity:1}}
-        .nav-logo{display:flex;align-items:center;gap:10px;font-weight:900;font-size:15px;letter-spacing:-.01em;text-decoration:none;color:var(--dark)}
+        .nav-logo{display:flex;align-items:center;gap:10px;font-weight:900;font-size:15px;letter-spacing:-.01em;text-decoration:none;color:var(--dark);flex-shrink:0}
         .logo-box{width:32px;height:32px;border:2px solid var(--dark);border-radius:7px;overflow:hidden;display:flex;align-items:center;justify-content:center;background:#fff;flex-shrink:0}
         .logo-box img{width:100%;height:100%;object-fit:cover}
-        .nav-links{display:flex;align-items:center;gap:4px}
-        .nav-links button,.nav-links a{padding:7px 12px;font-size:13px;font-weight:600;color:#5a5a5a;text-decoration:none;border-radius:6px;transition:color .15s,background .15s;background:none;border:none;cursor:pointer;font-family:inherit}
+        .nav-links{display:flex;align-items:center;gap:4px;flex-wrap:nowrap}
+        .nav-marketing{display:inline-flex;align-items:center;gap:2px}
+        .nav-links button,.nav-links a{padding:6px 10px;font-size:12.5px;font-weight:600;color:#5a5a5a;text-decoration:none;border-radius:6px;transition:color .15s,background .15s;background:none;border:none;cursor:pointer;font-family:inherit;white-space:nowrap}
         .nav-links button:hover,.nav-links a:hover{color:var(--dark);background:rgba(0,0,0,.05)}
-        .nav-cta{display:inline-flex;align-items:center;gap:6px;padding:9px 18px;font-size:13px;font-weight:800;background:var(--green);color:var(--dark);border:var(--border);border-radius:6px;box-shadow:var(--shadow);cursor:pointer;text-decoration:none;transition:all .15s}
+        .nav-cta{display:inline-flex;align-items:center;gap:6px;padding:7px 14px;font-size:12px;font-weight:800;background:var(--green);color:var(--dark);border:var(--border);border-radius:6px;box-shadow:var(--shadow);cursor:pointer;text-decoration:none;transition:all .15s;white-space:nowrap;flex-shrink:0}
         .nav-cta:hover{transform:translate(-1px,-1px);box-shadow:var(--shadow-lg)}
         .nav-cta:active{transform:translate(2px,2px);box-shadow:none}
 
@@ -477,29 +624,394 @@ export default function App() {
         .how-title{font-family:var(--font-serif);font-size:clamp(32px,5vw,52px);font-weight:400;line-height:1.05;letter-spacing:-.015em;text-align:center;margin-bottom:16px;color:var(--dark)}
         .how-title em{font-style:italic;color:var(--purple)}
         .how-sub{text-align:center;font-size:15px;font-weight:500;color:#5F5A51;line-height:1.7;max-width:540px;margin:0 auto 56px}
-        .how-layout{display:grid;grid-template-columns:400px 1fr;gap:24px;max-width:1200px;margin:0 auto;padding:0 24px;align-items:start}
-        .feature-tabs{display:flex;flex-direction:column;gap:8px}
-        .ftab{display:grid;grid-template-columns:52px 1fr;align-items:center;gap:14px;padding:14px;border-radius:10px;border:2px solid var(--dark);background:#fff;cursor:pointer;text-align:left;transition:all .15s;position:relative;overflow:hidden}
-        .ftab.active{background:var(--green);box-shadow:var(--shadow)}
-        .ftab:not(.active):hover{background:rgba(0,0,0,.03)}
-        .ftab-icon{width:44px;height:44px;border:2px solid var(--dark);border-radius:7px;background:#fff;display:flex;align-items:center;justify-content:center;font-size:18px;box-shadow:2px 2px 0 #0a0a0a;flex-shrink:0}
-        .ftab-title{font-size:14px;font-weight:700;letter-spacing:-.005em;color:var(--dark);line-height:1.25;display:block}
-        .ftab-desc{font-size:12.5px;font-weight:400;color:#5a5a5a;margin-top:3px;display:block}
-        .ftab-progress{position:absolute;bottom:0;left:0;height:3px;background:var(--dark);transform:scaleX(0);transform-origin:left}
-        .ftab.active .ftab-progress{animation:tabProg 5s linear forwards}
+        .how-layout{display:grid;grid-template-columns:420px 1fr;gap:28px;max-width:1200px;margin:0 auto;padding:0 24px;align-items:start}
+        .feature-tabs{display:flex;flex-direction:column;gap:10px}
+        .ftab{
+          display:grid;
+          grid-template-columns:50px 1fr;
+          align-items:center;
+          gap:14px;
+          padding:14px 16px;
+          border-radius:12px;
+          border:2px solid var(--dark);
+          background:#fff;
+          cursor:pointer;
+          text-align:left;
+          transition:all .18s cubic-bezier(0.16, 1, 0.3, 1);
+          position:relative;
+          overflow:hidden;
+          box-shadow:2.5px 2.5px 0 rgba(10,10,10,0.12);
+        }
+        .ftab:hover{
+          transform:translate(-2px,-2px);
+          box-shadow:var(--shadow);
+          background:#fff;
+        }
+        .ftab.active{
+          background:var(--green);
+          box-shadow:var(--shadow-lg);
+          transform:translate(-2px,-2px);
+        }
+        .ftab-icon{
+          width:46px;
+          height:46px;
+          border:2px solid var(--dark);
+          border-radius:10px;
+          background:#fff;
+          display:flex;
+          align-items:center;
+          justify-content:center;
+          font-size:22px;
+          box-shadow:2.5px 2.5px 0 #0a0a0a;
+          flex-shrink:0;
+          transition:transform .18s;
+        }
+        .ftab:hover .ftab-icon{
+          transform:scale(1.05);
+        }
+        .ftab.active .ftab-icon{
+          background:#fff;
+          box-shadow:3px 3px 0 #0a0a0a;
+        }
+        .ftab-content{
+          display:flex;
+          flex-direction:column;
+          gap:3px;
+          min-width:0;
+        }
+        .ftab-header{
+          display:flex;
+          align-items:center;
+          justify-content:space-between;
+          gap:8px;
+        }
+        .ftab-title{
+          font-size:14.5px;
+          font-weight:800;
+          letter-spacing:-.01em;
+          color:var(--dark);
+          line-height:1.25;
+        }
+        .ftab-num{
+          font-family:var(--font-mono);
+          font-size:10px;
+          font-weight:800;
+          letter-spacing:.05em;
+          padding:2px 6px;
+          border-radius:4px;
+          background:#f0ece1;
+          color:#6b645b;
+          border:1px solid rgba(10,10,10,0.15);
+          flex-shrink:0;
+        }
+        .ftab.active .ftab-num{
+          background:var(--dark);
+          color:var(--green);
+          border-color:var(--dark);
+        }
+        .ftab-desc{
+          font-size:12.5px;
+          font-weight:500;
+          color:#57534e;
+          line-height:1.45;
+          transition:color .15s;
+        }
+        .ftab.active .ftab-desc{
+          color:#1c1917;
+          font-weight:600;
+        }
+        .ftab-progress{
+          position:absolute;
+          bottom:0;
+          left:0;
+          height:3.5px;
+          background:var(--dark);
+          transform:scaleX(0);
+          transform-origin:left;
+        }
+        .ftab.active .ftab-progress{
+          animation:tabProg 5s linear forwards;
+        }
         @keyframes tabProg{from{transform:scaleX(0)}to{transform:scaleX(1)}}
-        .demo-preview{border:2px solid var(--dark);border-radius:4px;background:#fff;box-shadow:var(--shadow-lg);overflow:hidden;min-height:440px;position:relative}
-        .demo-inner{width:100%;height:100%;min-height:440px;display:flex;align-items:center;justify-content:center;background:#f8f5ef;flex-direction:column;gap:20px;padding:28px;position:relative}
-        .demo-card{width:100%;background:#fff;border:1.5px solid #ddd;border-radius:10px;padding:24px;animation:fadeUp .35s ease-out}
+        .demo-preview{
+          border: 2px solid var(--dark);
+          border-radius: 12px;
+          background: #faf8f5;
+          box-shadow: var(--shadow-lg);
+          overflow: hidden;
+          display: flex;
+          flex-direction: column;
+          min-height: 460px;
+          position: relative;
+        }
+        .demo-window-bar{
+          display: flex;
+          align-items: center;
+          justify-content: space-between;
+          padding: 10px 16px;
+          background: #f0ece1;
+          border-bottom: 2px solid var(--dark);
+          user-select: none;
+        }
+        .demo-window-dots{
+          display: flex;
+          gap: 6px;
+          align-items: center;
+        }
+        .d-dot{
+          width: 10px;
+          height: 10px;
+          border-radius: 50%;
+          border: 1.5px solid var(--dark);
+          display: inline-block;
+        }
+        .dot-red{background:#ff5f56}
+        .dot-yellow{background:#ffbd2e}
+        .dot-green{background:#27c93f}
+        .demo-window-title{
+          font-family: var(--font-mono);
+          font-size: 11.5px;
+          font-weight: 700;
+          color: #5a554a;
+          letter-spacing: .02em;
+        }
+        .demo-window-step{
+          font-family: var(--font-mono);
+          font-size: 10.5px;
+          font-weight: 800;
+          background: var(--green);
+          border: 1.5px solid var(--dark);
+          padding: 2px 8px;
+          border-radius: 4px;
+          box-shadow: 1.5px 1.5px 0 #0a0a0a;
+          color: var(--dark);
+        }
+        .demo-inner{
+          width: 100%;
+          flex: 1;
+          display: flex;
+          flex-direction: column;
+          justify-content: space-between;
+          background: #faf8f5;
+          padding: 24px;
+          position: relative;
+          gap: 16px;
+        }
+        .demo-card{
+          width: 100%;
+          background: #fff;
+          border: 2px solid var(--dark);
+          border-radius: 12px;
+          padding: 22px;
+          box-shadow: 4px 4px 0 #0a0a0a;
+          animation: fadeUp .35s ease-out;
+          position: relative;
+        }
         @keyframes fadeUp{from{transform:translateY(12px);opacity:0}to{transform:translateY(0);opacity:1}}
-        .demo-card h3{font-size:16px;font-weight:700;margin-bottom:10px}
-        .demo-card p{font-size:13.5px;font-weight:400;color:#5a5a5a;line-height:1.7}
-        .demo-tag{display:inline-flex;align-items:center;gap:6px;margin-top:14px;padding:6px 12px;background:var(--green);border:1.5px solid var(--dark);border-radius:6px;font-size:12px;font-weight:700}
-        .zk-popup{position:absolute;bottom:40px;right:30px;background:#fff;border:1.5px solid #ddd;border-radius:10px;padding:14px 16px;font-size:12px;color:#333;box-shadow:0 4px 20px rgba(0,0,0,.12);max-width:200px;animation:popIn .4s ease-out}
-        .zk-popup-bar{margin-top:8px;height:3px;border-radius:2px;background:linear-gradient(to right,var(--purple),#a78bfa);animation:loading 1.5s ease-in-out infinite alternate}
-        @keyframes loading{from{width:20%}to{width:90%}}
-        @keyframes popIn{from{transform:scale(.8) translateY(10px);opacity:0}to{transform:scale(1) translateY(0);opacity:1}}
-        .cursor{display:inline-block;width:2px;height:1em;background:var(--dark);margin-left:1px;animation:blink .8s step-end infinite;vertical-align:middle}
+        .demo-card-top{
+          display: flex;
+          align-items: center;
+          justify-content: space-between;
+          margin-bottom: 14px;
+          flex-wrap: wrap;
+          gap: 8px;
+        }
+        .demo-step-badge{
+          font-family: var(--font-mono);
+          font-size: 11px;
+          font-weight: 800;
+          letter-spacing: .06em;
+          padding: 4px 9px;
+          background: #f4f0e6;
+          border: 1.5px solid rgba(10,10,10,.2);
+          border-radius: 6px;
+          color: #4a453e;
+        }
+        .demo-status-pill{
+          display: inline-flex;
+          align-items: center;
+          gap: 6px;
+          font-size: 11px;
+          font-weight: 700;
+          background: #f0fdf4;
+          color: #15803d;
+          border: 1.5px solid #86efac;
+          border-radius: 20px;
+          padding: 3px 10px;
+          font-family: var(--font-mono);
+        }
+        .demo-status-dot{
+          width: 7px;
+          height: 7px;
+          border-radius: 50%;
+          background: #22c55e;
+          animation: pulse 1.8s infinite;
+        }
+        .demo-card-header{
+          display: flex;
+          align-items: center;
+          gap: 14px;
+          margin-bottom: 12px;
+        }
+        .demo-icon-box{
+          width: 46px;
+          height: 46px;
+          border: 2px solid var(--dark);
+          border-radius: 10px;
+          background: var(--green);
+          display: flex;
+          align-items: center;
+          justify-content: center;
+          font-size: 22px;
+          box-shadow: 2.5px 2.5px 0 #0a0a0a;
+          flex-shrink: 0;
+        }
+        .demo-card-title{
+          font-size: 18px;
+          font-weight: 800;
+          letter-spacing: -.01em;
+          color: var(--dark);
+          line-height: 1.2;
+          margin: 0;
+        }
+        .demo-card-subtitle{
+          font-size: 11.5px;
+          font-weight: 600;
+          color: #78716c;
+          margin-top: 2px;
+          text-transform: uppercase;
+          letter-spacing: .04em;
+          font-family: var(--font-mono);
+        }
+        .demo-card-desc{
+          font-size: 13.5px;
+          font-weight: 500;
+          color: #44403c;
+          line-height: 1.65;
+          margin-bottom: 18px;
+        }
+        .demo-metrics-grid{
+          display: grid;
+          grid-template-columns: repeat(3, 1fr);
+          gap: 8px;
+          margin-bottom: 16px;
+        }
+        .demo-metric-box{
+          background: #f8f6f0;
+          border: 1.5px solid rgba(10,10,10,.14);
+          border-radius: 8px;
+          padding: 8px 10px;
+          display: flex;
+          flex-direction: column;
+          gap: 2px;
+        }
+        .d-metric-lbl{
+          font-family: var(--font-mono);
+          font-size: 9px;
+          font-weight: 700;
+          color: #8c857b;
+          text-transform: uppercase;
+          letter-spacing: .05em;
+        }
+        .d-metric-val{
+          font-family: var(--font-mono);
+          font-size: 11.5px;
+          font-weight: 800;
+          color: var(--dark);
+          white-space: nowrap;
+          overflow: hidden;
+          text-overflow: ellipsis;
+        }
+        .d-metric-val.highlight{color:var(--purple)}
+        .demo-card-footer{
+          display: flex;
+          align-items: center;
+          justify-content: space-between;
+          border-top: 1.5px dashed rgba(10,10,10,.18);
+          padding-top: 12px;
+          flex-wrap: wrap;
+          gap: 8px;
+        }
+        .demo-tag-pill{
+          display: inline-flex;
+          align-items: center;
+          gap: 6px;
+          padding: 5px 12px;
+          background: var(--green);
+          border: 1.5px solid var(--dark);
+          border-radius: 6px;
+          font-size: 11.5px;
+          font-weight: 800;
+          color: var(--dark);
+          box-shadow: 2px 2px 0 #0a0a0a;
+        }
+        .demo-shield-badge{
+          display: inline-flex;
+          align-items: center;
+          gap: 5px;
+          font-size: 11px;
+          font-weight: 700;
+          color: #52525b;
+          font-family: var(--font-mono);
+        }
+        .zk-popup{
+          background: #0f0f14;
+          border: 2px solid var(--dark);
+          border-radius: 10px;
+          padding: 12px 16px;
+          color: #f4f4f5;
+          box-shadow: 3.5px 3.5px 0 var(--dark);
+          animation: popIn .4s ease-out;
+        }
+        .zk-popup-header{
+          display: flex;
+          align-items: center;
+          gap: 8px;
+          margin-bottom: 6px;
+        }
+        .zk-pulse-dot{
+          width: 7px;
+          height: 7px;
+          border-radius: 50%;
+          background: #22c55e;
+          box-shadow: 0 0 8px #22c55e;
+          animation: pulse 1.5s infinite;
+        }
+        .zk-popup-title{
+          font-family: var(--font-mono);
+          font-size: 10px;
+          font-weight: 800;
+          letter-spacing: .08em;
+          color: #a1a1aa;
+          text-transform: uppercase;
+        }
+        .zk-popup-status{
+          font-family: var(--font-mono);
+          font-size: 12px;
+          font-weight: 600;
+          color: #f4f4f5;
+          display: flex;
+          align-items: center;
+          gap: 2px;
+        }
+        .zk-popup-bar-wrap{
+          width: 100%;
+          height: 4px;
+          background: #27272a;
+          border-radius: 3px;
+          overflow: hidden;
+          margin-top: 8px;
+          border: 1px solid rgba(255,255,255,.08);
+        }
+        .zk-popup-bar{
+          height: 100%;
+          border-radius: 3px;
+          background: linear-gradient(90deg, var(--green) 0%, var(--purple) 50%, #38bdf8 100%);
+          animation: loading 2s ease-in-out infinite alternate;
+        }
+        @keyframes loading{from{width:20%}to{width:92%}}
+        @keyframes popIn{from{transform:scale(.95) translateY(6px);opacity:0}to{transform:scale(1) translateY(0);opacity:1}}
+        .cursor{display:inline-block;width:2px;height:1em;background:#22c55e;margin-left:2px;animation:blink .8s step-end infinite;vertical-align:middle}
         @keyframes blink{0%,100%{opacity:1}50%{opacity:0}}
 
         /* Features & Testimonials */
@@ -599,40 +1111,65 @@ export default function App() {
            ============================================= */
 
         /* ---- Nav desktop links hidden on mobile ---- */
-        .nav-links{display:flex;align-items:center;gap:4px}
-        @media(max-width:768px){.nav-links{display:none}}
+        .nav-links{display:flex;align-items:center;gap:4px;flex-wrap:nowrap}
+        .nav-marketing{display:inline-flex;align-items:center;gap:2px}
+        .nav-right{display:flex;align-items:center;gap:8px;flex-shrink:0}
+        @media(max-width:1250px){.nav-marketing{display:none !important}}
+        @media(max-width:960px){.nav-links{display:none !important}}
 
         /* ---- Mobile nav drawer ---- */
-        .nav-mobile-drawer{display:none;flex-direction:column;width:100%;border-top:1px solid rgba(0,0,0,0.08);padding:8px 0 12px;gap:4px;background:var(--cream)}
+        .nav-mobile-drawer{display:none;flex-direction:column;width:100%;border-top:1.5px solid var(--dark);padding:16px 18px 24px;gap:6px;background:var(--cream)}
         .nav-mobile-drawer.open{display:flex}
-        .nav-mobile-drawer button,.nav-mobile-drawer a{display:block;width:100%;text-align:left;padding:11px 14px;font-size:14px;font-weight:600;color:#444;background:none;border:none;border-radius:6px;cursor:pointer;font-family:inherit;text-decoration:none;transition:background .15s}
+        .nav-mobile-drawer button,.nav-mobile-drawer a{display:block;width:100%;text-align:left;padding:11px 14px;font-size:14px;font-weight:700;color:#222;background:none;border:none;border-radius:6px;cursor:pointer;font-family:inherit;text-decoration:none;transition:background .15s}
         .nav-mobile-drawer button:hover,.nav-mobile-drawer a:hover{background:rgba(0,0,0,0.06)}
         .nav-ham{display:none;background:none;border:none;cursor:pointer;font-size:22px;padding:4px 6px;line-height:1;color:var(--dark)}
-        @media(max-width:768px){.nav-ham{display:flex;align-items:center;justify-content:center}}
+        @media(max-width:960px){.nav-ham{display:flex;align-items:center;justify-content:center}}
 
         /* ---- Nav layout on mobile ---- */
-        @media(max-width:768px){
-          nav{height:auto;flex-wrap:wrap;padding:10px 14px;gap:0;align-items:center}
-          nav>a.nav-logo{flex:1}
-          nav>.nav-cta{font-size:11px;padding:7px 10px;gap:4px}
+        @media(max-width:960px){
+          nav{height:56px !important;padding:0 12px;flex-wrap:nowrap !important;align-items:center}
+          nav .nav-logo{font-size:13.5px;gap:6px}
+          nav .logo-box{width:28px;height:28px}
+          .nav-right{gap:6px}
+          .nav-cta{font-size:11px;padding:6px 10px;gap:4px}
+          .nav-mobile-drawer{
+            position:fixed;
+            top:56px;
+            left:0;
+            right:0;
+            bottom:0;
+            background:var(--cream);
+            border-top:1.5px solid var(--dark);
+            padding:16px 18px 32px;
+            z-index:250;
+            overflow-y:auto;
+            box-shadow:0 10px 30px rgba(0,0,0,0.25);
+          }
         }
 
-        /* ---- Hero ---- */
+        /* ---- Hero on mobile ---- */
         @media(max-width:768px){
-          .hero{padding:32px 16px 56px;min-height:auto}
-          .hero-inner{max-width:100%}
-          .hero-heading{font-size:clamp(36px,9vw,52px)}
-          .platform-line{font-size:clamp(26px,7vw,40px)}
-          .hero-sub{font-size:14px !important;line-height:1.6}
+          .hero{padding:24px 16px 40px;min-height:auto;overflow:hidden}
+          .hero-inner{max-width:100%;position:relative;z-index:5}
+          .deco{display:none !important}
+          .spin-badge{display:none !important}
+          .privacy-strip{font-size:11px;padding:5px 12px;margin-bottom:16px;white-space:normal;text-align:center}
+          .badge-row{gap:8px;margin-bottom:18px}
+          .badge-pill{padding:6px 10px;font-size:11px}
+          .hero-heading{font-size:clamp(32px,8.5vw,46px);margin-bottom:10px;line-height:1}
+          .platform-line{font-size:clamp(22px,6vw,30px);height:auto;margin-bottom:8px}
+          .hero-sub{font-size:13.5px !important;line-height:1.6;margin:12px auto 24px}
           .hero-btns{flex-direction:column;gap:10px;align-items:stretch}
-          .hero-btns a,.hero-btns button{width:100% !important;justify-content:center}
-          .badge-row{gap:8px}
-          .spin-badge{width:72px;height:72px;bottom:3%;right:2%}
+          .hero-btns a,.hero-btns button{width:100% !important;justify-content:center;padding:12px 20px;font-size:15px}
         }
 
         /* ---- How it works ---- */
         @media(max-width:768px){
           .how-layout{grid-template-columns:1fr !important;padding:0 16px}
+          .demo-inner{padding:16px !important}
+          .demo-card{padding:16px !important}
+          .demo-metrics-grid{grid-template-columns:1fr !important}
+          .demo-card-top{flex-direction:column;align-items:flex-start;gap:6px}
         }
 
         /* ---- Feature grid ---- */
@@ -715,27 +1252,172 @@ export default function App() {
         <div className="nav-links">
           <button onClick={() => setViewMode('landing')} style={{ background: viewMode === 'landing' ? 'rgba(0,0,0,0.08)' : 'none', fontWeight: viewMode === 'landing' ? 700 : 500 }}>Overview</button>
           <button onClick={() => setViewMode('marketplace')} style={{ background: viewMode === 'marketplace' ? 'var(--green)' : 'none', color: viewMode === 'marketplace' ? '#0a0a0a' : '#5a5a5a', border: viewMode === 'marketplace' ? '1.5px solid #0a0a0a' : 'none', fontWeight: 800 }}>🛒 Marketplace</button>
-          <a href="#features">Features ↓</a>
-          <a href="#how">How it works</a>
-          <a href="#pricing">Pricing</a>
-          <a href="https://github.com/Thanos0s/VeilBid_Midnight" target="_blank" rel="noreferrer">GitHub</a>
-          <button onClick={() => setShowDeployModal(true)} style={{ background: 'none', border: 'none', font: 'inherit', color: '#5a5a5a', cursor: 'pointer', padding: '7px 12px', fontSize: '13px', fontWeight: 500 }}>Deploy Auction</button>
-          <button onClick={() => { setSelectedAiAgent(aiAgentsList[0]); setShowDeployAiModal(true); }} style={{ background: 'var(--purple)', color: '#fff', border: '1.5px solid #0a0a0a', borderRadius: '6px', font: 'inherit', cursor: 'pointer', padding: '6px 12px', fontSize: '13px', fontWeight: 800, boxShadow: '2px 2px 0 #0a0a0a' }}>🤖 Deploy AI Agent</button>
-          <button onClick={() => setShowMyBidsModal(true)} style={{ background: 'var(--green)', color: '#0a0a0a', border: '1.5px solid #0a0a0a', borderRadius: '6px', font: 'inherit', cursor: 'pointer', padding: '6px 12px', fontSize: '13px', fontWeight: 800, boxShadow: '2px 2px 0 #0a0a0a' }}>👛 My Wallet & Bids</button>
+          
+          {viewMode === 'landing' && (
+            <span className="nav-marketing">
+              <a href="#features">Features ↓</a>
+              <a href="#how">How it works</a>
+              <a href="#pricing">Pricing</a>
+              <a href="https://github.com/Thanos0s/VeilBid_Midnight" target="_blank" rel="noreferrer">GitHub</a>
+            </span>
+          )}
+
+          <button onClick={() => setShowDeployModal(true)} style={{ background: 'none', border: 'none', font: 'inherit', color: '#5a5a5a', cursor: 'pointer', padding: '6px 9px', fontSize: '12.5px', fontWeight: 600 }}>🚀 Deploy</button>
+          <button onClick={() => { setSelectedAiAgent(aiAgentsList[0]); setShowDeployAiModal(true); }} style={{ background: 'var(--purple)', color: '#fff', border: '1.5px solid #0a0a0a', borderRadius: '6px', font: 'inherit', cursor: 'pointer', padding: '5px 10px', fontSize: '12px', fontWeight: 800, boxShadow: '2px 2px 0 #0a0a0a', whiteSpace: 'nowrap' }}>🤖 AI Agents</button>
+          <button onClick={() => setShowMyBidsModal(true)} style={{ background: 'var(--green)', color: '#0a0a0a', border: '1.5px solid #0a0a0a', borderRadius: '6px', font: 'inherit', cursor: 'pointer', padding: '5px 10px', fontSize: '12px', fontWeight: 800, boxShadow: '2px 2px 0 #0a0a0a', whiteSpace: 'nowrap' }}>👛 My Bids</button>
         </div>
 
-        {/* Wallet CTA — always visible */}
-        <button onClick={() => isConnected ? disconnectWallet() : setShowWalletModal(true)} className="nav-cta">
-          {isConnecting ? '⏳...' : isConnected ? `🔑 ${truncateAddr(unshieldedAddress)}` : '🔑 Connect'}
-        </button>
+        {/* Right CTA cluster: Unified Network/Contract Badge + Wallet CTA + Hamburger */}
+        <div className="nav-right">
+          {/* Unified Network & Contract Status Dropdown */}
+          <div style={{ position: 'relative' }} onClick={e => e.stopPropagation()}>
+            <button
+              onClick={() => setShowNetworkMenu(prev => !prev)}
+              style={{
+                display: 'inline-flex',
+                alignItems: 'center',
+                gap: '6px',
+                padding: '6px 10px',
+                background: '#fff',
+                border: '1.5px solid #0a0a0a',
+                borderRadius: '6px',
+                boxShadow: '2px 2px 0 #0a0a0a',
+                fontSize: '12px',
+                fontWeight: 800,
+                cursor: 'pointer',
+                whiteSpace: 'nowrap',
+              }}
+              title={`Network: ${networkName.toUpperCase()} — Click to switch`}
+            >
+              <span style={{
+                width: '8px',
+                height: '8px',
+                borderRadius: '50%',
+                background: isContractLoading ? '#F59E0B' : contract ? '#10B981' : '#EF4444',
+                boxShadow: contract ? '0 0 6px rgba(16,185,129,0.7)' : 'none',
+                flexShrink: 0,
+              }} />
+              <span>{networkName === 'preprod' ? 'Preprod' : 'Preview'}</span>
+              <span style={{ fontSize: '9px', opacity: 0.6 }}>▼</span>
+            </button>
 
-        {/* Hamburger — mobile only */}
-        <button className="nav-ham" aria-label="Toggle menu" onClick={() => setNavOpen(o => !o)}>
-          {navOpen ? '✕' : '☰'}
-        </button>
+            {showNetworkMenu && (
+              <div
+                style={{
+                  position: 'absolute',
+                  top: 'calc(100% + 6px)',
+                  right: 0,
+                  background: '#fff',
+                  border: '2px solid #0a0a0a',
+                  borderRadius: '8px',
+                  boxShadow: '3px 4px 0 #0a0a0a',
+                  padding: '8px',
+                  zIndex: 300,
+                  minWidth: '200px',
+                  display: 'flex',
+                  flexDirection: 'column',
+                  gap: '4px',
+                }}
+              >
+                <div style={{ fontSize: '10px', fontWeight: 800, color: '#888', textTransform: 'uppercase', padding: '4px 6px' }}>
+                  Select Network
+                </div>
+                <button
+                  onClick={() => { selectNetwork('preprod'); setShowNetworkMenu(false); }}
+                  style={{
+                    display: 'flex',
+                    alignItems: 'center',
+                    justifyContent: 'space-between',
+                    padding: '8px 10px',
+                    borderRadius: '5px',
+                    border: '1.5px solid',
+                    borderColor: networkName === 'preprod' ? '#0a0a0a' : 'transparent',
+                    background: networkName === 'preprod' ? 'var(--green)' : '#f9f9f9',
+                    fontSize: '12px',
+                    fontWeight: 800,
+                    cursor: 'pointer',
+                    color: '#0a0a0a',
+                  }}
+                >
+                  <span>● Preprod Network</span>
+                  {networkName === 'preprod' && <span>✓</span>}
+                </button>
+                <button
+                  onClick={() => { selectNetwork('preview'); setShowNetworkMenu(false); }}
+                  style={{
+                    display: 'flex',
+                    alignItems: 'center',
+                    justifyContent: 'space-between',
+                    padding: '8px 10px',
+                    borderRadius: '5px',
+                    border: '1.5px solid',
+                    borderColor: networkName === 'preview' ? '#0a0a0a' : 'transparent',
+                    background: networkName === 'preview' ? 'var(--green)' : '#f9f9f9',
+                    fontSize: '12px',
+                    fontWeight: 800,
+                    cursor: 'pointer',
+                    color: '#0a0a0a',
+                  }}
+                >
+                  <span>● Preview Network</span>
+                  {networkName === 'preview' && <span>✓</span>}
+                </button>
+                <div style={{ borderTop: '1.5px solid #eee', marginTop: '6px', paddingTop: '6px', fontSize: '11px', color: '#555', paddingLeft: '4px', display: 'flex', alignItems: 'center', gap: '6px' }}>
+                  <span style={{
+                    width: '7px',
+                    height: '7px',
+                    borderRadius: '50%',
+                    background: isContractLoading ? '#F59E0B' : contract ? '#10B981' : '#EF4444',
+                  }} />
+                  <span>Contract: <strong style={{ color: isContractLoading ? '#D97706' : contract ? '#059669' : '#DC2626' }}>
+                    {isContractLoading ? 'Binding Contract...' : contract ? 'Ready' : 'Not Loaded'}
+                  </strong></span>
+                </div>
+              </div>
+            )}
+          </div>
+
+          {/* Wallet CTA — always visible */}
+          <button
+            onClick={() => isConnected ? disconnectWallet() : setShowWalletModal(true)}
+            className="nav-cta"
+            title={isConnected ? `Connected: ${unshieldedAddress} (click to disconnect)` : 'Connect 1AM Wallet'}
+          >
+            {isConnecting ? '⏳...' : isConnected ? `🔑 ${truncateAddr(unshieldedAddress)}` : '🔑 Connect'}
+          </button>
+
+          {/* Hamburger — mobile only */}
+          <button className="nav-ham" aria-label="Toggle menu" onClick={() => setNavOpen(o => !o)}>
+            {navOpen ? '✕' : '☰'}
+          </button>
+        </div>
 
         {/* Mobile drawer */}
         <div className={`nav-mobile-drawer${navOpen ? ' open' : ''}`}>
+          <div style={{ display: 'flex', gap: '8px', marginBottom: '12px' }}>
+            <button
+              onClick={() => { selectNetwork('preprod'); setNavOpen(false); }}
+              style={{
+                flex: 1, padding: '8px', fontSize: '12px', fontWeight: 800,
+                background: networkName === 'preprod' ? 'var(--dark)' : '#fff',
+                color: networkName === 'preprod' ? '#fff' : '#0a0a0a',
+                border: '1.5px solid #0a0a0a', borderRadius: '6px'
+              }}
+            >
+              ● Preprod
+            </button>
+            <button
+              onClick={() => { selectNetwork('preview'); setNavOpen(false); }}
+              style={{
+                flex: 1, padding: '8px', fontSize: '12px', fontWeight: 800,
+                background: networkName === 'preview' ? 'var(--dark)' : '#fff',
+                color: networkName === 'preview' ? '#fff' : '#0a0a0a',
+                border: '1.5px solid #0a0a0a', borderRadius: '6px'
+              }}
+            >
+              ● Preview
+            </button>
+          </div>
           <button onClick={() => { setViewMode('landing'); setNavOpen(false); }} style={{ fontWeight: viewMode === 'landing' ? 800 : 600 }}>🏠 Overview</button>
           <button onClick={() => { setViewMode('marketplace'); setNavOpen(false); }} style={{ fontWeight: viewMode === 'marketplace' ? 800 : 600 }}>🛒 Marketplace</button>
           <a href="#features" onClick={() => setNavOpen(false)}>✨ Features</a>
@@ -804,17 +1486,128 @@ export default function App() {
             <p className="how-sub">One wallet connection puts zero-knowledge private auctions in your hands. Your bids stay sealed forever.</p>
             <div className="how-layout">
               <div className="feature-tabs" id="feature-tabs">
-                <button className="ftab active" data-idx="0"><div className="ftab-icon">🔑</div><span><span className="ftab-title">Connect your wallet</span><span className="ftab-desc">Link 1AM wallet to start bidding anonymously.</span></span><div className="ftab-progress"></div></button>
-                <button className="ftab" data-idx="1"><div className="ftab-icon">🔒</div><span><span className="ftab-title">Seal your bid amount</span><span className="ftab-desc">Your bid is hidden as a ZK witness. Nobody sees it.</span></span><div className="ftab-progress"></div></button>
-                <button className="ftab" data-idx="2"><div className="ftab-icon">⚡</div><span><span className="ftab-title">ZK proof generated</span><span className="ftab-desc">Proof verifies your bid is valid without revealing the amount.</span></span><div className="ftab-progress"></div></button>
-                <button className="ftab" data-idx="3"><div className="ftab-icon">🏆</div><span><span className="ftab-title">Private settlement</span><span className="ftab-desc">Winner revealed. Losing bids stay sealed forever.</span></span><div className="ftab-progress"></div></button>
-                <button className="ftab" data-idx="4"><div className="ftab-icon">🤖</div><span><span className="ftab-title">AI Agent trading</span><span className="ftab-desc">Let AI bid on your behalf, completely privately.</span></span><div className="ftab-progress"></div></button>
-                <button className="ftab" data-idx="5"><div className="ftab-icon">👛</div><span><span className="ftab-title">My Collection</span><span className="ftab-desc">View all your purchased NFTs in your private wallet.</span></span><div className="ftab-progress"></div></button>
+                <button className="ftab active" data-idx="0">
+                  <div className="ftab-icon">🔑</div>
+                  <div className="ftab-content">
+                    <div className="ftab-header">
+                      <span className="ftab-title">Connect your wallet</span>
+                      <span className="ftab-num">STEP 01</span>
+                    </div>
+                    <span className="ftab-desc">Link 1AM wallet to start bidding anonymously.</span>
+                  </div>
+                  <div className="ftab-progress"></div>
+                </button>
+                <button className="ftab" data-idx="1">
+                  <div className="ftab-icon">🔒</div>
+                  <div className="ftab-content">
+                    <div className="ftab-header">
+                      <span className="ftab-title">Seal your bid amount</span>
+                      <span className="ftab-num">STEP 02</span>
+                    </div>
+                    <span className="ftab-desc">Your bid is hidden as a ZK witness. Nobody sees it.</span>
+                  </div>
+                  <div className="ftab-progress"></div>
+                </button>
+                <button className="ftab" data-idx="2">
+                  <div className="ftab-icon">⚡</div>
+                  <div className="ftab-content">
+                    <div className="ftab-header">
+                      <span className="ftab-title">ZK proof generated</span>
+                      <span className="ftab-num">STEP 03</span>
+                    </div>
+                    <span className="ftab-desc">Proof verifies your bid is valid without revealing amount.</span>
+                  </div>
+                  <div className="ftab-progress"></div>
+                </button>
+                <button className="ftab" data-idx="3">
+                  <div className="ftab-icon">🏆</div>
+                  <div className="ftab-content">
+                    <div className="ftab-header">
+                      <span className="ftab-title">Private settlement</span>
+                      <span className="ftab-num">STEP 04</span>
+                    </div>
+                    <span className="ftab-desc">Winner revealed. Losing bids stay sealed forever.</span>
+                  </div>
+                  <div className="ftab-progress"></div>
+                </button>
+                <button className="ftab" data-idx="4">
+                  <div className="ftab-icon">🤖</div>
+                  <div className="ftab-content">
+                    <div className="ftab-header">
+                      <span className="ftab-title">AI Agent trading</span>
+                      <span className="ftab-num">STEP 05</span>
+                    </div>
+                    <span className="ftab-desc">Let AI bid on your behalf, completely privately.</span>
+                  </div>
+                  <div className="ftab-progress"></div>
+                </button>
+                <button className="ftab" data-idx="5">
+                  <div className="ftab-icon">👛</div>
+                  <div className="ftab-content">
+                    <div className="ftab-header">
+                      <span className="ftab-title">My Collection</span>
+                      <span className="ftab-num">STEP 06</span>
+                    </div>
+                    <span className="ftab-desc">View all your purchased NFTs in your private wallet.</span>
+                  </div>
+                  <div className="ftab-progress"></div>
+                </button>
               </div>
               <div className="demo-preview" id="demo-preview">
+                <div className="demo-window-bar">
+                  <div className="demo-window-dots">
+                    <span className="d-dot dot-red"></span>
+                    <span className="d-dot dot-yellow"></span>
+                    <span className="d-dot dot-green"></span>
+                  </div>
+                  <div className="demo-window-title">veilbid://engine/zk-privacy-pipeline</div>
+                  <div className="demo-window-step">STEP 01 / 06</div>
+                </div>
                 <div className="demo-inner">
-                  <div className="demo-card"><h3>🔑 Connect your Wallet</h3><p>Link your 1AM wallet to VeilBid. Your identity is shielded from the very first step using Midnight's dual-state privacy layer.</p><span className="demo-tag">🌙 Midnight Preview Network</span></div>
-                  <div className="zk-popup">Connecting 1AM wallet<span className="cursor"></span><div className="zk-popup-bar"></div></div>
+                  <div className="demo-card">
+                    <div className="demo-card-top">
+                      <span className="demo-step-badge">STEP 01</span>
+                      <span className="demo-status-pill"><span className="demo-status-dot"></span>Moonlight / Preprod</span>
+                    </div>
+                    <div className="demo-card-header">
+                      <div className="demo-icon-box">🔑</div>
+                      <div>
+                        <h3 className="demo-card-title">Connect Your 1AM Wallet</h3>
+                        <div className="demo-card-subtitle">Zero-Knowledge Identity Initialization</div>
+                      </div>
+                    </div>
+                    <p className="demo-card-desc">Link your 1AM wallet to VeilBid. Your on-chain identity and Cardano balance are completely shielded using Midnight’s dual-state ZK architecture.</p>
+                    <div className="demo-metrics-grid">
+                      <div className="demo-metric-box">
+                        <span className="d-metric-lbl">IDENTITY</span>
+                        <span className="d-metric-val">Shielded (1AM)</span>
+                      </div>
+                      <div className="demo-metric-box">
+                        <span className="d-metric-lbl">ZK WITNESS</span>
+                        <span className="d-metric-val highlight">Initialized</span>
+                      </div>
+                      <div className="demo-metric-box">
+                        <span className="d-metric-lbl">WALLET EXPOSURE</span>
+                        <span className="d-metric-val">0.00% Public</span>
+                      </div>
+                    </div>
+                    <div className="demo-card-footer">
+                      <span className="demo-tag-pill">🌙 Midnight Network</span>
+                      <span className="demo-shield-badge">🛡️ Shielded State Active</span>
+                    </div>
+                  </div>
+                  <div className="zk-popup">
+                    <div className="zk-popup-header">
+                      <span className="zk-pulse-dot"></span>
+                      <span className="zk-popup-title">ZK PROVER DAEMON</span>
+                    </div>
+                    <div className="zk-popup-status">
+                      <span>Initializing wallet keypair...</span><span className="cursor"></span>
+                    </div>
+                    <div className="zk-popup-bar-wrap">
+                      <div className="zk-popup-bar"></div>
+                    </div>
+                  </div>
                 </div>
               </div>
             </div>
@@ -1066,9 +1859,49 @@ export default function App() {
           <div className="modal-card" onClick={e => e.stopPropagation()}>
             <button className="modal-close" onClick={() => setShowWalletModal(false)}>✕</button>
             <h3 style={{ fontSize: '20px', fontWeight: 800, marginBottom: '8px' }}>Connect Midnight Wallet</h3>
-            <p style={{ fontSize: '13.5px', color: '#5a5a5a', marginBottom: '20px' }}>
+            <p style={{ fontSize: '13.5px', color: '#5a5a5a', marginBottom: '16px' }}>
               Connect your 1AM wallet to interact with VeilBid's Zero-Knowledge private auction smart contract.
             </p>
+
+            <div style={{ marginBottom: '16px' }}>
+              <label style={{ fontSize: '12px', fontWeight: 700, textTransform: 'uppercase', color: '#888', display: 'block', marginBottom: '6px' }}>
+                Select Network:
+              </label>
+              <div style={{ display: 'grid', gridTemplateColumns: '1fr 1fr', gap: '8px' }}>
+                <button
+                  type="button"
+                  onClick={() => selectNetwork('preprod')}
+                  style={{
+                    padding: '8px',
+                    borderRadius: '6px',
+                    border: '1.5px solid #0a0a0a',
+                    fontWeight: 800,
+                    fontSize: '12px',
+                    cursor: 'pointer',
+                    background: networkName === 'preprod' ? 'var(--dark)' : '#fff',
+                    color: networkName === 'preprod' ? '#fff' : '#0a0a0a',
+                  }}
+                >
+                  Preprod
+                </button>
+                <button
+                  type="button"
+                  onClick={() => selectNetwork('preview')}
+                  style={{
+                    padding: '8px',
+                    borderRadius: '6px',
+                    border: '1.5px solid #0a0a0a',
+                    fontWeight: 800,
+                    fontSize: '12px',
+                    cursor: 'pointer',
+                    background: networkName === 'preview' ? 'var(--dark)' : '#fff',
+                    color: networkName === 'preview' ? '#fff' : '#0a0a0a',
+                  }}
+                >
+                  Preview
+                </button>
+              </div>
+            </div>
 
             {walletError && (
               <div style={{ padding: '10px 12px', background: '#FEE2E2', border: '1px solid #EF4444', borderRadius: '6px', color: '#B91C1C', fontSize: '12.5px', marginBottom: '16px' }}>
@@ -1084,7 +1917,7 @@ export default function App() {
               className="btn-primary"
               style={{ width: '100%', justifyContent: 'center' }}
             >
-              <span>🌙 Connect 1AM Wallet</span>
+              <span>🌙 Connect 1AM Wallet ({networkName.toUpperCase()})</span>
             </button>
           </div>
         </div>
@@ -1142,6 +1975,24 @@ export default function App() {
               </div>
             ) : (
               <form onSubmit={handleBidSubmit}>
+                <div style={{
+                  display: 'flex',
+                  alignItems: 'center',
+                  justifyContent: 'space-between',
+                  padding: '8px 12px',
+                  borderRadius: '6px',
+                  background: isContractLoading ? '#FEF3C7' : contract ? '#D1FAE5' : '#FEE2E2',
+                  border: '1.5px solid #0a0a0a',
+                  marginBottom: '16px',
+                  fontSize: '12px',
+                  fontWeight: 700
+                }}>
+                  <span>Network: <strong>{networkName.toUpperCase()}</strong></span>
+                  <span style={{ color: isContractLoading ? '#92400E' : contract ? '#065F46' : '#991B1B' }}>
+                    {isContractLoading ? '⏳ Initializing Contract...' : contract ? '● Contract Ready' : '⚠ Contract Not Loaded'}
+                  </span>
+                </div>
+
                 <label style={{ fontSize: '12px', fontWeight: 700, textTransform: 'uppercase', color: '#888' }}>
                   Bid Amount (tNIGHT)
                 </label>

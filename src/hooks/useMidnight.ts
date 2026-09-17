@@ -44,6 +44,8 @@ const getStoredNetwork = (): NetworkName => {
 export interface WalletState {
   isConnected: boolean;
   isConnecting: boolean;
+  isContractLoading: boolean;
+  contractError: string | null;
   unshieldedAddress: string | null;
   shieldedAddress: string | null;
   walletName: string | null;
@@ -58,6 +60,19 @@ export interface WalletState {
 
 // ── Browser-native ZkConfigProvider ──
 class BrowserZkConfigProvider {
+  private publicDataProvider?: any;
+  private contractAddress?: string | null;
+
+  constructor(publicDataProvider?: any, contractAddress?: string | null) {
+    this.publicDataProvider = publicDataProvider;
+    this.contractAddress = contractAddress;
+  }
+
+  setContractContext(publicDataProvider: any, contractAddress: string) {
+    this.publicDataProvider = publicDataProvider;
+    this.contractAddress = contractAddress;
+  }
+
   async getZKIR(circuitId: string): Promise<any> {
     const res = await fetch(`/managed/zkir/${circuitId}.bzkir`);
     if (!res.ok) throw new Error(`Failed to fetch ZKIR for ${circuitId}`);
@@ -71,13 +86,34 @@ class BrowserZkConfigProvider {
   }
 
   async getVerifierKey(circuitId: string): Promise<any> {
+    if (this.publicDataProvider && this.contractAddress) {
+      try {
+        const state = await this.publicDataProvider.queryContractState(this.contractAddress);
+        const onChainVk = state?.operation?.(circuitId)?.verifierKey;
+        if (onChainVk) return onChainVk;
+      } catch (e) {
+        console.warn(`Could not fetch on-chain verifier key for ${circuitId}, falling back to static file:`, e);
+      }
+    }
     const res = await fetch(`/managed/keys/${circuitId}.verifier`);
     if (!res.ok) throw new Error(`Failed to fetch verifier key for ${circuitId}`);
     return new Uint8Array(await res.arrayBuffer());
   }
 
   async getVerifierKeys(circuitIds: string[]): Promise<[string, any][]> {
-    return Promise.all(circuitIds.map(async (id): Promise<[string, any]> => [id, await this.getVerifierKey(id)]));
+    let state: any = null;
+    if (this.publicDataProvider && this.contractAddress) {
+      try {
+        state = await this.publicDataProvider.queryContractState(this.contractAddress);
+      } catch (e) {
+        console.warn('Failed to query contract state for verifier keys:', e);
+      }
+    }
+    return Promise.all(circuitIds.map(async (id): Promise<[string, any]> => {
+      const onChainVk = state?.operation?.(id)?.verifierKey;
+      if (onChainVk) return [id, onChainVk];
+      return [id, await this.getVerifierKey(id)];
+    }));
   }
 
   async get(circuitId: string) {
@@ -144,7 +180,7 @@ const browserPrivateStateProvider = {
 };
 
 // ── Build contract providers from wallet API ──
-async function buildProviders(api: any, networkConfig: typeof NETWORK_CONFIGS['preprod']) {
+async function buildProviders(api: any, networkConfig: typeof NETWORK_CONFIGS['preprod'], contractAddress?: string) {
   const [
     { indexerPublicDataProvider },
     { httpClientProofProvider },
@@ -159,8 +195,8 @@ async function buildProviders(api: any, networkConfig: typeof NETWORK_CONFIGS['p
     import('@midnight-ntwrk/ledger-v8'),
   ]);
 
-  const zkConfigProvider = new BrowserZkConfigProvider();
   const publicDataProvider = indexerPublicDataProvider(networkConfig.indexer, networkConfig.indexerWS);
+  const zkConfigProvider = new BrowserZkConfigProvider(publicDataProvider, contractAddress);
   const proofProvider = (typeof api.getProvingProvider === 'function')
     ? createProofProvider(await api.getProvingProvider(zkConfigProvider.asKeyMaterialProvider()))
     : httpClientProofProvider(networkConfig.proofServer, zkConfigProvider);
@@ -196,6 +232,8 @@ export const useMidnight = () => {
   const [state, setState] = useState<WalletState>({
     isConnected: false,
     isConnecting: false,
+    isContractLoading: false,
+    contractError: null,
     unshieldedAddress: null,
     shieldedAddress: null,
     walletName: null,
@@ -210,7 +248,7 @@ export const useMidnight = () => {
     setNetworkNameState(name);
     localStorage.setItem('veilbid_network', name);
     setState({
-      isConnected: false, isConnecting: false, unshieldedAddress: null,
+      isConnected: false, isConnecting: false, isContractLoading: false, contractError: null, unshieldedAddress: null,
       shieldedAddress: null, walletName: null, error: null, contract: null, balances: null,
     });
     localStorage.removeItem('veilbid_wallet_connected');
@@ -241,6 +279,8 @@ export const useMidnight = () => {
         ...prev,
         isConnected: true,
         isConnecting: false,
+        isContractLoading: true,
+        contractError: null,
         unshieldedAddress: uAddr,
         shieldedAddress: sAddr,
         walletName,
@@ -267,7 +307,9 @@ export const useMidnight = () => {
         // ✅ Set network to preprod/preview dynamically
         setNetworkId(networkName);
 
-        const providers = await buildProviders(api, activeConfig);
+        // ✅ Use per-network stored address, fall back to hardcoded default
+        const contractAddress = localStorage.getItem(`veilbid_contract_address_${networkName}`) || activeConfig.contractAddress;
+        const providers = await buildProviders(api, activeConfig, contractAddress);
 
         // ✅ Contract name matches auction.compact compiled output
         const compiledContract = CompiledContract.make('auction', VeilBidContract.Contract as any).pipe(
@@ -277,8 +319,6 @@ export const useMidnight = () => {
           (CompiledContract.withCompiledFileAssets as any)('/managed')
         );
 
-        // ✅ Use per-network stored address, fall back to hardcoded default
-        const contractAddress = localStorage.getItem(`veilbid_contract_address_${networkName}`) || activeConfig.contractAddress;
         let instance: any = null;
         if (contractAddress) {
           const realInstance = await findDeployedContract(providers as any, {
@@ -291,14 +331,16 @@ export const useMidnight = () => {
           instance = realInstance;
         }
 
-        setState(prev => ({ ...prev, contract: instance }));
+        setState(prev => ({ ...prev, contract: instance, isContractLoading: false, contractError: null }));
       } catch (e: any) {
-        console.error('Contract binding failed:', e.message);
+        console.error('Contract binding failed:', e);
+        setState(prev => ({ ...prev, contract: null, isContractLoading: false, contractError: e.message || 'Contract binding failed' }));
       }
     } catch (e: any) {
       setState(prev => ({
         ...prev,
         isConnecting: false,
+        isContractLoading: false,
         error: e.message || 'Failed to connect wallet',
       }));
     }
@@ -354,7 +396,7 @@ export const useMidnight = () => {
 
   const disconnectWallet = useCallback(() => {
     setState({
-      isConnected: false, isConnecting: false, unshieldedAddress: null,
+      isConnected: false, isConnecting: false, isContractLoading: false, contractError: null, unshieldedAddress: null,
       shieldedAddress: null, walletName: null, error: null, contract: null, balances: null,
     });
     localStorage.removeItem('veilbid_wallet_connected');
