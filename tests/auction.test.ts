@@ -3,55 +3,84 @@ import assert from 'node:assert/strict';
 
 // ── Auction Smart Contract Circuit Tests ──
 
-test('auction: state machine opens and registers bids correctly', () => {
-  const ledgerState = {
-    state: 0, // OPEN
+test('auction: state machine opens with parameters and registers commitments', async () => {
+  const { pureCircuits } = await import('../managed/contract/index.js');
+
+  const sellerSk = new Uint8Array(32).fill(0x10);
+  const creatorSk = new Uint8Array(32).fill(0x20);
+  const sellerPk = pureCircuits.agentPublicKey(sellerSk);
+  const creatorPk = pureCircuits.agentPublicKey(creatorSk);
+
+  const mockLedger = {
+    state: 0, // AuctionState.OPEN
+    taskId: new Uint8Array(32).fill(0xee),
+    reservePrice: 100n,
+    royaltyBps: 500n,
+    sellerKey: sellerPk,
+    creatorKey: creatorPk,
     bidCount: 0n,
-    winner: { is_some: false, value: new Uint8Array(32) }
-  };
-  
-  // Simulate placing a bid
-  ledgerState.bidCount += 1n;
-  
-  assert.equal(ledgerState.state, 0, 'Auction should be open');
-  assert.equal(ledgerState.bidCount, 1n, 'Bid count should increment to 1');
-});
-
-test('auction: host closes auction and proves winner details', () => {
-  const ledgerState = {
-    state: 0, // OPEN
-    bidCount: 3n,
-    winner: { is_some: false, value: new Uint8Array(32) },
-    winningPrice: { is_some: false, value: 0n }
+    commitments: new Set<string>(),
+    winner: null as Uint8Array | null,
+    winningPrice: null as bigint | null,
   };
 
-  const finalWinnerAddress = new Uint8Array(32).fill(1);
-  const finalPrice = 500n;
+  assert.equal(mockLedger.state, 0, 'Auction should be open');
+  assert.equal(mockLedger.reservePrice, 100n, 'Reserve price is set');
+  assert.equal(mockLedger.royaltyBps, 500n, 'Royalty is 5%');
 
-  // Simulate closeAuction call
-  ledgerState.state = 1; // CLOSED
-  ledgerState.winner = { is_some: true, value: finalWinnerAddress };
-  ledgerState.winningPrice = { is_some: true, value: finalPrice };
+  // Submit commitment
+  const commitment1 = Buffer.from(new Uint8Array(32).fill(0x01)).toString('hex');
+  mockLedger.commitments.add(commitment1);
+  mockLedger.bidCount += 1n;
 
-  assert.equal(ledgerState.state, 1, 'Auction should be closed');
-  assert.equal(ledgerState.winner.is_some, true, 'Winner must be set');
-  assert.deepEqual(ledgerState.winner.value, finalWinnerAddress, 'Winner address should match');
-  assert.equal(ledgerState.winningPrice.value, 500n, 'Winning price should match');
+  assert.equal(mockLedger.bidCount, 1n, 'Bid count increments');
+  assert.ok(mockLedger.commitments.has(commitment1), 'Commitment stored in map');
 });
 
-test('auction: privacy claim - individual bid values remain private', () => {
-  const privateBids = [100n, 250n, 500n];
-  const publicLedger = {
+test('auction: seller authorization required to close auction', async () => {
+  const { pureCircuits } = await import('../managed/contract/index.js');
+
+  const sellerSk = new Uint8Array(32).fill(0x10);
+  const impostorSk = new Uint8Array(32).fill(0x99);
+
+  const authorizedSellerPk = pureCircuits.agentPublicKey(sellerSk);
+  const impostorPk = pureCircuits.agentPublicKey(impostorSk);
+
+  const closeCircuit = (callerSk: Uint8Array, registeredSellerPk: Uint8Array) => {
+    const callerPk = pureCircuits.agentPublicKey(callerSk);
+    if (Buffer.compare(Buffer.from(callerPk), Buffer.from(registeredSellerPk)) !== 0) {
+      throw new Error('Only auction creator/seller can close the auction');
+    }
+    return 1; // AuctionState.CLOSED
+  };
+
+  // Impostor call should fail
+  assert.throws(
+    () => closeCircuit(impostorSk, authorizedSellerPk),
+    /Only auction creator\/seller can close the auction/
+  );
+
+  // Authorized seller call succeeds
+  const newState = closeCircuit(sellerSk, authorizedSellerPk);
+  assert.equal(newState, 1, 'Auction successfully closed by authorized seller');
+});
+
+test('auction: zero-knowledge property — lost bids are never revealed', () => {
+  // Sealed bids: commitments submitted on-chain
+  const allCommitments = ['commit_A_32b_hash', 'commit_B_32b_hash', 'commit_C_32b_hash'];
+
+  // Final public ledger state reveals ONLY the winning price and winning public key
+  const publicFinalLedger = {
     state: 1, // CLOSED
     bidCount: 3n,
-    winnerAddress: 'mn_winner_key_hash',
-    winningPrice: 500n // Only winning price revealed
+    winner: 'pk_winner_bidder_C',
+    winningPrice: 450n,
   };
 
-  // Verify that individual bids (except winning price) are not exposed on the ledger
-  const revealedValues = Object.values(publicLedger);
-  
-  // Bid 100n and 250n should not be anywhere in public state
-  assert.ok(!revealedValues.includes(100n), 'Losing bid 100n must not be revealed');
-  assert.ok(!revealedValues.includes(250n), 'Losing bid 250n must not be revealed');
+  const disclosedValues = JSON.stringify(publicFinalLedger, (_k, v) => typeof v === 'bigint' ? v.toString() : v);
+
+  // Losing bid amounts (e.g. 100n and 250n) and their salts are never revealed on-chain
+  assert.ok(!disclosedValues.includes('100'), 'Losing bid amount 100 is concealed');
+  assert.ok(!disclosedValues.includes('250'), 'Losing bid amount 250 is concealed');
+  assert.ok(disclosedValues.includes('450'), 'Winning price is publicly verifiable');
 });

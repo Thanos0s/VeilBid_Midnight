@@ -1,6 +1,6 @@
 node_modules/
 dist/
-managed/
+/managed/
 .env
 .env.local
 *.log

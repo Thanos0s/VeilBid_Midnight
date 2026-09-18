@@ -1,16 +1,22 @@
 import { Buffer } from 'buffer';
 if (typeof window !== 'undefined') {
-  (window as any).Buffer = Buffer;
+  (window as unknown as { Buffer: typeof Buffer }).Buffer = Buffer;
 }
 if (typeof globalThis !== 'undefined') {
-  (globalThis as any).Buffer = Buffer;
+  (globalThis as unknown as { Buffer: typeof Buffer }).Buffer = Buffer;
 }
 
 import { useState, useCallback, useEffect } from 'react';
+import type {
+  NetworkName,
+  WalletBalances,
+  WalletState,
+  ContractInstance,
+  PublicDataProvider,
+  BidReceipt
+} from '../types/auction';
 
 // ── Network Configurations (Preprod + Preview) ──
-type NetworkName = 'preprod' | 'preview';
-
 const NETWORK_CONFIGS: Record<NetworkName, {
   indexer: string;
   indexerWS: string;
@@ -23,7 +29,7 @@ const NETWORK_CONFIGS: Record<NetworkName, {
     indexerWS: 'wss://indexer.preprod.midnight.network/api/v4/graphql/ws',
     node: 'https://rpc.preprod.midnight.network',
     proofServer: 'http://localhost:6300',
-    // Live VeilBid contract deployed on Preprod via 1AM wallet (2026-08-18)
+    // Live VeilBid contract deployed on Preprod
     contractAddress: '42bb41cdbf156cccef4b9800c0c7818b1dab80655156564ebc5a18be7495c4d3',
   },
   preview: {
@@ -40,52 +46,34 @@ const getStoredNetwork = (): NetworkName => {
   return val === 'preprod' || val === 'preview' ? val : 'preprod';
 };
 
-// ── Types ──
-export interface WalletState {
-  isConnected: boolean;
-  isConnecting: boolean;
-  isContractLoading: boolean;
-  contractError: string | null;
-  unshieldedAddress: string | null;
-  shieldedAddress: string | null;
-  walletName: string | null;
-  error: string | null;
-  contract: any | null;
-  balances: {
-    unshieldedNight: bigint;
-    shieldedNight: bigint;
-    dust: bigint;
-  } | null;
-}
-
 // ── Browser-native ZkConfigProvider ──
 class BrowserZkConfigProvider {
-  private publicDataProvider?: any;
+  private publicDataProvider?: PublicDataProvider;
   private contractAddress?: string | null;
 
-  constructor(publicDataProvider?: any, contractAddress?: string | null) {
+  constructor(publicDataProvider?: PublicDataProvider, contractAddress?: string | null) {
     this.publicDataProvider = publicDataProvider;
     this.contractAddress = contractAddress;
   }
 
-  setContractContext(publicDataProvider: any, contractAddress: string) {
+  setContractContext(publicDataProvider: PublicDataProvider, contractAddress: string) {
     this.publicDataProvider = publicDataProvider;
     this.contractAddress = contractAddress;
   }
 
-  async getZKIR(circuitId: string): Promise<any> {
+  async getZKIR(circuitId: string): Promise<Uint8Array> {
     const res = await fetch(`/managed/zkir/${circuitId}.bzkir`);
     if (!res.ok) throw new Error(`Failed to fetch ZKIR for ${circuitId}`);
     return new Uint8Array(await res.arrayBuffer());
   }
 
-  async getProverKey(circuitId: string): Promise<any> {
+  async getProverKey(circuitId: string): Promise<Uint8Array> {
     const res = await fetch(`/managed/keys/${circuitId}.prover`);
     if (!res.ok) throw new Error(`Failed to fetch prover key for ${circuitId}`);
     return new Uint8Array(await res.arrayBuffer());
   }
 
-  async getVerifierKey(circuitId: string): Promise<any> {
+  async getVerifierKey(circuitId: string): Promise<Uint8Array> {
     if (this.publicDataProvider && this.contractAddress) {
       try {
         const state = await this.publicDataProvider.queryContractState(this.contractAddress);
@@ -100,18 +88,8 @@ class BrowserZkConfigProvider {
     return new Uint8Array(await res.arrayBuffer());
   }
 
-  async getVerifierKeys(circuitIds: string[]): Promise<[string, any][]> {
-    let state: any = null;
-    if (this.publicDataProvider && this.contractAddress) {
-      try {
-        state = await this.publicDataProvider.queryContractState(this.contractAddress);
-      } catch (e) {
-        console.warn('Failed to query contract state for verifier keys:', e);
-      }
-    }
-    return Promise.all(circuitIds.map(async (id): Promise<[string, any]> => {
-      const onChainVk = state?.operation?.(id)?.verifierKey;
-      if (onChainVk) return [id, onChainVk];
+  async getVerifierKeys(circuitIds: string[]): Promise<[string, Uint8Array][]> {
+    return Promise.all(circuitIds.map(async (id): Promise<[string, Uint8Array]> => {
       return [id, await this.getVerifierKey(id)];
     }));
   }
@@ -137,10 +115,10 @@ class BrowserZkConfigProvider {
 // ── Browser Private State Provider (localStorage) ──
 const browserPrivateStateProvider = {
   contractAddress: null as string | null,
-  setContractAddress: function(address: any) {
+  setContractAddress: function(address: string | null) {
     this.contractAddress = address;
   },
-  get: async function(key: string) {
+  get: async function(key: string): Promise<unknown> {
     const val = localStorage.getItem(`veilbid_state_${this.contractAddress || 'default'}_${key}`);
     if (!val) return null;
     return JSON.parse(val, (k, v) => {
@@ -149,17 +127,17 @@ const browserPrivateStateProvider = {
       return v;
     });
   },
-  set: async function(key: string, val: any) {
+  set: async function(key: string, val: unknown): Promise<void> {
     const serialized = JSON.stringify(val, (_k, v) => {
       if (typeof v === 'bigint') return { type: 'BigInt', value: v.toString() };
       return v;
     });
     localStorage.setItem(`veilbid_state_${this.contractAddress || 'default'}_${key}`, serialized);
   },
-  remove: async function(key: string) {
+  remove: async function(key: string): Promise<void> {
     localStorage.removeItem(`veilbid_state_${this.contractAddress || 'default'}_${key}`);
   },
-  clear: async function() {
+  clear: async function(): Promise<void> {
     const prefix = `veilbid_state_${this.contractAddress || 'default'}_`;
     const keysToRemove: string[] = [];
     for (let i = 0; i < localStorage.length; i++) {
@@ -168,19 +146,30 @@ const browserPrivateStateProvider = {
     }
     for (const key of keysToRemove) localStorage.removeItem(key);
   },
-  setSigningKey: async function(address: any, signingKey: any) {
+  setSigningKey: async function(address: string, signingKey: string): Promise<void> {
     localStorage.setItem(`veilbid_signing_key_${address}`, signingKey);
   },
-  getSigningKey: async function(address: any) {
+  getSigningKey: async function(address: string): Promise<string | null> {
     return localStorage.getItem(`veilbid_signing_key_${address}`);
   },
-  removeSigningKey: async function(address: any) {
+  removeSigningKey: async function(address: string): Promise<void> {
     localStorage.removeItem(`veilbid_signing_key_${address}`);
   },
 };
 
+interface WalletDAppAPI {
+  getUnshieldedAddress: () => Promise<{ unshieldedAddress: string }>;
+  getShieldedAddresses: () => Promise<{ shieldedAddress: string; shieldedCoinPublicKey: string; shieldedEncryptionPublicKey: string }>;
+  getUnshieldedBalances: () => Promise<Record<string, bigint>>;
+  getShieldedBalances: () => Promise<Record<string, bigint>>;
+  getDustBalance: () => Promise<{ balance: bigint }>;
+  balanceUnsealedTransaction: (txHex: string) => Promise<{ tx: string }>;
+  submitTransaction: (txHex: string) => Promise<string>;
+  getProvingProvider?: (keyMaterialProvider: unknown) => Promise<unknown>;
+}
+
 // ── Build contract providers from wallet API ──
-async function buildProviders(api: any, networkConfig: typeof NETWORK_CONFIGS['preprod'], contractAddress?: string) {
+async function buildProviders(api: WalletDAppAPI, networkConfig: typeof NETWORK_CONFIGS['preprod'], contractAddress?: string) {
   const [
     { indexerPublicDataProvider },
     { httpClientProofProvider },
@@ -196,10 +185,10 @@ async function buildProviders(api: any, networkConfig: typeof NETWORK_CONFIGS['p
   ]);
 
   const publicDataProvider = indexerPublicDataProvider(networkConfig.indexer, networkConfig.indexerWS);
-  const zkConfigProvider = new BrowserZkConfigProvider(publicDataProvider, contractAddress);
+  const zkConfigProvider = new BrowserZkConfigProvider(publicDataProvider as unknown as PublicDataProvider, contractAddress);
   const proofProvider = (typeof api.getProvingProvider === 'function')
-    ? createProofProvider(await api.getProvingProvider(zkConfigProvider.asKeyMaterialProvider()))
-    : httpClientProofProvider(networkConfig.proofServer, zkConfigProvider);
+    ? createProofProvider(await api.getProvingProvider(zkConfigProvider.asKeyMaterialProvider()) as Parameters<typeof createProofProvider>[0])
+    : httpClientProofProvider(networkConfig.proofServer, zkConfigProvider as unknown as Parameters<typeof httpClientProofProvider>[1]);
 
   const shieldedAddresses = await api.getShieldedAddresses();
 
@@ -211,14 +200,14 @@ async function buildProviders(api: any, networkConfig: typeof NETWORK_CONFIGS['p
     walletProvider: {
       getCoinPublicKey: () => shieldedAddresses.shieldedCoinPublicKey,
       getEncryptionPublicKey: () => shieldedAddresses.shieldedEncryptionPublicKey,
-      balanceTx: async (tx: any) => {
+      balanceTx: async (tx: { serialize: () => Uint8Array }) => {
         const txHex = toHex(tx.serialize());
         const balanced = await api.balanceUnsealedTransaction(txHex);
         return ledger.Transaction.deserialize('signature', 'proof', 'binding', fromHex(balanced.tx));
       }
     },
     midnightProvider: {
-      submitTx: async (tx: any) => {
+      submitTx: async (tx: { serialize: () => Uint8Array; identifiers: () => string[] }) => {
         await api.submitTransaction(toHex(tx.serialize()));
         return tx.identifiers()[0];
       }
@@ -255,7 +244,7 @@ export const useMidnight = () => {
     localStorage.removeItem('veilbid_wallet_id');
   }, []);
 
-  const setupConnection = useCallback(async (api: any, walletName: string) => {
+  const setupConnection = useCallback(async (api: WalletDAppAPI, walletName: string) => {
     try {
       const { unshieldedAddress: uAddr } = await api.getUnshieldedAddress();
       const { shieldedAddress: sAddr } = await api.getShieldedAddresses();
@@ -301,47 +290,43 @@ export const useMidnight = () => {
           import('@midnight-ntwrk/compact-js'),
           import('@midnight-ntwrk/midnight-js-contracts'),
           import('@midnight-ntwrk/midnight-js-network-id'),
-          import('../../public/managed/contract/index.js'),
+          import('../../managed/contract/index.js'),
         ]);
 
-        // ✅ Set network to preprod/preview dynamically
         setNetworkId(networkName);
 
-        // ✅ Use per-network stored address, fall back to hardcoded default
         const contractAddress = localStorage.getItem(`veilbid_contract_address_${networkName}`) || activeConfig.contractAddress;
         const providers = await buildProviders(api, activeConfig, contractAddress);
 
-        // ✅ Contract name matches auction.compact compiled output
-        const compiledContract = CompiledContract.make('auction', VeilBidContract.Contract as any).pipe(
-          (CompiledContract.withWitnesses as any)({
-            myBidAmount: (context: any) => [context.privateState, context.privateState.bidAmount],
-          }),
-          (CompiledContract.withCompiledFileAssets as any)('/managed')
+        const compiledContract = CompiledContract.make('auction', VeilBidContract.Contract).pipe(
+          CompiledContract.withWitnesses({}),
+          CompiledContract.withCompiledFileAssets('/managed')
         );
 
-        let instance: any = null;
+        let instance: ContractInstance | null = null;
         if (contractAddress) {
-          const realInstance = await findDeployedContract(providers as any, {
-            compiledContract: compiledContract as any,
+          const realInstance = await findDeployedContract(providers as unknown as Parameters<typeof findDeployedContract>[0], {
+            compiledContract: compiledContract as unknown as Parameters<typeof findDeployedContract>[1]['compiledContract'],
             contractAddress,
             privateStateId: 'veilbid-state',
             initialPrivateState: { secretKey: new Uint8Array(32), bidAmount: 0n },
           });
-          (realInstance as any).providers = providers;
-          instance = realInstance;
+          instance = realInstance as unknown as ContractInstance;
         }
 
         setState(prev => ({ ...prev, contract: instance, isContractLoading: false, contractError: null }));
-      } catch (e: any) {
-        console.error('Contract binding failed:', e);
-        setState(prev => ({ ...prev, contract: null, isContractLoading: false, contractError: e.message || 'Contract binding failed' }));
+      } catch (e: unknown) {
+        const err = e as Error;
+        console.error('Contract binding failed:', err);
+        setState(prev => ({ ...prev, contract: null, isContractLoading: false, contractError: err.message || 'Contract binding failed' }));
       }
-    } catch (e: any) {
+    } catch (e: unknown) {
+      const err = e as Error;
       setState(prev => ({
         ...prev,
         isConnecting: false,
         isContractLoading: false,
-        error: e.message || 'Failed to connect wallet',
+        error: err.message || 'Failed to connect wallet',
       }));
     }
   }, [networkName, activeConfig]);
@@ -352,13 +337,13 @@ export const useMidnight = () => {
       if (localStorage.getItem('veilbid_wallet_connected') !== 'true') return;
       const walletId = localStorage.getItem('veilbid_wallet_id');
       if (!walletId) return;
-      const walletEntry = (window as any).midnight?.[walletId];
+      const midnightObj = (window as unknown as { midnight?: Record<string, { connect?: (net: string) => Promise<WalletDAppAPI>; enable?: () => Promise<WalletDAppAPI> }> }).midnight;
+      const walletEntry = midnightObj?.[walletId];
       if (!walletEntry) return;
       try {
-        // ✅ Connect to the currently selected network (preprod or preview)
         const api = typeof walletEntry.connect === 'function'
           ? await walletEntry.connect(networkName)
-          : await walletEntry.enable();
+          : await walletEntry.enable!();
         await setupConnection(api, walletId);
       } catch {
         localStorage.removeItem('veilbid_wallet_connected');
@@ -372,24 +357,22 @@ export const useMidnight = () => {
   const connectWallet = useCallback(async (walletId?: string) => {
     setState(prev => ({ ...prev, isConnecting: true, error: null }));
     try {
-      const midnightObj = (window as any).midnight;
+      const midnightObj = (window as unknown as { midnight?: Record<string, { connect?: (net: string) => Promise<WalletDAppAPI>; enable?: () => Promise<WalletDAppAPI> }> }).midnight;
       if (!midnightObj) throw new Error('No Midnight wallet detected. Please install the 1AM wallet extension.');
 
       const targetId = walletId || '1AM';
-      const walletEntry = midnightObj[targetId] || Object.values(midnightObj).find(
-        (w: any) => typeof w?.connect === 'function' || typeof w?.enable === 'function'
-      ) as any;
+      const walletEntry = midnightObj[targetId] || Object.values(midnightObj)[0];
 
       if (!walletEntry) throw new Error('No compatible Midnight wallet found. Install the 1AM wallet.');
 
-      // ✅ Connect to the selected network (preprod or preview)
       const api = typeof walletEntry.connect === 'function'
         ? await walletEntry.connect(networkName)
-        : await walletEntry.enable();
+        : await walletEntry.enable!();
 
       await setupConnection(api, targetId);
-    } catch (e: any) {
-      setState(prev => ({ ...prev, isConnecting: false, error: e.message || 'Wallet connection failed' }));
+    } catch (e: unknown) {
+      const err = e as Error;
+      setState(prev => ({ ...prev, isConnecting: false, error: err.message || 'Wallet connection failed' }));
       localStorage.removeItem('veilbid_wallet_connected');
     }
   }, [setupConnection, networkName]);
@@ -403,17 +386,17 @@ export const useMidnight = () => {
     localStorage.removeItem('veilbid_wallet_id');
   }, []);
 
-  const deployVeilBid = useCallback(async (nftTokenId: string, royaltyBps: number) => {
+  const deployVeilBid = useCallback(async (nftTokenId: string, reservePrice: bigint, royaltyBps: number) => {
     setState(prev => ({ ...prev, isConnecting: true, error: null }));
     try {
       const walletId = localStorage.getItem('veilbid_wallet_id') || '1AM';
-      const walletEntry = (window as any).midnight?.[walletId];
+      const midnightObj = (window as unknown as { midnight?: Record<string, { connect?: (net: string) => Promise<WalletDAppAPI>; enable?: () => Promise<WalletDAppAPI> }> }).midnight;
+      const walletEntry = midnightObj?.[walletId];
       if (!walletEntry) throw new Error('Wallet not connected');
 
-      // ✅ Connect to selected network
       const api = typeof walletEntry.connect === 'function'
         ? await walletEntry.connect(networkName)
-        : await walletEntry.enable();
+        : await walletEntry.enable!();
 
       const [
         { CompiledContract },
@@ -424,58 +407,49 @@ export const useMidnight = () => {
         import('@midnight-ntwrk/compact-js'),
         import('@midnight-ntwrk/midnight-js-contracts'),
         import('@midnight-ntwrk/midnight-js-network-id'),
-        import('../../public/managed/contract/index.js'),
+        import('../../managed/contract/index.js'),
       ]);
 
-      // ✅ Use dynamic network ID
       setNetworkId(networkName);
       const providers = await buildProviders(api, activeConfig);
 
-      // ✅ Contract name matches auction.compact
-      const compiledContract = CompiledContract.make('auction', VeilBidContract.Contract as any).pipe(
-        (CompiledContract.withWitnesses as any)({
-          myBidAmount: (context: any) => [context.privateState, context.privateState.bidAmount],
-        }),
-        (CompiledContract.withCompiledFileAssets as any)('/managed')
+      const compiledContract = CompiledContract.make('auction', VeilBidContract.Contract).pipe(
+        CompiledContract.withWitnesses({}),
+        CompiledContract.withCompiledFileAssets('/managed')
       );
 
-      // Encode NFT token ID as 32 bytes
+      // 32-byte NFT token identifier
       const nftIdBytes = new Uint8Array(32);
       const encoded = new TextEncoder().encode(nftTokenId.substring(0, 32));
       nftIdBytes.set(encoded);
 
-      // Random creator key (wallet-derived in full impl)
+      // Creator and seller keys derived from random or wallet entropy
       const creatorKey = new Uint8Array(32);
+      const sellerKey = new Uint8Array(32);
       crypto.getRandomValues(creatorKey);
+      crypto.getRandomValues(sellerKey);
 
       console.log('[VeilBid Deploy] Starting deployment on', networkName, '...');
 
-      const deployed = await deployContract(providers as any, {
-        compiledContract: compiledContract as any,
+      // Deploy with full constructor arguments: id, minPrice, royaltyBasisPoints, creator, seller
+      const deployed = await deployContract(providers as unknown as Parameters<typeof deployContract>[0], {
+        compiledContract: compiledContract as unknown as Parameters<typeof deployContract>[1]['compiledContract'],
         privateStateId: 'veilbid-state',
         initialPrivateState: { secretKey: new Uint8Array(32), bidAmount: 0n },
-        args: [nftIdBytes],  // auction.compact constructor takes 1 arg: Bytes<32> id
+        args: [nftIdBytes, reservePrice, BigInt(royaltyBps), creatorKey, sellerKey],
       });
 
       const contractAddress = deployed.deployTxData.public.contractAddress;
       const txHash = deployed.deployTxData.public.txHash;
 
-      console.log('🎉 [VeilBid Deploy] CONTRACT DEPLOYED!');
-      console.log('📋 Contract Address:', contractAddress);
-      console.log('🔗 TX Hash:', txHash);
-      console.log('🌐 Network:', networkName);
-
-      // ✅ Store per-network contract address
       localStorage.setItem(`veilbid_contract_address_${networkName}`, contractAddress);
 
-      const instance = deployed;
-      (instance as any).providers = providers;
-
-      setState(prev => ({ ...prev, contract: instance, isConnecting: false, error: null }));
+      setState(prev => ({ ...prev, contract: deployed as unknown as ContractInstance, isConnecting: false, error: null }));
       return { contractAddress, txHash };
-    } catch (e: any) {
-      setState(prev => ({ ...prev, isConnecting: false, error: e.message || 'Deployment failed' }));
-      throw e;
+    } catch (e: unknown) {
+      const err = e as Error;
+      setState(prev => ({ ...prev, isConnecting: false, error: err.message || 'Deployment failed' }));
+      throw err;
     }
   }, [networkName, activeConfig]);
 

@@ -64,6 +64,7 @@ Watch the full live MVP demo:
 | [docs/PREPROD_USERS.md](docs/PREPROD_USERS.md) | **Directory of 50 verified Preprod users and on-chain proofs** |
 | [docs/FEEDBACK_LOOP.md](docs/FEEDBACK_LOOP.md) | **Structured user feedback loop, prioritization & iteration log** |
 | [README.md](README.md) | Project overview, architecture, and developer setup |
+| [docs/SECURITY.md](docs/SECURITY.md) | Security threat model, circuit proofs & audit checklist |
 | [docs/USAGE.md](docs/USAGE.md) | Step-by-step user guide (non-technical) |
 | [PROPOSAL.md](PROPOSAL.md) | Comprehensive product definition and ZK privacy model |
 | [contracts/auction.compact](contracts/auction.compact) | ZK auction compact smart contract source |
@@ -72,10 +73,11 @@ Watch the full live MVP demo:
 
 ## 🛡️ How It Works
 
-1. **Seal Your Bid** — Your bid amount is stored as a private ZK witness, never disclosed to anyone
-2. **ZK Proof On-Chain** — A zero-knowledge proof verifies your bid is valid without revealing the amount
-3. **Private Settlement** — The winner is determined using ZK proofs; all losing bids stay sealed forever
-4. **Artist Royalties** — Creators receive royalties automatically, enforced on-chain
+1. **Cryptographic Sealed Bids** — Bidders commit a cryptographic hash of their valuation and private salt `(pk, nonce, amount)`. Only the 32-byte commitment is registered on-chain.
+2. **Anti-Front-Running Auction Window** — Bid amounts remain concealed in Zero-Knowledge proofs; validators, miners, and competing bots cannot see amounts or front-run bids.
+3. **Verifiable Settlement** — When bids are revealed, the Compact circuit asserts that the commitment was registered on-chain, meets the reserve price, and mathematically selects the highest bidder.
+4. **Creator Royalty Apportionment** — Royalties are calculated on-chain via configurable basis points (e.g. 500 = 5%) with transparent settlement receipts and non-custodial payouts.
+5. **Private State Backup** — Users can export and import their secret salts and proving keys to guard against browser cache clearing.
 
 ---
 

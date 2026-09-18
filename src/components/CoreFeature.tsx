@@ -1,7 +1,8 @@
 import React from 'react';
+import type { ContractInstance } from '../types/auction';
 
 interface CoreFeatureProps {
-  contract: any;
+  contract: ContractInstance | null;
   isConnected: boolean;
 }
 
@@ -15,7 +16,9 @@ export const CoreFeature: React.FC<CoreFeatureProps> = ({ contract, isConnected 
       {!isConnected ? (
         <div style={{ color: '#f59e0b', fontSize: '13px' }}>⚠️ Connect your wallet to place bids.</div>
       ) : (
-        <div style={{ color: '#10b981', fontSize: '13px' }}>✓ Securely bound to Live preprod contract address.</div>
+        <div style={{ color: '#10b981', fontSize: '13px' }}>
+          ✓ Securely bound to Live contract address: {contract?.contractAddress ? `${contract.contractAddress.slice(0, 10)}...` : 'Preprod Active'}
+        </div>
       )}
     </div>
   );

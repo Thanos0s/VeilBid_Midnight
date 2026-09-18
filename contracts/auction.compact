@@ -7,41 +7,99 @@ export enum AuctionState {
   CLOSED
 }
 
-// Ledger state - all public on-chain
+export struct BidCommitment {
+  pk: Bytes<32>,
+  nonce: Bytes<32>,
+  amount: Uint<64>
+}
+
+// Public ledger state
 export ledger state: AuctionState;
 export ledger taskId: Bytes<32>;          // NFT token identifier
 export ledger bidCount: Counter;
+export ledger reservePrice: Uint<64>;      // Minimum reserve price
+export ledger royaltyBps: Uint<64>;       // Royalty in basis points (e.g. 500 = 5%)
+export ledger creatorKey: Bytes<32>;      // Creator public key for royalty
+export ledger sellerKey: Bytes<32>;       // Seller/auctioneer public key
 export ledger winner: Maybe<Bytes<32>>;
 export ledger winningPrice: Maybe<Uint<64>>;
-export ledger royaltyBps: Uint<64>;       // royalty in basis points (e.g. 500 = 5%)
-export ledger creatorKey: Bytes<32>;      // creator public key for royalty
+export ledger winningCommitment: Maybe<Bytes<32>>;
+export ledger commitments: Map<Bytes<32>, Boolean>;
 
-constructor(id: Bytes<32>, royaltyBasisPoints: Uint<64>, creator: Bytes<32>) {
+constructor(id: Bytes<32>, minPrice: Uint<64>, royaltyBasisPoints: Uint<64>, creator: Bytes<32>, seller: Bytes<32>) {
   state = AuctionState.OPEN;
   taskId = disclose(id);
+  reservePrice = disclose(minPrice);
   royaltyBps = disclose(royaltyBasisPoints);
   creatorKey = disclose(creator);
+  sellerKey = disclose(seller);
   winner = none<Bytes<32>>();
   winningPrice = none<Uint<64>>();
-}
-
-// Witnesses - private data provided by user browser, never disclosed
-witness myBidAmount(): Uint<64>;
-
-export circuit submitBid(): [] {
-  assert(state == AuctionState.OPEN, "Auction is not open for bids");
-  const bid = myBidAmount();
-  bidCount.increment(1);
-}
-
-export circuit closeAuction(secretKey: Bytes<32>, price: Uint<64>): [] {
-  assert(state == AuctionState.OPEN, "Auction already closed");
-  const key = agentPublicKey(secretKey);
-  winner = disclose(some<Bytes<32>>(key));
-  winningPrice = disclose(some<Uint<64>>(price));
-  state = AuctionState.CLOSED;
+  winningCommitment = none<Bytes<32>>();
 }
 
 export circuit agentPublicKey(sk: Bytes<32>): Bytes<32> {
   return persistentHash<Vector<2, Bytes<32>>>([pad(32, "veilbid:pk:"), sk]);
+}
+
+/**
+ * Phase 1: Submit Sealed Bid
+ * Bidder computes commitment off-chain in private:
+ *   c = persistentHash(BidCommitment { pk, nonce, amount })
+ * Ledger registers the commitment hash and increments bidCount.
+ * The bid amount, nonce, and bidder identity remain completely private.
+ */
+export circuit submitBid(commitment: Bytes<32>): [] {
+  assert(state == AuctionState.OPEN, "Auction is not open for bids");
+  const c = disclose(commitment);
+  assert(!commitments.member(c), "Commitment already registered");
+  commitments.insert(c, true);
+  bidCount.increment(1);
+}
+
+/**
+ * Phase 2: Reveal Bid & Settlement
+ * Bidder reveals secretKey, salt, and amount.
+ * The ZK circuit computes the commitment and verifies:
+ * 1. The commitment was registered on-chain during bidding.
+ * 2. The amount satisfies the minimum reserve price.
+ * 3. Updates the highest winning bid on the ledger.
+ */
+export circuit revealBid(secretKey: Bytes<32>, salt: Bytes<32>, amount: Uint<64>): [] {
+  assert(state == AuctionState.OPEN, "Auction is not open for reveals");
+  const pk = agentPublicKey(secretKey);
+  const commitment = persistentHash<BidCommitment>(BidCommitment {
+    pk: pk,
+    nonce: salt,
+    amount: amount
+  });
+  const c = disclose(commitment);
+  assert(commitments.member(c), "Bid commitment was never registered on-chain");
+
+  const revealedAmount = disclose(amount);
+  assert(revealedAmount >= reservePrice, "Bid does not meet reserve price");
+
+  const revealedPk = disclose(pk);
+  if (!winningPrice.is_some) {
+    winner = some<Bytes<32>>(revealedPk);
+    winningPrice = some<Uint<64>>(revealedAmount);
+    winningCommitment = some<Bytes<32>>(c);
+  } else {
+    if (revealedAmount > winningPrice.value) {
+      winner = some<Bytes<32>>(revealedPk);
+      winningPrice = some<Uint<64>>(revealedAmount);
+      winningCommitment = some<Bytes<32>>(c);
+    }
+  }
+}
+
+/**
+ * Phase 3: Finalize Auction
+ * Only the designated auction seller can finalize the auction state.
+ */
+export circuit closeAuction(sellerSk: Bytes<32>): [] {
+  assert(state == AuctionState.OPEN, "Auction already closed");
+  const callerPk = agentPublicKey(sellerSk);
+  assert(callerPk == sellerKey, "Only auction creator/seller can close the auction");
+  state = AuctionState.CLOSED;
 }

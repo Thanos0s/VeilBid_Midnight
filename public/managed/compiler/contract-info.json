@@ -4,44 +4,6 @@
   "runtime-version": "0.16.0",
   "circuits": [
     {
-      "name": "submitBid",
-      "pure": false,
-      "proof": true,
-      "arguments": [
-      ],
-      "result-type": {
-        "type-name": "Tuple",
-        "types": [
-        ]
-      }
-    },
-    {
-      "name": "closeAuction",
-      "pure": false,
-      "proof": true,
-      "arguments": [
-        {
-          "name": "secretKey",
-          "type": {
-            "type-name": "Bytes",
-            "length": 32
-          }
-        },
-        {
-          "name": "price",
-          "type": {
-            "type-name": "Uint",
-            "maxval": 18446744073709551615
-          }
-        }
-      ],
-      "result-type": {
-        "type-name": "Tuple",
-        "types": [
-        ]
-      }
-    },
-    {
       "name": "agentPublicKey",
       "pure": true,
       "proof": false,
@@ -58,18 +20,80 @@
         "type-name": "Bytes",
         "length": 32
       }
+    },
+    {
+      "name": "submitBid",
+      "pure": false,
+      "proof": true,
+      "arguments": [
+        {
+          "name": "commitment",
+          "type": {
+            "type-name": "Bytes",
+            "length": 32
+          }
+        }
+      ],
+      "result-type": {
+        "type-name": "Tuple",
+        "types": [
+        ]
+      }
+    },
+    {
+      "name": "revealBid",
+      "pure": false,
+      "proof": true,
+      "arguments": [
+        {
+          "name": "secretKey",
+          "type": {
+            "type-name": "Bytes",
+            "length": 32
+          }
+        },
+        {
+          "name": "salt",
+          "type": {
+            "type-name": "Bytes",
+            "length": 32
+          }
+        },
+        {
+          "name": "amount",
+          "type": {
+            "type-name": "Uint",
+            "maxval": 18446744073709551615
+          }
+        }
+      ],
+      "result-type": {
+        "type-name": "Tuple",
+        "types": [
+        ]
+      }
+    },
+    {
+      "name": "closeAuction",
+      "pure": false,
+      "proof": true,
+      "arguments": [
+        {
+          "name": "sellerSk",
+          "type": {
+            "type-name": "Bytes",
+            "length": 32
+          }
+        }
+      ],
+      "result-type": {
+        "type-name": "Tuple",
+        "types": [
+        ]
+      }
     }
   ],
   "witnesses": [
-    {
-      "name": "myBidAmount",
-      "arguments": [
-      ],
-      "result type": {
-        "type-name": "Uint",
-        "maxval": 18446744073709551615
-      }
-    }
   ],
   "contracts": [
   ],
@@ -105,8 +129,48 @@
       "storage": "Counter"
     },
     {
-      "name": "winner",
+      "name": "reservePrice",
       "index": 3,
+      "exported": true,
+      "storage": "Cell",
+      "type": {
+        "type-name": "Uint",
+        "maxval": 18446744073709551615
+      }
+    },
+    {
+      "name": "royaltyBps",
+      "index": 4,
+      "exported": true,
+      "storage": "Cell",
+      "type": {
+        "type-name": "Uint",
+        "maxval": 18446744073709551615
+      }
+    },
+    {
+      "name": "creatorKey",
+      "index": 5,
+      "exported": true,
+      "storage": "Cell",
+      "type": {
+        "type-name": "Bytes",
+        "length": 32
+      }
+    },
+    {
+      "name": "sellerKey",
+      "index": 6,
+      "exported": true,
+      "storage": "Cell",
+      "type": {
+        "type-name": "Bytes",
+        "length": 32
+      }
+    },
+    {
+      "name": "winner",
+      "index": 7,
       "exported": true,
       "storage": "Cell",
       "type": {
@@ -131,7 +195,7 @@
     },
     {
       "name": "winningPrice",
-      "index": 4,
+      "index": 8,
       "exported": true,
       "storage": "Cell",
       "type": {
@@ -155,23 +219,41 @@
       }
     },
     {
-      "name": "royaltyBps",
-      "index": 5,
+      "name": "winningCommitment",
+      "index": 9,
       "exported": true,
       "storage": "Cell",
       "type": {
-        "type-name": "Uint",
-        "maxval": 18446744073709551615
+        "type-name": "Struct",
+        "name": "Maybe",
+        "elements": [
+          {
+            "name": "is_some",
+            "type": {
+              "type-name": "Boolean"
+            }
+          },
+          {
+            "name": "value",
+            "type": {
+              "type-name": "Bytes",
+              "length": 32
+            }
+          }
+        ]
       }
     },
     {
-      "name": "creatorKey",
-      "index": 6,
+      "name": "commitments",
+      "index": 10,
       "exported": true,
-      "storage": "Cell",
-      "type": {
+      "storage": "Map",
+      "key": {
         "type-name": "Bytes",
         "length": 32
+      },
+      "value": {
+        "type-name": "Boolean"
       }
     }
   ]
