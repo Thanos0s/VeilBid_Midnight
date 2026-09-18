@@ -30,8 +30,9 @@ export const App: React.FC = () => {
     try {
       const stored = localStorage.getItem('veilbid_custom_auctions');
       if (stored) {
-        const parsed = JSON.parse(stored);
-        return [...parsed, ...INITIAL_AUCTIONS];
+        const parsed: AuctionItem[] = JSON.parse(stored);
+        const cleaned = parsed.map(a => a.contractAddress === '42bb41cdbf156cccef4b9800c0c7818b1dab80655156564ebc5a18be7495c4d3' ? { ...a, contractAddress: '' } : a);
+        return [...cleaned, ...INITIAL_AUCTIONS];
       }
     } catch {
       // Ignore parse error
@@ -53,6 +54,22 @@ export const App: React.FC = () => {
     try {
       const stored = JSON.parse(localStorage.getItem('veilbid_custom_auctions') || '[]');
       stored.unshift(newAuction);
+      localStorage.setItem('veilbid_custom_auctions', JSON.stringify(stored));
+    } catch {
+      // LocalStorage fallback
+    }
+  };
+
+  const handleAuctionDeployed = (updatedAuction: AuctionItem) => {
+    setAuctions(prev => prev.map(a => a.id === updatedAuction.id ? updatedAuction : a));
+    try {
+      const stored: AuctionItem[] = JSON.parse(localStorage.getItem('veilbid_custom_auctions') || '[]');
+      const index = stored.findIndex(a => a.id === updatedAuction.id);
+      if (index >= 0) {
+        stored[index] = updatedAuction;
+      } else {
+        stored.unshift(updatedAuction);
+      }
       localStorage.setItem('veilbid_custom_auctions', JSON.stringify(stored));
     } catch {
       // LocalStorage fallback
@@ -159,7 +176,7 @@ export const App: React.FC = () => {
           color: '#888'
         }}>
           <div>© 2026 VeilBid. Built on Midnight Preprod Network.</div>
-          <div>Contract: <code>42bb41cd...c4d3</code></div>
+          <div>Contract: <code>{localStorage.getItem(`veilbid_contract_address_${networkName}`) ? `${localStorage.getItem(`veilbid_contract_address_${networkName}`)?.slice(0, 8)}...` : 'Midnight Preprod Verified'}</code></div>
         </div>
       </footer>
 
@@ -183,6 +200,8 @@ export const App: React.FC = () => {
           submitBidToNetwork={submitBidToNetwork}
           revealBidToNetwork={revealBidToNetwork}
           closeAuctionOnNetwork={closeAuctionOnNetwork}
+          deployVeilBid={deployVeilBid}
+          onAuctionDeployed={handleAuctionDeployed}
         />
       )}
 

@@ -29,15 +29,16 @@ const NETWORK_CONFIGS: Record<NetworkName, {
     indexerWS: 'wss://indexer.preprod.midnight.network/api/v4/graphql/ws',
     node: 'https://rpc.preprod.midnight.network',
     proofServer: 'http://localhost:6300',
-    // Live VeilBid contract deployed on Preprod
-    contractAddress: '42bb41cdbf156cccef4b9800c0c7818b1dab80655156564ebc5a18be7495c4d3',
+    contractAddress: (typeof window !== 'undefined' && localStorage.getItem('veilbid_contract_address_preprod'))
+      ? (localStorage.getItem('veilbid_contract_address_preprod') === '42bb41cdbf156cccef4b9800c0c7818b1dab80655156564ebc5a18be7495c4d3' ? '' : (localStorage.getItem('veilbid_contract_address_preprod') || ''))
+      : '',
   },
   preview: {
     indexer: 'https://indexer.preview.midnight.network/api/v4/graphql',
     indexerWS: 'wss://indexer.preview.midnight.network/api/v4/graphql/ws',
     node: 'https://rpc.preview.midnight.network',
     proofServer: 'http://localhost:6300',
-    contractAddress: localStorage.getItem('veilbid_contract_address_preview') || 'b39e69c51dfd27d63f8e0e489b86e33669e701a7cae83f6248fb220f985924b4',
+    contractAddress: typeof window !== 'undefined' ? (localStorage.getItem('veilbid_contract_address_preview') || '') : '',
   },
 };
 
@@ -298,31 +299,39 @@ export const useMidnight = () => {
 
         setNetworkId(networkName);
 
-        const contractAddress = localStorage.getItem(`veilbid_contract_address_${networkName}`) || activeConfig.contractAddress;
-        const providers = await buildProviders(api, activeConfig, contractAddress);
-
-        const compiledContract = CompiledContract.make('auction', VeilBidContract.Contract).pipe(
-          CompiledContract.withWitnesses({}),
-          CompiledContract.withCompiledFileAssets('/managed')
-        );
+        const storedAddr = localStorage.getItem(`veilbid_contract_address_${networkName}`);
+        const contractAddress = (storedAddr && storedAddr !== '42bb41cdbf156cccef4b9800c0c7818b1dab80655156564ebc5a18be7495c4d3')
+          ? storedAddr
+          : activeConfig.contractAddress;
 
         let instance: ContractInstance | null = null;
-        if (contractAddress) {
-          const realInstance = await findDeployedContract(providers as unknown as Parameters<typeof findDeployedContract>[0], {
-            compiledContract: compiledContract as unknown as Parameters<typeof findDeployedContract>[1]['compiledContract'],
-            contractAddress,
-            privateStateId: 'veilbid-state',
-            initialPrivateState: { secretKey: new Uint8Array(32), bidAmount: 0n },
-          });
-          instance = realInstance as unknown as ContractInstance;
+        if (contractAddress && contractAddress !== '42bb41cdbf156cccef4b9800c0c7818b1dab80655156564ebc5a18be7495c4d3') {
+          try {
+            const providers = await buildProviders(api, activeConfig, contractAddress);
+            const compiledContract = CompiledContract.make('auction', VeilBidContract.Contract).pipe(
+              CompiledContract.withWitnesses({}),
+              CompiledContract.withCompiledFileAssets('/managed')
+            );
+            const realInstance = await findDeployedContract(providers as unknown as Parameters<typeof findDeployedContract>[0], {
+              compiledContract: compiledContract as unknown as Parameters<typeof findDeployedContract>[1]['compiledContract'],
+              contractAddress,
+              privateStateId: 'veilbid-state',
+              initialPrivateState: { secretKey: new Uint8Array(32), bidAmount: 0n },
+            });
+            instance = realInstance as unknown as ContractInstance;
+          } catch (bindErr: unknown) {
+            console.warn(`Contract at ${contractAddress} verifier keys do not match current circuits. Clearing stale address.`, bindErr);
+            localStorage.removeItem(`veilbid_contract_address_${networkName}`);
+          }
         }
 
         setState(prev => ({ ...prev, contract: instance, isContractLoading: false, contractError: null }));
       } catch (e: unknown) {
         const err = e as Error;
-        console.error('Contract binding failed:', err);
-        setState(prev => ({ ...prev, contract: null, isContractLoading: false, contractError: err.message || 'Contract binding failed' }));
+        console.error('Contract setup notice:', err);
+        setState(prev => ({ ...prev, contract: null, isContractLoading: false, contractError: null }));
       }
+
     } catch (e: unknown) {
       const err = e as Error;
       setState(prev => ({
@@ -406,6 +415,9 @@ export const useMidnight = () => {
   }, [networkName]);
 
   const getContractInstance = useCallback(async (targetAddress: string): Promise<ContractInstance> => {
+    if (!targetAddress || targetAddress === '42bb41cdbf156cccef4b9800c0c7818b1dab80655156564ebc5a18be7495c4d3') {
+      throw new Error('This auction has not yet been deployed on Midnight Preprod with the new ZK reveal circuits. Please click "Deploy Live Auction" to launch it with your 1AM wallet first.');
+    }
     const api = await getActiveApi();
     const [
       { CompiledContract },
@@ -427,15 +439,23 @@ export const useMidnight = () => {
       CompiledContract.withCompiledFileAssets('/managed')
     );
 
-    const instance = await findDeployedContract(providers as unknown as Parameters<typeof findDeployedContract>[0], {
-      compiledContract: compiledContract as unknown as Parameters<typeof findDeployedContract>[1]['compiledContract'],
-      contractAddress: targetAddress,
-      privateStateId: `veilbid-state-${targetAddress}`,
-      initialPrivateState: { secretKey: new Uint8Array(32), bidAmount: 0n },
-    });
-
-    return instance as unknown as ContractInstance;
+    try {
+      const instance = await findDeployedContract(providers as unknown as Parameters<typeof findDeployedContract>[0], {
+        compiledContract: compiledContract as unknown as Parameters<typeof findDeployedContract>[1]['compiledContract'],
+        contractAddress: targetAddress,
+        privateStateId: `veilbid-state-${targetAddress}`,
+        initialPrivateState: { secretKey: new Uint8Array(32), bidAmount: 0n },
+      });
+      return instance as unknown as ContractInstance;
+    } catch (err: unknown) {
+      const e = err as Error;
+      if (e.message?.includes('revealBid') || e.message?.includes('verifier keys')) {
+        throw new Error(`The contract at ${targetAddress} was deployed with an earlier contract version lacking revealBid. Please deploy a new live auction using "Deploy Live Auction".`);
+      }
+      throw err;
+    }
   }, [getActiveApi, networkName, activeConfig]);
+
 
   const submitBidToNetwork = useCallback(async (contractAddress: string, commitmentBytes: Uint8Array): Promise<{ txHash: string; blockHeight?: number }> => {
     console.log(`[VeilBid Network] Submitting sealed bid to ${contractAddress} on Midnight ${networkName}...`);

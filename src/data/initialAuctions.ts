@@ -3,7 +3,7 @@ import type { AuctionItem } from '../types/auction';
 export const INITIAL_AUCTIONS: AuctionItem[] = [
   {
     id: 'auc-live-1',
-    contractAddress: '42bb41cdbf156cccef4b9800c0c7818b1dab80655156564ebc5a18be7495c4d3',
+    contractAddress: '',
     title: 'VeilBid Pepe #001',
     author: 'Thanos0s',
     creatorKey: 'mn_addr_preprod1creator_pepe',
@@ -20,7 +20,7 @@ export const INITIAL_AUCTIONS: AuctionItem[] = [
   },
   {
     id: 'auc-live-2',
-    contractAddress: '42bb41cdbf156cccef4b9800c0c7818b1dab80655156564ebc5a18be7495c4d3',
+    contractAddress: '',
     title: 'Shadow Realm Artifact',
     author: 'MidnightLabs',
     creatorKey: 'mn_addr_preprod1shadow_creator',
@@ -37,7 +37,7 @@ export const INITIAL_AUCTIONS: AuctionItem[] = [
   },
   {
     id: 'auc-live-3',
-    contractAddress: '42bb41cdbf156cccef4b9800c0c7818b1dab80655156564ebc5a18be7495c4d3',
+    contractAddress: '',
     title: 'Cipher Node #042',
     author: 'ZeroWitness',
     creatorKey: 'mn_addr_preprod1cipher_creator',
@@ -54,7 +54,7 @@ export const INITIAL_AUCTIONS: AuctionItem[] = [
   },
   {
     id: 'auc-live-4',
-    contractAddress: '42bb41cdbf156cccef4b9800c0c7818b1dab80655156564ebc5a18be7495c4d3',
+    contractAddress: '',
     title: 'Eclipse Visionary',
     author: 'DarkArts',
     creatorKey: 'mn_addr_preprod1eclipse_creator',
@@ -71,7 +71,7 @@ export const INITIAL_AUCTIONS: AuctionItem[] = [
   },
   {
     id: 'auc-live-5',
-    contractAddress: '42bb41cdbf156cccef4b9800c0c7818b1dab80655156564ebc5a18be7495c4d3',
+    contractAddress: '',
     title: 'Void Walker #007',
     author: 'AnonCollector',
     creatorKey: 'mn_addr_preprod1void_creator',
@@ -88,7 +88,7 @@ export const INITIAL_AUCTIONS: AuctionItem[] = [
   },
   {
     id: 'auc-live-6',
-    contractAddress: '42bb41cdbf156cccef4b9800c0c7818b1dab80655156564ebc5a18be7495c4d3',
+    contractAddress: '',
     title: 'Prism Refract',
     author: 'LightShaper',
     creatorKey: 'mn_addr_preprod1prism_creator',
@@ -106,7 +106,7 @@ export const INITIAL_AUCTIONS: AuctionItem[] = [
   // AI Agents
   {
     id: 'ai-1',
-    contractAddress: '42bb41cdbf156cccef4b9800c0c7818b1dab80655156564ebc5a18be7495c4d3',
+    contractAddress: '',
     title: 'VeilBid ZK Sniper Agent v1',
     author: 'VeilBid Labs',
     creatorKey: 'mn_addr_preprod1veilbid_labs',
@@ -125,7 +125,7 @@ export const INITIAL_AUCTIONS: AuctionItem[] = [
   },
   {
     id: 'ai-2',
-    contractAddress: '42bb41cdbf156cccef4b9800c0c7818b1dab80655156564ebc5a18be7495c4d3',
+    contractAddress: '',
     title: 'Valuation Oracle Agent',
     author: 'Midnight Zero Witness',
     creatorKey: 'mn_addr_preprod1oracle_creator',
@@ -144,7 +144,7 @@ export const INITIAL_AUCTIONS: AuctionItem[] = [
   },
   {
     id: 'ai-3',
-    contractAddress: '42bb41cdbf156cccef4b9800c0c7818b1dab80655156564ebc5a18be7495c4d3',
+    contractAddress: '',
     title: 'Budget Guard Bot',
     author: 'Privacy Capital',
     creatorKey: 'mn_addr_preprod1budget_creator',
@@ -163,7 +163,7 @@ export const INITIAL_AUCTIONS: AuctionItem[] = [
   },
   {
     id: 'ai-4',
-    contractAddress: '42bb41cdbf156cccef4b9800c0c7818b1dab80655156564ebc5a18be7495c4d3',
+    contractAddress: '',
     title: 'Alpha Arbitrage Agent',
     author: 'Cardano ZK Algo',
     creatorKey: 'mn_addr_preprod1arbitrage_creator',

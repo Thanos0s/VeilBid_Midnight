@@ -10,6 +10,8 @@ interface BidModalProps {
   submitBidToNetwork?: (contractAddress: string, commitmentBytes: Uint8Array) => Promise<{ txHash: string; blockHeight?: number }>;
   revealBidToNetwork?: (contractAddress: string, secretKeyBytes: Uint8Array, saltBytes: Uint8Array, amountBigInt: bigint) => Promise<{ txHash: string; blockHeight?: number }>;
   closeAuctionOnNetwork?: (contractAddress: string, sellerSkBytes: Uint8Array) => Promise<{ txHash: string; blockHeight?: number }>;
+  deployVeilBid?: (nftTokenId: string, reservePrice: bigint, royaltyBps: number) => Promise<{ contractAddress: string; txHash: string }>;
+  onAuctionDeployed?: (updatedAuction: AuctionItem) => void;
 }
 
 export const BidModal: React.FC<BidModalProps> = ({
@@ -20,8 +22,22 @@ export const BidModal: React.FC<BidModalProps> = ({
   onBidSubmitted,
   submitBidToNetwork,
   revealBidToNetwork,
+  deployVeilBid,
+  onAuctionDeployed,
 }) => {
   const [tab, setTab] = useState<'commit' | 'reveal'>('commit');
+  const [contractAddress, setContractAddress] = useState<string>(() => {
+    if (auction?.contractAddress && auction.contractAddress !== '42bb41cdbf156cccef4b9800c0c7818b1dab80655156564ebc5a18be7495c4d3') {
+      return auction.contractAddress;
+    }
+    const globalStored = typeof window !== 'undefined' ? localStorage.getItem(`veilbid_contract_address_${networkName}`) : null;
+    if (globalStored && globalStored !== '42bb41cdbf156cccef4b9800c0c7818b1dab80655156564ebc5a18be7495c4d3') {
+      return globalStored;
+    }
+    return '';
+  });
+  const [isDeployingContract, setIsDeployingContract] = useState(false);
+  const [deploySuccessTx, setDeploySuccessTx] = useState<string | null>(null);
   const [bidAmount, setBidAmount] = useState('');
   const [saltHex, setSaltHex] = useState('');
   const [secretKeyHex, setSecretKeyHex] = useState('');
@@ -31,6 +47,19 @@ export const BidModal: React.FC<BidModalProps> = ({
   const [successReceipt, setSuccessReceipt] = useState<BidReceipt | null>(null);
   const [revealSuccessTx, setRevealSuccessTx] = useState<string | null>(null);
   const [errorMsg, setErrorMsg] = useState<string | null>(null);
+
+  useEffect(() => {
+    if (auction?.contractAddress && auction.contractAddress !== '42bb41cdbf156cccef4b9800c0c7818b1dab80655156564ebc5a18be7495c4d3') {
+      setContractAddress(auction.contractAddress);
+    } else {
+      const globalStored = typeof window !== 'undefined' ? localStorage.getItem(`veilbid_contract_address_${networkName}`) : null;
+      if (globalStored && globalStored !== '42bb41cdbf156cccef4b9800c0c7818b1dab80655156564ebc5a18be7495c4d3') {
+        setContractAddress(globalStored);
+      } else {
+        setContractAddress('');
+      }
+    }
+  }, [auction, networkName]);
 
   // Auto-generate fresh cryptographic salt & secret key on modal open
   useEffect(() => {
@@ -120,9 +149,43 @@ export const BidModal: React.FC<BidModalProps> = ({
     ? 'https://preview.midnightexplorer.com'
     : 'https://preprod.midnightexplorer.com';
 
+  const handleDeployAuction = async () => {
+    if (!wallet.isConnected) {
+      setErrorMsg('Please connect your 1AM wallet first.');
+      return;
+    }
+    if (!deployVeilBid) {
+      setErrorMsg('Deploy functionality is not available. Please verify your wallet connection.');
+      return;
+    }
+    setIsDeployingContract(true);
+    setErrorMsg(null);
+    try {
+      const res = await deployVeilBid(auction.title, auction.reservePrice, auction.royaltyBps);
+      setContractAddress(res.contractAddress);
+      setDeploySuccessTx(res.txHash);
+      if (onAuctionDeployed) {
+        onAuctionDeployed({
+          ...auction,
+          contractAddress: res.contractAddress,
+        });
+      }
+    } catch (err: unknown) {
+      const e = err as Error;
+      console.error('[VeilBid Deploy Error]', e);
+      setErrorMsg(e.message || 'Failed to deploy contract to Midnight Preprod.');
+    } finally {
+      setIsDeployingContract(false);
+    }
+  };
+
   const handleCommitBid = async () => {
     if (!wallet.isConnected) {
       setErrorMsg('Please connect your 1AM wallet first.');
+      return;
+    }
+    if (!contractAddress) {
+      setErrorMsg('Please deploy this auction on Midnight Preprod first using the button above.');
       return;
     }
     if (!bidAmount || Number(bidAmount) <= 0) {
@@ -148,11 +211,11 @@ export const BidModal: React.FC<BidModalProps> = ({
         commitmentBytes[i] = parseInt(commitmentHex.substring(i * 2, i * 2 + 2), 16) || 0;
       }
 
-      const res = await submitBidToNetwork(auction.contractAddress, commitmentBytes);
+      const res = await submitBidToNetwork(contractAddress, commitmentBytes);
 
       const receipt: BidReceipt = {
         auctionId: auction.id,
-        contractAddress: auction.contractAddress,
+        contractAddress: contractAddress,
         amount: bidAmount,
         amountBigInt: BigInt(Math.floor(Number(bidAmount) * 1_000_000)).toString(),
         saltHex,
@@ -185,6 +248,10 @@ export const BidModal: React.FC<BidModalProps> = ({
       setErrorMsg('Please connect your 1AM wallet first.');
       return;
     }
+    if (!contractAddress) {
+      setErrorMsg('Please deploy this auction on Midnight Preprod first using the button above.');
+      return;
+    }
     if (!revealBidToNetwork) {
       setErrorMsg('On-chain reveal is not available. Please verify your wallet connection.');
       return;
@@ -207,7 +274,7 @@ export const BidModal: React.FC<BidModalProps> = ({
       }
       const amountBigInt = BigInt(Math.floor(Number(revealAmount) * 1_000_000));
 
-      const res = await revealBidToNetwork(auction.contractAddress, skBytes, saltBytes, amountBigInt);
+      const res = await revealBidToNetwork(contractAddress, skBytes, saltBytes, amountBigInt);
       setRevealSuccessTx(res.txHash);
     } catch (err: unknown) {
       const e = err as Error;
@@ -331,6 +398,108 @@ export const BidModal: React.FC<BidModalProps> = ({
             wordBreak: 'break-word'
           }}>
             ⚠️ {errorMsg}
+          </div>
+        )}
+
+        {/* Contract Status & 1-Click Deployment Banner */}
+        {!contractAddress ? (
+          <div style={{
+            background: '#fffbeb',
+            border: '2px solid #f59e0b',
+            borderRadius: '10px',
+            padding: '14px',
+            display: 'flex',
+            flexDirection: 'column',
+            gap: '10px'
+          }}>
+            <div style={{ display: 'flex', alignItems: 'center', gap: '8px' }}>
+              <span style={{ fontSize: '18px' }}>⚡</span>
+              <div>
+                <div style={{ fontWeight: 800, fontSize: '14px', color: '#92400e' }}>
+                  Deploy Contract on Midnight Preprod
+                </div>
+                <div style={{ fontSize: '11px', color: '#b45309' }}>
+                  This auction requires an on-chain Compact contract instance to record your sealed bids.
+                </div>
+              </div>
+            </div>
+
+            <div style={{ fontSize: '11px', color: '#78350f', lineHeight: 1.4 }}>
+              Reserve Price: <strong>{auction.floor}</strong> • Royalty: <strong>{auction.royaltyBps / 100}%</strong> • Midnight {networkName}
+            </div>
+
+            <button
+              onClick={handleDeployAuction}
+              disabled={isDeployingContract || !wallet.isConnected}
+              style={{
+                padding: '10px 16px',
+                fontSize: '13px',
+                fontWeight: 800,
+                background: '#f59e0b',
+                color: '#fff',
+                border: '2px solid #0a0a0a',
+                borderRadius: '8px',
+                cursor: isDeployingContract || !wallet.isConnected ? 'not-allowed' : 'pointer',
+                boxShadow: '3px 3px 0 #0a0a0a',
+                display: 'flex',
+                alignItems: 'center',
+                justifyContent: 'center',
+                gap: '8px'
+              }}
+            >
+              {isDeployingContract ? (
+                '⏳ Confirming Deploy in 1AM Wallet...'
+              ) : !wallet.isConnected ? (
+                '🔑 Connect 1AM Wallet to Deploy'
+              ) : (
+                '🚀 Deploy Auction Contract to Midnight (1-Click)'
+              )}
+            </button>
+          </div>
+        ) : (
+          <div style={{
+            background: '#f0fdf4',
+            border: '1.5px solid #86efac',
+            borderRadius: '8px',
+            padding: '8px 12px',
+            fontSize: '11px',
+            display: 'flex',
+            justifyContent: 'space-between',
+            alignItems: 'center'
+          }}>
+            <span style={{ color: '#166534', fontWeight: 700 }}>
+              ● On-Chain Contract: <code style={{ fontFamily: 'var(--font-mono)' }}>{contractAddress.slice(0, 8)}...{contractAddress.slice(-6)}</code>
+            </span>
+            <a
+              href={`${explorerBase}/contract/${contractAddress}`}
+              target="_blank"
+              rel="noreferrer"
+              style={{ color: '#15803d', fontWeight: 800, textDecoration: 'none' }}
+            >
+              Explorer ↗
+            </a>
+          </div>
+        )}
+
+        {deploySuccessTx && (
+          <div style={{
+            background: '#ecfdf5',
+            border: '1px solid #10b981',
+            borderRadius: '8px',
+            padding: '10px 12px',
+            fontSize: '11px',
+            color: '#065f46'
+          }}>
+            ✅ Contract successfully deployed on Midnight Preprod!
+            <br />
+            <a
+              href={`${explorerBase}/tx/${deploySuccessTx}`}
+              target="_blank"
+              rel="noreferrer"
+              style={{ color: '#059669', fontWeight: 700, wordBreak: 'break-all' }}
+            >
+              TX: {deploySuccessTx} ↗
+            </a>
           </div>
         )}
 
@@ -536,20 +705,24 @@ export const BidModal: React.FC<BidModalProps> = ({
 
             <button
               onClick={handleCommitBid}
-              disabled={isSubmitting || !bidAmount}
+              disabled={isSubmitting || !bidAmount || !contractAddress}
               style={{
                 padding: '12px',
                 fontSize: '14px',
                 fontWeight: 800,
-                background: '#C1F04C',
+                background: !contractAddress ? '#e5e7eb' : '#C1F04C',
                 color: '#0a0a0a',
                 border: '2px solid #0a0a0a',
                 borderRadius: '8px',
-                cursor: isSubmitting ? 'not-allowed' : 'pointer',
-                boxShadow: '4px 4px 0 #0a0a0a'
+                cursor: (isSubmitting || !contractAddress) ? 'not-allowed' : 'pointer',
+                boxShadow: !contractAddress ? 'none' : '4px 4px 0 #0a0a0a'
               }}
             >
-              {isSubmitting ? (submittingStep || '⏳ Submitting to Midnight...') : '🔒 Submit Sealed Bid on Midnight'}
+              {!contractAddress
+                ? '⚠️ Deploy Contract Above First'
+                : isSubmitting
+                ? (submittingStep || '⏳ Submitting to Midnight...')
+                : '🔒 Submit Sealed Bid on Midnight'}
             </button>
           </div>
         ) : !revealSuccessTx ? (
@@ -631,25 +804,29 @@ export const BidModal: React.FC<BidModalProps> = ({
               fontSize: '12px'
             }}>
               <div><strong>Reserve Price:</strong> {auction.floor}</div>
-              <div><strong>Contract:</strong> {auction.contractAddress.slice(0, 10)}...</div>
+              <div><strong>Contract:</strong> {contractAddress ? `${contractAddress.slice(0, 10)}...` : 'Not Deployed'}</div>
             </div>
 
             <button
               onClick={handleRevealBid}
-              disabled={isSubmitting || !revealSecretKey || !revealSalt || !revealAmount}
+              disabled={isSubmitting || !revealSecretKey || !revealSalt || !revealAmount || !contractAddress}
               style={{
                 padding: '12px',
                 fontSize: '14px',
                 fontWeight: 800,
-                background: '#fff',
+                background: !contractAddress ? '#e5e7eb' : '#fff',
                 color: '#0a0a0a',
                 border: '2px solid #0a0a0a',
                 borderRadius: '8px',
-                cursor: isSubmitting ? 'not-allowed' : 'pointer',
-                boxShadow: '4px 4px 0 #0a0a0a'
+                cursor: (isSubmitting || !contractAddress) ? 'not-allowed' : 'pointer',
+                boxShadow: !contractAddress ? 'none' : '4px 4px 0 #0a0a0a'
               }}
             >
-              {isSubmitting ? (submittingStep || '⏳ Submitting Reveal to Midnight...') : '🏆 Submit Reveal Transaction on Midnight'}
+              {!contractAddress
+                ? '⚠️ Deploy Contract Above to Enable Reveal'
+                : isSubmitting
+                ? (submittingStep || '⏳ Submitting Reveal to Midnight...')
+                : '🏆 Submit Reveal Transaction on Midnight'}
             </button>
           </div>
         ) : null}

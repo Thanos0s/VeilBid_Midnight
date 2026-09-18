@@ -120,14 +120,20 @@ export const AuctionCard: React.FC<AuctionCardProps> = ({
         {/* Contract & Address details */}
         <div style={{ display: 'flex', justifyContent: 'space-between', fontSize: '11px', color: '#888' }}>
           <span>Contract:</span>
-          <a
-            href={`${explorerUrl}/contract/${auction.contractAddress}`}
-            target="_blank"
-            rel="noreferrer"
-            style={{ color: '#5B5BD6', textDecoration: 'none', fontFamily: 'var(--font-mono)' }}
-          >
-            {auction.contractAddress.slice(0, 6)}...{auction.contractAddress.slice(-4)} ↗
-          </a>
+          {auction.contractAddress ? (
+            <a
+              href={`${explorerUrl}/contract/${auction.contractAddress}`}
+              target="_blank"
+              rel="noreferrer"
+              style={{ color: '#5B5BD6', textDecoration: 'none', fontFamily: 'var(--font-mono)' }}
+            >
+              {auction.contractAddress.slice(0, 6)}...{auction.contractAddress.slice(-4)} ↗
+            </a>
+          ) : (
+            <span style={{ color: '#d97706', fontWeight: 700, background: '#fef3c7', padding: '1px 6px', borderRadius: '4px' }}>
+              ⚡ Deploy to Preprod
+            </span>
+          )}
         </div>
 
         {/* Reserve & Bids Info */}
