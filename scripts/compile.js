@@ -7,12 +7,12 @@ console.log(`[VeilBid Compiler] Compiling contracts/auction.compact on ${process
 
 try {
   if (isWindows) {
-    execSync('wsl bash -c "~/.local/bin/compact compile contracts/auction.compact managed"', { stdio: 'inherit' });
+    execSync('wsl bash -c "~/.local/bin/compact update 0.31.1 2>/dev/null || true; ~/.local/bin/compact compile contracts/auction.compact managed"', { stdio: 'inherit' });
   } else {
     try {
-      execSync('compact compile contracts/auction.compact managed', { stdio: 'inherit' });
+      execSync('compact update 0.31.1 2>/dev/null || true; compact compile contracts/auction.compact managed', { stdio: 'inherit' });
     } catch {
-      execSync('~/.local/bin/compact compile contracts/auction.compact managed', { stdio: 'inherit' });
+      execSync('~/.local/bin/compact update 0.31.1 2>/dev/null || true; ~/.local/bin/compact compile contracts/auction.compact managed', { stdio: 'inherit' });
     }
   }
 
