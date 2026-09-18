@@ -36,30 +36,6 @@ export const Hero: React.FC<HeroProps> = ({ onExploreClick, onDeployClick }) => 
       </div>
 
       <div className="hero-inner">
-        {/* Verification & Tech Badges */}
-        <div className="badge-row">
-          <div className="badge-pill">
-            <span className="priv-dot" />
-            <div>
-              <span className="badge-pill-label">Network</span>
-              <span>Midnight Preprod</span>
-            </div>
-          </div>
-          <div className="badge-pill">
-            <span>🛡️</span>
-            <div>
-              <span className="badge-pill-label">Settlement</span>
-              <span>ZK Sealed Bids</span>
-            </div>
-          </div>
-          <div className="badge-pill">
-            <span>👥</span>
-            <div>
-              <span className="badge-pill-label">Adoption</span>
-              <span>50 Verifiable Users</span>
-            </div>
-          </div>
-        </div>
 
         {/* Main Heading */}
         <h1 className="hero-heading">

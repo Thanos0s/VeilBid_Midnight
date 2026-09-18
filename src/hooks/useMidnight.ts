@@ -6,7 +6,7 @@ if (typeof globalThis !== 'undefined') {
   (globalThis as unknown as { Buffer: typeof Buffer }).Buffer = Buffer;
 }
 
-import { useState, useCallback, useEffect } from 'react';
+import { useState, useCallback, useEffect, useRef } from 'react';
 import type {
   NetworkName,
   WalletBalances,
@@ -218,6 +218,7 @@ async function buildProviders(api: WalletDAppAPI, networkConfig: typeof NETWORK_
 // ── Main Hook ──
 export const useMidnight = () => {
   const [networkName, setNetworkNameState] = useState<NetworkName>(getStoredNetwork);
+  const apiRef = useRef<WalletDAppAPI | null>(null);
   const [state, setState] = useState<WalletState>({
     isConnected: false,
     isConnecting: false,
@@ -236,6 +237,7 @@ export const useMidnight = () => {
   const selectNetwork = useCallback((name: NetworkName) => {
     setNetworkNameState(name);
     localStorage.setItem('veilbid_network', name);
+    apiRef.current = null;
     setState({
       isConnected: false, isConnecting: false, isContractLoading: false, contractError: null, unshieldedAddress: null,
       shieldedAddress: null, walletName: null, error: null, contract: null, balances: null,
@@ -246,6 +248,7 @@ export const useMidnight = () => {
 
   const setupConnection = useCallback(async (api: WalletDAppAPI, walletName: string) => {
     try {
+      apiRef.current = api;
       const { unshieldedAddress: uAddr } = await api.getUnshieldedAddress();
       const { shieldedAddress: sAddr } = await api.getShieldedAddresses();
 
@@ -378,6 +381,7 @@ export const useMidnight = () => {
   }, [setupConnection, networkName]);
 
   const disconnectWallet = useCallback(() => {
+    apiRef.current = null;
     setState({
       isConnected: false, isConnecting: false, isContractLoading: false, contractError: null, unshieldedAddress: null,
       shieldedAddress: null, walletName: null, error: null, contract: null, balances: null,
@@ -386,17 +390,125 @@ export const useMidnight = () => {
     localStorage.removeItem('veilbid_wallet_id');
   }, []);
 
+  const getActiveApi = useCallback(async (): Promise<WalletDAppAPI> => {
+    if (apiRef.current) return apiRef.current;
+    const walletId = localStorage.getItem('veilbid_wallet_id') || '1AM';
+    const midnightObj = (window as unknown as { midnight?: Record<string, { connect?: (net: string) => Promise<WalletDAppAPI>; enable?: () => Promise<WalletDAppAPI> }> }).midnight;
+    const walletEntry = midnightObj?.[walletId] || (midnightObj ? Object.values(midnightObj)[0] : undefined);
+    if (!walletEntry) {
+      throw new Error('1AM wallet is not connected or extension is not detected. Please install/connect your 1AM wallet.');
+    }
+    const api = typeof walletEntry.connect === 'function'
+      ? await walletEntry.connect(networkName)
+      : await walletEntry.enable!();
+    apiRef.current = api;
+    return api;
+  }, [networkName]);
+
+  const getContractInstance = useCallback(async (targetAddress: string): Promise<ContractInstance> => {
+    const api = await getActiveApi();
+    const [
+      { CompiledContract },
+      { findDeployedContract },
+      { setNetworkId },
+      VeilBidContract,
+    ] = await Promise.all([
+      import('@midnight-ntwrk/compact-js'),
+      import('@midnight-ntwrk/midnight-js-contracts'),
+      import('@midnight-ntwrk/midnight-js-network-id'),
+      import('../../public/managed/contract/index.js'),
+    ]);
+
+    setNetworkId(networkName);
+    const providers = await buildProviders(api, activeConfig, targetAddress);
+
+    const compiledContract = CompiledContract.make('auction', VeilBidContract.Contract).pipe(
+      CompiledContract.withWitnesses({}),
+      CompiledContract.withCompiledFileAssets('/managed')
+    );
+
+    const instance = await findDeployedContract(providers as unknown as Parameters<typeof findDeployedContract>[0], {
+      compiledContract: compiledContract as unknown as Parameters<typeof findDeployedContract>[1]['compiledContract'],
+      contractAddress: targetAddress,
+      privateStateId: `veilbid-state-${targetAddress}`,
+      initialPrivateState: { secretKey: new Uint8Array(32), bidAmount: 0n },
+    });
+
+    return instance as unknown as ContractInstance;
+  }, [getActiveApi, networkName, activeConfig]);
+
+  const submitBidToNetwork = useCallback(async (contractAddress: string, commitmentBytes: Uint8Array): Promise<{ txHash: string; blockHeight?: number }> => {
+    console.log(`[VeilBid Network] Submitting sealed bid to ${contractAddress} on Midnight ${networkName}...`);
+    const instance = await getContractInstance(contractAddress);
+    if (!instance?.callTx?.submitBid) {
+      throw new Error(`Contract at ${contractAddress} does not implement submitBid or is not found on Midnight ${networkName}.`);
+    }
+    const result = await instance.callTx.submitBid(commitmentBytes);
+    console.log('[VeilBid Network] submitBid result:', result);
+    const txHash = (result as { public?: { txHash?: string; txId?: string; blockHeight?: number }; txHash?: string })?.public?.txHash
+      || (result as { public?: { txHash?: string; txId?: string; blockHeight?: number }; txHash?: string })?.txHash
+      || (result as { public?: { txHash?: string; txId?: string; blockHeight?: number }; txHash?: string })?.public?.txId;
+    if (!txHash) {
+      throw new Error('Transaction was submitted to Midnight, but no transaction hash was returned by the network.');
+    }
+    return {
+      txHash,
+      blockHeight: (result as { public?: { blockHeight?: number } })?.public?.blockHeight,
+    };
+  }, [getContractInstance, networkName]);
+
+  const revealBidToNetwork = useCallback(async (
+    contractAddress: string,
+    secretKeyBytes: Uint8Array,
+    saltBytes: Uint8Array,
+    amountBigInt: bigint
+  ): Promise<{ txHash: string; blockHeight?: number }> => {
+    console.log(`[VeilBid Network] Submitting reveal transaction to ${contractAddress} on Midnight ${networkName}...`);
+    const instance = await getContractInstance(contractAddress);
+    if (!instance?.callTx?.revealBid) {
+      throw new Error(`Contract at ${contractAddress} does not implement revealBid or is not found on Midnight ${networkName}.`);
+    }
+    const result = await instance.callTx.revealBid(secretKeyBytes, saltBytes, amountBigInt);
+    console.log('[VeilBid Network] revealBid result:', result);
+    const txHash = (result as { public?: { txHash?: string; txId?: string; blockHeight?: number }; txHash?: string })?.public?.txHash
+      || (result as { public?: { txHash?: string; txId?: string; blockHeight?: number }; txHash?: string })?.txHash
+      || (result as { public?: { txHash?: string; txId?: string; blockHeight?: number }; txHash?: string })?.public?.txId;
+    if (!txHash) {
+      throw new Error('Transaction was submitted to Midnight, but no transaction hash was returned by the network.');
+    }
+    return {
+      txHash,
+      blockHeight: (result as { public?: { blockHeight?: number } })?.public?.blockHeight,
+    };
+  }, [getContractInstance, networkName]);
+
+  const closeAuctionOnNetwork = useCallback(async (
+    contractAddress: string,
+    sellerSkBytes: Uint8Array
+  ): Promise<{ txHash: string; blockHeight?: number }> => {
+    console.log(`[VeilBid Network] Finalizing auction on ${contractAddress} on Midnight ${networkName}...`);
+    const instance = await getContractInstance(contractAddress);
+    if (!instance?.callTx?.closeAuction) {
+      throw new Error(`Contract at ${contractAddress} does not implement closeAuction or is not found on Midnight ${networkName}.`);
+    }
+    const result = await instance.callTx.closeAuction(sellerSkBytes);
+    console.log('[VeilBid Network] closeAuction result:', result);
+    const txHash = (result as { public?: { txHash?: string; txId?: string; blockHeight?: number }; txHash?: string })?.public?.txHash
+      || (result as { public?: { txHash?: string; txId?: string; blockHeight?: number }; txHash?: string })?.txHash
+      || (result as { public?: { txHash?: string; txId?: string; blockHeight?: number }; txHash?: string })?.public?.txId;
+    if (!txHash) {
+      throw new Error('Transaction was submitted to Midnight, but no transaction hash was returned by the network.');
+    }
+    return {
+      txHash,
+      blockHeight: (result as { public?: { blockHeight?: number } })?.public?.blockHeight,
+    };
+  }, [getContractInstance, networkName]);
+
   const deployVeilBid = useCallback(async (nftTokenId: string, reservePrice: bigint, royaltyBps: number) => {
     setState(prev => ({ ...prev, isConnecting: true, error: null }));
     try {
-      const walletId = localStorage.getItem('veilbid_wallet_id') || '1AM';
-      const midnightObj = (window as unknown as { midnight?: Record<string, { connect?: (net: string) => Promise<WalletDAppAPI>; enable?: () => Promise<WalletDAppAPI> }> }).midnight;
-      const walletEntry = midnightObj?.[walletId];
-      if (!walletEntry) throw new Error('Wallet not connected');
-
-      const api = typeof walletEntry.connect === 'function'
-        ? await walletEntry.connect(networkName)
-        : await walletEntry.enable!();
+      const api = await getActiveApi();
 
       const [
         { CompiledContract },
@@ -451,7 +563,7 @@ export const useMidnight = () => {
       setState(prev => ({ ...prev, isConnecting: false, error: err.message || 'Deployment failed' }));
       throw err;
     }
-  }, [networkName, activeConfig]);
+  }, [getActiveApi, networkName, activeConfig]);
 
   return {
     ...state,
@@ -461,5 +573,9 @@ export const useMidnight = () => {
     connectWallet,
     disconnectWallet,
     deployVeilBid,
+    submitBidToNetwork,
+    revealBidToNetwork,
+    closeAuctionOnNetwork,
   };
 };
+

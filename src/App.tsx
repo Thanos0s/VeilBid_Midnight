@@ -20,6 +20,9 @@ export const App: React.FC = () => {
     connectWallet,
     disconnectWallet,
     deployVeilBid,
+    submitBidToNetwork,
+    revealBidToNetwork,
+    closeAuctionOnNetwork,
     ...walletState
   } = useMidnight();
 
@@ -94,6 +97,7 @@ export const App: React.FC = () => {
         auctions={auctions}
         onSelectBid={(auc) => setSelectedBidAuction(auc)}
         onSelectReveal={(auc) => setSelectedBidAuction(auc)}
+        onOpenDeploy={() => setDeployModalOpen(true)}
         explorerUrl={explorerBase}
       />
 
@@ -173,10 +177,15 @@ export const App: React.FC = () => {
         <BidModal
           auction={selectedBidAuction}
           wallet={walletState}
+          networkName={networkName}
           onClose={() => setSelectedBidAuction(null)}
           onBidSubmitted={handleBidSubmitted}
+          submitBidToNetwork={submitBidToNetwork}
+          revealBidToNetwork={revealBidToNetwork}
+          closeAuctionOnNetwork={closeAuctionOnNetwork}
         />
       )}
+
 
       {deployModalOpen && (
         <DeployModal

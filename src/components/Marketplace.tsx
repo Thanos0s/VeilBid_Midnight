@@ -6,6 +6,7 @@ interface MarketplaceProps {
   auctions: AuctionItem[];
   onSelectBid: (auction: AuctionItem) => void;
   onSelectReveal: (auction: AuctionItem) => void;
+  onOpenDeploy?: () => void;
   explorerUrl?: string;
 }
 
@@ -15,6 +16,7 @@ export const Marketplace: React.FC<MarketplaceProps> = ({
   auctions,
   onSelectBid,
   onSelectReveal,
+  onOpenDeploy,
   explorerUrl,
 }) => {
   const [selectedCategory, setSelectedCategory] = useState('All');
@@ -123,8 +125,31 @@ export const Marketplace: React.FC<MarketplaceProps> = ({
             <option value="ending">⏱ Ending Soonest</option>
             <option value="bids">🔥 Most Bids</option>
           </select>
+
+          {onOpenDeploy && (
+            <button
+              onClick={onOpenDeploy}
+              style={{
+                padding: '8px 14px',
+                fontSize: '13px',
+                fontWeight: 800,
+                borderRadius: '8px',
+                border: '1.5px solid #0a0a0a',
+                background: '#C1F04C',
+                color: '#0a0a0a',
+                cursor: 'pointer',
+                boxShadow: '2px 2px 0 #0a0a0a',
+                display: 'flex',
+                alignItems: 'center',
+                gap: '6px'
+              }}
+            >
+              <span>🚀</span> Deploy Live Auction
+            </button>
+          )}
         </div>
       </div>
+
 
       {/* Auctions Grid */}
       {filteredAuctions.length === 0 ? (

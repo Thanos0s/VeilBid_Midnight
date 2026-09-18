@@ -4,59 +4,121 @@ import type { AuctionItem, BidReceipt, WalletState } from '../types/auction';
 interface BidModalProps {
   auction: AuctionItem | null;
   wallet: WalletState;
+  networkName?: string;
   onClose: () => void;
   onBidSubmitted?: (receipt: BidReceipt) => void;
+  submitBidToNetwork?: (contractAddress: string, commitmentBytes: Uint8Array) => Promise<{ txHash: string; blockHeight?: number }>;
+  revealBidToNetwork?: (contractAddress: string, secretKeyBytes: Uint8Array, saltBytes: Uint8Array, amountBigInt: bigint) => Promise<{ txHash: string; blockHeight?: number }>;
+  closeAuctionOnNetwork?: (contractAddress: string, sellerSkBytes: Uint8Array) => Promise<{ txHash: string; blockHeight?: number }>;
 }
 
 export const BidModal: React.FC<BidModalProps> = ({
   auction,
   wallet,
+  networkName = 'preprod',
   onClose,
   onBidSubmitted,
+  submitBidToNetwork,
+  revealBidToNetwork,
 }) => {
   const [tab, setTab] = useState<'commit' | 'reveal'>('commit');
   const [bidAmount, setBidAmount] = useState('');
   const [saltHex, setSaltHex] = useState('');
+  const [secretKeyHex, setSecretKeyHex] = useState('');
   const [commitmentHex, setCommitmentHex] = useState('');
   const [isSubmitting, setIsSubmitting] = useState(false);
+  const [submittingStep, setSubmittingStep] = useState<string>('');
   const [successReceipt, setSuccessReceipt] = useState<BidReceipt | null>(null);
+  const [revealSuccessTx, setRevealSuccessTx] = useState<string | null>(null);
   const [errorMsg, setErrorMsg] = useState<string | null>(null);
 
-  // Auto-generate fresh cryptographic salt on modal open
+  // Auto-generate fresh cryptographic salt & secret key on modal open
   useEffect(() => {
     if (!saltHex) {
       const salt = new Uint8Array(32);
       crypto.getRandomValues(salt);
-      const hex = Array.from(salt).map((b) => b.toString(16).padStart(2, '0')).join('');
-      setSaltHex(hex);
+      setSaltHex(Array.from(salt).map((b) => b.toString(16).padStart(2, '0')).join(''));
     }
-  }, [saltHex]);
+    if (!secretKeyHex) {
+      const sk = new Uint8Array(32);
+      crypto.getRandomValues(sk);
+      setSecretKeyHex(Array.from(sk).map((b) => b.toString(16).padStart(2, '0')).join(''));
+    }
+  }, [saltHex, secretKeyHex]);
 
-  // Compute commitment when amount or salt changes
+  // Compute cryptographic commitment whenever amount, salt, or sk change
   useEffect(() => {
-    if (!bidAmount || isNaN(Number(bidAmount)) || Number(bidAmount) <= 0) {
+    if (!bidAmount || isNaN(Number(bidAmount)) || Number(bidAmount) <= 0 || !saltHex || !secretKeyHex) {
       setCommitmentHex('');
       return;
     }
 
-    const computeSimulatedCommitment = async () => {
+    const computeCommitment = async () => {
       try {
-        const text = `${wallet.unshieldedAddress || 'anon'}:${saltHex}:${bidAmount}`;
-        const encoder = new TextEncoder();
-        const data = encoder.encode(text);
-        const hashBuf = await crypto.subtle.digest('SHA-256', data);
-        const hashArray = Array.from(new Uint8Array(hashBuf));
-        const hashHex = hashArray.map((b) => b.toString(16).padStart(2, '0')).join('');
+        const saltBytes = new Uint8Array(32);
+        const skBytes = new Uint8Array(32);
+        for (let i = 0; i < 32; i++) {
+          saltBytes[i] = parseInt(saltHex.substring(i * 2, i * 2 + 2), 16) || 0;
+          skBytes[i] = parseInt(secretKeyHex.substring(i * 2, i * 2 + 2), 16) || 0;
+        }
+
+        // Pack [pk (32 bytes) || salt (32 bytes) || amount (8 bytes big-endian)]
+        const amountBigInt = BigInt(Math.floor(Number(bidAmount) * 1_000_000));
+        let hashHex = '';
+        try {
+          const { pureCircuits } = await import('../../public/managed/contract/index.js');
+          const pk = pureCircuits.agentPublicKey(skBytes);
+          const buffer = new Uint8Array(32 + 32 + 8);
+          buffer.set(pk, 0);
+          buffer.set(saltBytes, 32);
+          const view = new DataView(buffer.buffer);
+          view.setBigUint64(64, amountBigInt, false);
+          const digest = await crypto.subtle.digest('SHA-256', buffer);
+          hashHex = Array.from(new Uint8Array(digest)).map(b => b.toString(16).padStart(2, '0')).join('');
+        } catch {
+          const buffer = new Uint8Array(32 + 32 + 8);
+          buffer.set(skBytes, 0);
+          buffer.set(saltBytes, 32);
+          const view = new DataView(buffer.buffer);
+          view.setBigUint64(64, amountBigInt, false);
+          const digest = await crypto.subtle.digest('SHA-256', buffer);
+          hashHex = Array.from(new Uint8Array(digest)).map(b => b.toString(16).padStart(2, '0')).join('');
+        }
         setCommitmentHex(hashHex);
       } catch (err) {
         console.error('Commitment computation error:', err);
       }
     };
 
-    computeSimulatedCommitment();
-  }, [bidAmount, saltHex, wallet.unshieldedAddress]);
+    computeCommitment();
+  }, [bidAmount, saltHex, secretKeyHex]);
+
+  // Reveal fields
+  const [revealSecretKey, setRevealSecretKey] = useState('');
+  const [revealSalt, setRevealSalt] = useState('');
+  const [revealAmount, setRevealAmount] = useState('');
+
+  // Auto-populate reveal fields if receipt exists for this auction
+  useEffect(() => {
+    if (!auction) return;
+    try {
+      const receipts: BidReceipt[] = JSON.parse(localStorage.getItem('veilbid_receipts') || '[]');
+      const match = receipts.find(r => r.auctionId === auction.id || r.contractAddress === auction.contractAddress);
+      if (match) {
+        setRevealSecretKey(match.secretKeyHex);
+        setRevealSalt(match.saltHex);
+        setRevealAmount(match.amount);
+      }
+    } catch {
+      // Ignore
+    }
+  }, [auction]);
 
   if (!auction) return null;
+
+  const explorerBase = networkName === 'preview'
+    ? 'https://preview.midnightexplorer.com'
+    : 'https://preprod.midnightexplorer.com';
 
   const handleCommitBid = async () => {
     if (!wallet.isConnected) {
@@ -67,27 +129,38 @@ export const BidModal: React.FC<BidModalProps> = ({
       setErrorMsg('Please enter a valid bid amount.');
       return;
     }
+    if (!commitmentHex) {
+      setErrorMsg('Commitment calculation in progress. Please wait a moment.');
+      return;
+    }
+    if (!submitBidToNetwork) {
+      setErrorMsg('On-chain network submission is not available. Please verify your wallet connection.');
+      return;
+    }
 
     setIsSubmitting(true);
     setErrorMsg(null);
+    setSubmittingStep('Requesting 1AM Wallet signature & submitting on Midnight Preprod...');
 
     try {
-      const secretKeyBytes = new Uint8Array(32);
-      crypto.getRandomValues(secretKeyBytes);
-      const secretKeyHex = Array.from(secretKeyBytes).map((b) => b.toString(16).padStart(2, '0')).join('');
+      const commitmentBytes = new Uint8Array(32);
+      for (let i = 0; i < 32; i++) {
+        commitmentBytes[i] = parseInt(commitmentHex.substring(i * 2, i * 2 + 2), 16) || 0;
+      }
 
-      // Create verifiable receipt
+      const res = await submitBidToNetwork(auction.contractAddress, commitmentBytes);
+
       const receipt: BidReceipt = {
         auctionId: auction.id,
         contractAddress: auction.contractAddress,
         amount: bidAmount,
         amountBigInt: BigInt(Math.floor(Number(bidAmount) * 1_000_000)).toString(),
         saltHex,
-        commitmentHex: commitmentHex || '0x' + saltHex.slice(0, 64),
+        commitmentHex,
         secretKeyHex,
         timestamp: Date.now(),
         status: 'COMMITTED',
-        txHash: '0x' + Array.from(crypto.getRandomValues(new Uint8Array(32))).map(b => b.toString(16).padStart(2, '0')).join(''),
+        txHash: res.txHash,
       };
 
       // Save to localStorage
@@ -95,43 +168,54 @@ export const BidModal: React.FC<BidModalProps> = ({
       existing.unshift(receipt);
       localStorage.setItem('veilbid_receipts', JSON.stringify(existing));
 
-      // If contract is connected, call submitBid circuit if available
-      if (wallet.contract?.callTx?.submitBid) {
-        try {
-          const commitmentBytes = new Uint8Array(32);
-          for (let i = 0; i < 32; i++) {
-            commitmentBytes[i] = parseInt(receipt.commitmentHex.substring(i * 2, i * 2 + 2), 16) || 0;
-          }
-          const res = await wallet.contract.callTx.submitBid(commitmentBytes);
-          receipt.txHash = res.txHash;
-        } catch (contractErr) {
-          console.warn('On-chain submitBid call fell back to verified simulation:', contractErr);
-        }
-      }
-
       setSuccessReceipt(receipt);
       if (onBidSubmitted) onBidSubmitted(receipt);
     } catch (err: unknown) {
       const e = err as Error;
-      setErrorMsg(e.message || 'Failed to submit sealed bid.');
+      console.error('[VeilBid On-Chain Error]', e);
+      setErrorMsg(e.message || 'On-chain transaction failed on Midnight Preprod network.');
     } finally {
       setIsSubmitting(false);
+      setSubmittingStep('');
     }
   };
 
   const handleRevealBid = async () => {
+    if (!wallet.isConnected) {
+      setErrorMsg('Please connect your 1AM wallet first.');
+      return;
+    }
+    if (!revealBidToNetwork) {
+      setErrorMsg('On-chain reveal is not available. Please verify your wallet connection.');
+      return;
+    }
+    if (!revealSecretKey || !revealSalt || !revealAmount) {
+      setErrorMsg('Please provide your secret key, salt, and bid amount to reveal.');
+      return;
+    }
+
     setIsSubmitting(true);
     setErrorMsg(null);
+    setSubmittingStep('Generating ZK proof & submitting reveal transaction to Midnight Preprod...');
+
     try {
-      // Simulate/call reveal circuit
-      await new Promise((r) => setTimeout(r, 1200));
-      alert(`🎉 Bid of ${bidAmount || '0.5'} tNIGHT successfully revealed on Midnight! Verifying commitment on-chain.`);
-      onClose();
+      const skBytes = new Uint8Array(32);
+      const saltBytes = new Uint8Array(32);
+      for (let i = 0; i < 32; i++) {
+        skBytes[i] = parseInt(revealSecretKey.substring(i * 2, i * 2 + 2), 16) || 0;
+        saltBytes[i] = parseInt(revealSalt.substring(i * 2, i * 2 + 2), 16) || 0;
+      }
+      const amountBigInt = BigInt(Math.floor(Number(revealAmount) * 1_000_000));
+
+      const res = await revealBidToNetwork(auction.contractAddress, skBytes, saltBytes, amountBigInt);
+      setRevealSuccessTx(res.txHash);
     } catch (err: unknown) {
       const e = err as Error;
-      setErrorMsg(e.message || 'Reveal failed.');
+      console.error('[VeilBid Reveal Error]', e);
+      setErrorMsg(e.message || 'On-chain reveal transaction failed on Midnight.');
     } finally {
       setIsSubmitting(false);
+      setSubmittingStep('');
     }
   };
 
@@ -180,7 +264,7 @@ export const BidModal: React.FC<BidModalProps> = ({
         <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center' }}>
           <div>
             <h2 style={{ fontSize: '20px', fontWeight: 900, margin: 0 }}>
-              {tab === 'commit' ? '🔒 Place Sealed Bid' : '🏆 Settle & Reveal Bid'}
+              {tab === 'commit' ? '🔒 Place Sealed Bid on Midnight' : '🏆 Settle & Reveal Bid'}
             </h2>
             <div style={{ fontSize: '12px', color: '#666', marginTop: '2px' }}>
               Auction: {auction.title} ({auction.floor})
@@ -204,7 +288,7 @@ export const BidModal: React.FC<BidModalProps> = ({
         {/* Tab Switcher */}
         <div style={{ display: 'flex', gap: '8px', borderBottom: '1.5px solid #eee', paddingBottom: '12px' }}>
           <button
-            onClick={() => setTab('commit')}
+            onClick={() => { setTab('commit'); setErrorMsg(null); }}
             style={{
               padding: '6px 14px',
               fontSize: '12px',
@@ -219,7 +303,7 @@ export const BidModal: React.FC<BidModalProps> = ({
             Phase 1: Sealed Commitment
           </button>
           <button
-            onClick={() => setTab('reveal')}
+            onClick={() => { setTab('reveal'); setErrorMsg(null); }}
             style={{
               padding: '6px 14px',
               fontSize: '12px',
@@ -243,14 +327,15 @@ export const BidModal: React.FC<BidModalProps> = ({
             padding: '10px 14px',
             borderRadius: '8px',
             fontSize: '12px',
-            border: '1px solid #f87171'
+            border: '1px solid #f87171',
+            wordBreak: 'break-word'
           }}>
             ⚠️ {errorMsg}
           </div>
         )}
 
-        {/* Success Screen */}
-        {successReceipt ? (
+        {/* Reveal Success Screen */}
+        {revealSuccessTx && (
           <div style={{ display: 'flex', flexDirection: 'column', gap: '14px' }}>
             <div style={{
               background: '#dcfce7',
@@ -261,9 +346,63 @@ export const BidModal: React.FC<BidModalProps> = ({
               textAlign: 'center'
             }}>
               <div style={{ fontSize: '24px', marginBottom: '4px' }}>🎉</div>
-              <div style={{ fontWeight: 800, fontSize: '15px' }}>Sealed Bid Committed Successfully!</div>
+              <div style={{ fontWeight: 800, fontSize: '15px' }}>Bid Revealed On-Chain!</div>
               <div style={{ fontSize: '12px', marginTop: '4px' }}>
-                Your bid amount is encrypted with Zero-Knowledge proofs and registered on-chain.
+                Your ZK reveal was verified on Midnight Preprod network.
+              </div>
+            </div>
+
+            <div style={{
+              background: '#F6F3EC',
+              border: '1.5px solid #0a0a0a',
+              borderRadius: '8px',
+              padding: '12px',
+              fontSize: '12px'
+            }}>
+              <div><strong>Reveal TX Hash:</strong></div>
+              <a
+                href={`${explorerBase}/tx/${revealSuccessTx}`}
+                target="_blank"
+                rel="noreferrer"
+                style={{ color: '#5B5BD6', wordBreak: 'break-all', fontFamily: 'var(--font-mono)' }}
+              >
+                {revealSuccessTx} ↗
+              </a>
+            </div>
+
+            <button
+              onClick={onClose}
+              style={{
+                padding: '10px 20px',
+                fontSize: '13px',
+                fontWeight: 800,
+                background: '#C1F04C',
+                border: '2px solid #0a0a0a',
+                borderRadius: '8px',
+                cursor: 'pointer',
+                boxShadow: '3px 3px 0 #0a0a0a'
+              }}
+            >
+              Done
+            </button>
+          </div>
+        )}
+
+        {/* Commit Success Screen */}
+        {successReceipt && !revealSuccessTx ? (
+          <div style={{ display: 'flex', flexDirection: 'column', gap: '14px' }}>
+            <div style={{
+              background: '#dcfce7',
+              color: '#15803d',
+              padding: '14px',
+              borderRadius: '8px',
+              border: '1.5px solid #86efac',
+              textAlign: 'center'
+            }}>
+              <div style={{ fontSize: '24px', marginBottom: '4px' }}>🎉</div>
+              <div style={{ fontWeight: 800, fontSize: '15px' }}>Sealed Bid Submitted On-Chain!</div>
+              <div style={{ fontSize: '12px', marginTop: '4px' }}>
+                Your bid commitment was verified and registered on Midnight Preprod.
               </div>
             </div>
 
@@ -281,7 +420,17 @@ export const BidModal: React.FC<BidModalProps> = ({
               <div><strong>Commitment Hash:</strong> <code style={{ wordBreak: 'break-all' }}>{successReceipt.commitmentHex}</code></div>
               <div><strong>Salt (Keep Secret):</strong> <code style={{ wordBreak: 'break-all' }}>{successReceipt.saltHex}</code></div>
               {successReceipt.txHash && (
-                <div><strong>TX Hash:</strong> <code style={{ wordBreak: 'break-all' }}>{successReceipt.txHash}</code></div>
+                <div>
+                  <strong>Midnight TX Hash:</strong><br />
+                  <a
+                    href={`${explorerBase}/tx/${successReceipt.txHash}`}
+                    target="_blank"
+                    rel="noreferrer"
+                    style={{ color: '#5B5BD6', wordBreak: 'break-all', fontFamily: 'var(--font-mono)' }}
+                  >
+                    {successReceipt.txHash} ↗
+                  </a>
+                </div>
               )}
             </div>
 
@@ -319,11 +468,11 @@ export const BidModal: React.FC<BidModalProps> = ({
               </button>
             </div>
           </div>
-        ) : tab === 'commit' ? (
+        ) : !revealSuccessTx && tab === 'commit' ? (
           /* Commit Form */
           <div style={{ display: 'flex', flexDirection: 'column', gap: '14px' }}>
             <div style={{ fontSize: '12px', color: '#555', lineHeight: 1.5 }}>
-              Enter your bid amount. VeilBid generates a high-entropy 256-bit salt locally in your browser to produce an on-chain commitment. No observer or validator can learn your bid.
+              Enter your bid amount. VeilBid computes a 256-bit cryptographic commitment locally. When you submit, your 1AM wallet signs and registers the commitment on the Midnight blockchain.
             </div>
 
             <div>
@@ -363,7 +512,7 @@ export const BidModal: React.FC<BidModalProps> = ({
               <div style={{ fontFamily: 'var(--font-mono)', wordBreak: 'break-all', color: '#555' }}>
                 {saltHex || 'Generating...'}
               </div>
-              <div><strong>ZK Commitment Hash (Public on Ledger):</strong></div>
+              <div><strong>ZK Commitment Hash (Submitted to Midnight):</strong></div>
               <div style={{ fontFamily: 'var(--font-mono)', wordBreak: 'break-all', color: '#5B5BD6' }}>
                 {commitmentHex || 'Enter amount to compute...'}
               </div>
@@ -400,14 +549,78 @@ export const BidModal: React.FC<BidModalProps> = ({
                 boxShadow: '4px 4px 0 #0a0a0a'
               }}
             >
-              {isSubmitting ? '⏳ Generating ZK Proof & Submitting...' : '🔒 Submit Sealed Bid'}
+              {isSubmitting ? (submittingStep || '⏳ Submitting to Midnight...') : '🔒 Submit Sealed Bid on Midnight'}
             </button>
           </div>
-        ) : (
+        ) : !revealSuccessTx ? (
           /* Reveal Form */
           <div style={{ display: 'flex', flexDirection: 'column', gap: '14px' }}>
             <div style={{ fontSize: '12px', color: '#555', lineHeight: 1.5 }}>
-              Once the bidding window closes, bidders reveal their private credentials. The Zero-Knowledge circuit verifies that the revealed bid matches the registered on-chain commitment and meets the reserve price.
+              To settle the auction, provide your private bid credentials. The ZK circuit verifies that your reveal matches your on-chain commitment and meets the reserve price.
+            </div>
+
+            <div>
+              <label style={{ fontSize: '11px', fontWeight: 800, display: 'block', marginBottom: '4px' }}>
+                Secret Key (Hex)
+              </label>
+              <input
+                type="text"
+                placeholder="32-byte secret key"
+                value={revealSecretKey}
+                onChange={(e) => setRevealSecretKey(e.target.value)}
+                style={{
+                  width: '100%',
+                  padding: '8px',
+                  fontSize: '12px',
+                  fontFamily: 'var(--font-mono)',
+                  borderRadius: '6px',
+                  border: '1.5px solid #0a0a0a',
+                  boxSizing: 'border-box'
+                }}
+              />
+            </div>
+
+            <div>
+              <label style={{ fontSize: '11px', fontWeight: 800, display: 'block', marginBottom: '4px' }}>
+                Salt Nonce (Hex)
+              </label>
+              <input
+                type="text"
+                placeholder="32-byte salt"
+                value={revealSalt}
+                onChange={(e) => setRevealSalt(e.target.value)}
+                style={{
+                  width: '100%',
+                  padding: '8px',
+                  fontSize: '12px',
+                  fontFamily: 'var(--font-mono)',
+                  borderRadius: '6px',
+                  border: '1.5px solid #0a0a0a',
+                  boxSizing: 'border-box'
+                }}
+              />
+            </div>
+
+            <div>
+              <label style={{ fontSize: '11px', fontWeight: 800, display: 'block', marginBottom: '4px' }}>
+                Revealed Bid Amount (tNIGHT)
+              </label>
+              <input
+                type="number"
+                step="0.01"
+                placeholder="e.g. 0.50"
+                value={revealAmount}
+                onChange={(e) => setRevealAmount(e.target.value)}
+                style={{
+                  width: '100%',
+                  padding: '8px',
+                  fontSize: '13px',
+                  fontWeight: 700,
+                  borderRadius: '6px',
+                  border: '1.5px solid #0a0a0a',
+                  boxSizing: 'border-box'
+                }}
+              />
             </div>
 
             <div style={{
@@ -418,13 +631,12 @@ export const BidModal: React.FC<BidModalProps> = ({
               fontSize: '12px'
             }}>
               <div><strong>Reserve Price:</strong> {auction.floor}</div>
-              <div><strong>Creator Royalty:</strong> {auction.royaltyBps / 100}%</div>
               <div><strong>Contract:</strong> {auction.contractAddress.slice(0, 10)}...</div>
             </div>
 
             <button
               onClick={handleRevealBid}
-              disabled={isSubmitting}
+              disabled={isSubmitting || !revealSecretKey || !revealSalt || !revealAmount}
               style={{
                 padding: '12px',
                 fontSize: '14px',
@@ -437,10 +649,10 @@ export const BidModal: React.FC<BidModalProps> = ({
                 boxShadow: '4px 4px 0 #0a0a0a'
               }}
             >
-              {isSubmitting ? '⏳ Proving & Submitting Reveal...' : '🏆 Settle Auction with ZK Proof'}
+              {isSubmitting ? (submittingStep || '⏳ Submitting Reveal to Midnight...') : '🏆 Submit Reveal Transaction on Midnight'}
             </button>
           </div>
-        )}
+        ) : null}
       </div>
     </div>
   );
