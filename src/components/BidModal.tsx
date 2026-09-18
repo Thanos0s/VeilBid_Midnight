@@ -471,7 +471,7 @@ export const BidModal: React.FC<BidModalProps> = ({
               ● On-Chain Contract: <code style={{ fontFamily: 'var(--font-mono)' }}>{contractAddress.slice(0, 8)}...{contractAddress.slice(-6)}</code>
             </span>
             <a
-              href={`${explorerBase}/contract/${contractAddress}`}
+              href={`${explorerBase}/contracts/${contractAddress.startsWith('0x') ? contractAddress : '0x' + contractAddress}`}
               target="_blank"
               rel="noreferrer"
               style={{ color: '#15803d', fontWeight: 800, textDecoration: 'none' }}
@@ -493,7 +493,7 @@ export const BidModal: React.FC<BidModalProps> = ({
             ✅ Contract successfully deployed on Midnight Preprod!
             <br />
             <a
-              href={`${explorerBase}/tx/${deploySuccessTx}`}
+              href={`${explorerBase}/transactions/${deploySuccessTx}`}
               target="_blank"
               rel="noreferrer"
               style={{ color: '#059669', fontWeight: 700, wordBreak: 'break-all' }}
@@ -530,7 +530,7 @@ export const BidModal: React.FC<BidModalProps> = ({
             }}>
               <div><strong>Reveal TX Hash:</strong></div>
               <a
-                href={`${explorerBase}/tx/${revealSuccessTx}`}
+                href={`${explorerBase}/transactions/${revealSuccessTx}`}
                 target="_blank"
                 rel="noreferrer"
                 style={{ color: '#5B5BD6', wordBreak: 'break-all', fontFamily: 'var(--font-mono)' }}
@@ -592,7 +592,7 @@ export const BidModal: React.FC<BidModalProps> = ({
                 <div>
                   <strong>Midnight TX Hash:</strong><br />
                   <a
-                    href={`${explorerBase}/tx/${successReceipt.txHash}`}
+                    href={`${explorerBase}/transactions/${successReceipt.txHash}`}
                     target="_blank"
                     rel="noreferrer"
                     style={{ color: '#5B5BD6', wordBreak: 'break-all', fontFamily: 'var(--font-mono)' }}

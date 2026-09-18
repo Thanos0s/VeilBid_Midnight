@@ -164,7 +164,7 @@ export const DeployModal: React.FC<DeployModalProps> = ({
               <div>
                 <strong>Contract Address:</strong><br />
                 <a
-                  href={`${explorerBase}/contract/${deployResult.address}`}
+                  href={`${explorerBase}/contracts/${deployResult.address.startsWith('0x') ? deployResult.address : '0x' + deployResult.address}`}
                   target="_blank"
                   rel="noreferrer"
                   style={{ color: '#5B5BD6', wordBreak: 'break-all', fontFamily: 'var(--font-mono)' }}
@@ -175,7 +175,7 @@ export const DeployModal: React.FC<DeployModalProps> = ({
               <div>
                 <strong>Deploy TX:</strong><br />
                 <a
-                  href={`${explorerBase}/tx/${deployResult.tx}`}
+                  href={`${explorerBase}/transactions/${deployResult.tx}`}
                   target="_blank"
                   rel="noreferrer"
                   style={{ color: '#5B5BD6', wordBreak: 'break-all', fontFamily: 'var(--font-mono)' }}

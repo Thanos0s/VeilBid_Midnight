@@ -122,7 +122,7 @@ export const AuctionCard: React.FC<AuctionCardProps> = ({
           <span>Contract:</span>
           {auction.contractAddress ? (
             <a
-              href={`${explorerUrl}/contract/${auction.contractAddress}`}
+              href={`${explorerUrl}/contracts/${auction.contractAddress.startsWith('0x') ? auction.contractAddress : '0x' + auction.contractAddress}`}
               target="_blank"
               rel="noreferrer"
               style={{ color: '#5B5BD6', textDecoration: 'none', fontFamily: 'var(--font-mono)' }}
