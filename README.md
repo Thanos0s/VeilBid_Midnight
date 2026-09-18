@@ -31,6 +31,19 @@ Connect your [1AM Wallet](https://1am.space) on **Midnight Preprod Network** (or
 
 ---
 
+## Contract Address
+| Network  | Address                              |
+|----------|--------------------------------------|
+| Preprod  | `0x2bb504ffeb044d37e4fa02e0845cdafc2fa68db489c4c810457b32db7e7888e9` |
+
+## Level 5 — User Validation
+- Target: 50 Preprod users
+- Current: 50 / 50 (See USERS.md and docs/PREPROD_USERS.md)
+- See USERS.md for wallet addresses
+- See docs/FEEDBACK.md for feedback log and changes
+
+---
+
 ## 📜 Verified Deployed Smart Contracts & On-Chain Proofs
 
 | Network | Contract Address | Indexer / Explorer |
@@ -65,6 +78,8 @@ Watch the full live MVP demo:
 
 | Document | Description |
 |---|---|
+| [USERS.md](USERS.md) | **Level 5 verified Preprod users table** |
+| [docs/FEEDBACK.md](docs/FEEDBACK.md) | **Level 5 structured feedback log, themes & changes** |
 | [docs/LEVEL_5_SUBMISSION.md](docs/LEVEL_5_SUBMISSION.md) | **Master Level 5 Full Moon Submission Dossier & Checklist** |
 | [docs/PREPROD_USERS.md](docs/PREPROD_USERS.md) | **Directory of 50 verified Preprod users and on-chain proofs** |
 | [docs/FEEDBACK_LOOP.md](docs/FEEDBACK_LOOP.md) | **Structured user feedback loop, prioritization & iteration log** |
