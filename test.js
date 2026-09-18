@@ -5,7 +5,7 @@ import { createHash } from 'node:crypto';
 // ── VeilBid Contract & Cryptographic Circuit Tests ──
 
 test('VeilBid: auction state machine and compiled contract exports', async () => {
-  const contract = await import('./managed/contract/index.js');
+  const contract = await import('./public/managed/contract/index.js');
   
   assert.ok(contract.Contract, 'Contract export should exist');
   assert.ok(contract.AuctionState, 'AuctionState enum should be exported');
@@ -16,7 +16,7 @@ test('VeilBid: auction state machine and compiled contract exports', async () =>
 });
 
 test('VeilBid: deterministic public key derivation via Compact pure circuit', async () => {
-  const { pureCircuits } = await import('./managed/contract/index.js');
+  const { pureCircuits } = await import('./public/managed/contract/index.js');
   
   const secretKey1 = new Uint8Array(32);
   secretKey1[0] = 0x42;
@@ -39,7 +39,7 @@ test('VeilBid: deterministic public key derivation via Compact pure circuit', as
 });
 
 test('VeilBid: contract instantiation and interface verification', async () => {
-  const { Contract } = await import('./managed/contract/index.js');
+  const { Contract } = await import('./public/managed/contract/index.js');
   
   const contractInstance = new Contract({});
   assert.ok(contractInstance.circuits, 'Contract must define circuits');

@@ -290,7 +290,7 @@ export const useMidnight = () => {
           import('@midnight-ntwrk/compact-js'),
           import('@midnight-ntwrk/midnight-js-contracts'),
           import('@midnight-ntwrk/midnight-js-network-id'),
-          import('../../managed/contract/index.js'),
+          import('../../public/managed/contract/index.js'),
         ]);
 
         setNetworkId(networkName);
@@ -407,7 +407,7 @@ export const useMidnight = () => {
         import('@midnight-ntwrk/compact-js'),
         import('@midnight-ntwrk/midnight-js-contracts'),
         import('@midnight-ntwrk/midnight-js-network-id'),
-        import('../../managed/contract/index.js'),
+        import('../../public/managed/contract/index.js'),
       ]);
 
       setNetworkId(networkName);

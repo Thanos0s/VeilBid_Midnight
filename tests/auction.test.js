@@ -4,7 +4,7 @@ import assert from 'node:assert/strict';
 // ── Auction Smart Contract Circuit Tests ──
 
 test('auction: state machine opens with parameters and registers commitments', async () => {
-  const { pureCircuits } = await import('../managed/contract/index.js');
+  const { pureCircuits } = await import('../public/managed/contract/index.js');
 
   const sellerSk = new Uint8Array(32).fill(0x10);
   const creatorSk = new Uint8Array(32).fill(0x20);
@@ -19,9 +19,9 @@ test('auction: state machine opens with parameters and registers commitments', a
     sellerKey: sellerPk,
     creatorKey: creatorPk,
     bidCount: 0n,
-    commitments: new Set<string>(),
-    winner: null as Uint8Array | null,
-    winningPrice: null as bigint | null,
+    commitments: new Set(),
+    winner: null,
+    winningPrice: null,
   };
 
   assert.equal(mockLedger.state, 0, 'Auction should be open');
@@ -38,7 +38,7 @@ test('auction: state machine opens with parameters and registers commitments', a
 });
 
 test('auction: seller authorization required to close auction', async () => {
-  const { pureCircuits } = await import('../managed/contract/index.js');
+  const { pureCircuits } = await import('../public/managed/contract/index.js');
 
   const sellerSk = new Uint8Array(32).fill(0x10);
   const impostorSk = new Uint8Array(32).fill(0x99);
@@ -46,7 +46,7 @@ test('auction: seller authorization required to close auction', async () => {
   const authorizedSellerPk = pureCircuits.agentPublicKey(sellerSk);
   const impostorPk = pureCircuits.agentPublicKey(impostorSk);
 
-  const closeCircuit = (callerSk: Uint8Array, registeredSellerPk: Uint8Array) => {
+  const closeCircuit = (callerSk, registeredSellerPk) => {
     const callerPk = pureCircuits.agentPublicKey(callerSk);
     if (Buffer.compare(Buffer.from(callerPk), Buffer.from(registeredSellerPk)) !== 0) {
       throw new Error('Only auction creator/seller can close the auction');
