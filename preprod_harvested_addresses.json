@@ -1,0 +1,566 @@
+{
+  "network": "midnight-preprod",
+  "explorerBaseUrl": "https://preprod.midnightexplorer.com",
+  "harvestTimestamp": "2026-09-18T08:23:34.060Z",
+  "userAddresses": [
+    {
+      "address": "mn_addr_preprod13apau25syp76tat4qhu92hdd6ypz9mjnsxwy84ur67pxeugczwus353zzu",
+      "blockHeight": 2601147,
+      "txHash": "59db51b48bf666e383227ca9a565d19836ddffddde6d82ad4a71aa1661c35c1d",
+      "explorerTxUrl": "https://preprod.midnightexplorer.com/transactions/59db51b48bf666e383227ca9a565d19836ddffddde6d82ad4a71aa1661c35c1d",
+      "role": "receiver"
+    },
+    {
+      "address": "mn_addr_preprod1tulkgkmdzxnakfy4f50gpwvwg7cmv66n2ua4mm4tenqesqfqv56qgkd6l4",
+      "blockHeight": 2601147,
+      "txHash": "59db51b48bf666e383227ca9a565d19836ddffddde6d82ad4a71aa1661c35c1d",
+      "explorerTxUrl": "https://preprod.midnightexplorer.com/transactions/59db51b48bf666e383227ca9a565d19836ddffddde6d82ad4a71aa1661c35c1d",
+      "role": "receiver"
+    },
+    {
+      "address": "mn_addr_preprod16xwpc4yl77w8kuf9ald3tzeyklallfsfy8ql8p5c77jf2v3qaryqee7d8q",
+      "blockHeight": 2601088,
+      "txHash": "552299cb5d477638759216457da0dc4135cfed881e991f6ea77db79c77484dbc",
+      "explorerTxUrl": "https://preprod.midnightexplorer.com/transactions/552299cb5d477638759216457da0dc4135cfed881e991f6ea77db79c77484dbc",
+      "role": "receiver"
+    },
+    {
+      "address": "mn_addr_preprod1g59g6auxsfmlqln8qa3ex07nqlsq4yl8skqtq7qgjymre2gvmp8qahf8d3",
+      "blockHeight": 2601029,
+      "txHash": "31708232474941f89338fe3dcb1964b78b9e12c01ebee13984efd7154a96848d",
+      "explorerTxUrl": "https://preprod.midnightexplorer.com/transactions/31708232474941f89338fe3dcb1964b78b9e12c01ebee13984efd7154a96848d",
+      "role": "receiver"
+    },
+    {
+      "address": "mn_addr_preprod1swwaz8rvfex2ar4tx3yyfamfxp0n8736hcdfd29w7tl70jhlk93sjqez97",
+      "blockHeight": 2600980,
+      "txHash": "722434b4065718b83b29a93a111c65d381fc4239e1b0b263bc045cd2127603cb",
+      "explorerTxUrl": "https://preprod.midnightexplorer.com/transactions/722434b4065718b83b29a93a111c65d381fc4239e1b0b263bc045cd2127603cb",
+      "role": "receiver"
+    },
+    {
+      "address": "mn_addr_preprod18w4cgdyd6vjupp599ydqsrnwkjy5umwhdt2e272rr297r8g32q0sjy03mn",
+      "blockHeight": 2600929,
+      "txHash": "3c5551298c4bddcae000d350825dd6399b300671fc9cee6f9fa20b17ca014428",
+      "explorerTxUrl": "https://preprod.midnightexplorer.com/transactions/3c5551298c4bddcae000d350825dd6399b300671fc9cee6f9fa20b17ca014428",
+      "role": "receiver"
+    },
+    {
+      "address": "mn_addr_preprod1yw0a5svy0s22gtczyyc74sxjm54xy7cgqm4krv2ezwyr0q80f5hs7hks9m",
+      "blockHeight": 2600929,
+      "txHash": "3c5551298c4bddcae000d350825dd6399b300671fc9cee6f9fa20b17ca014428",
+      "explorerTxUrl": "https://preprod.midnightexplorer.com/transactions/3c5551298c4bddcae000d350825dd6399b300671fc9cee6f9fa20b17ca014428",
+      "role": "receiver"
+    },
+    {
+      "address": "mn_addr_preprod1en8764c628ds2m0wu7nghfagdtjp3tk6hnafpdz3g5tr4uavqh0sh42xjl",
+      "blockHeight": 2600928,
+      "txHash": "a0dab071a4239955fb32de17f24c9186c9990ef7b0d4ba06511836b8a5ab9d30",
+      "explorerTxUrl": "https://preprod.midnightexplorer.com/transactions/a0dab071a4239955fb32de17f24c9186c9990ef7b0d4ba06511836b8a5ab9d30",
+      "role": "receiver"
+    },
+    {
+      "address": "mn_addr_preprod18d733aulfgfsqanhxmj3sdv8hfxmpasrnhzu8q02xzcl2ta2lyqq0vs0z2",
+      "blockHeight": 2600919,
+      "txHash": "e562f20bf8eea1550a1800419ee9c4fdad58e13ed19e14ab0786012f7b040a46",
+      "explorerTxUrl": "https://preprod.midnightexplorer.com/transactions/e562f20bf8eea1550a1800419ee9c4fdad58e13ed19e14ab0786012f7b040a46",
+      "role": "receiver"
+    },
+    {
+      "address": "mn_addr_preprod1qa9vhnuuufjpprrt5u5awzu6fgxzlwj4h84mqwnwg28r4fy5crjqw4c7ej",
+      "blockHeight": 2600817,
+      "txHash": "a4415a7860641c2c5b6f691aa4c599fcd96f06b8a5c061120965efe28b593c0a",
+      "explorerTxUrl": "https://preprod.midnightexplorer.com/transactions/a4415a7860641c2c5b6f691aa4c599fcd96f06b8a5c061120965efe28b593c0a",
+      "role": "receiver"
+    },
+    {
+      "address": "mn_addr_preprod1m0tkez6x0qwpurpknup9sfpkcywk9kslzezf8mzl9033wwe0yhmsrkp45w",
+      "blockHeight": 2600738,
+      "txHash": "05abc42c55eb5f9c51b3f89a096d9ff0168a030bee5ce323341dd16af3101ce7",
+      "explorerTxUrl": "https://preprod.midnightexplorer.com/transactions/05abc42c55eb5f9c51b3f89a096d9ff0168a030bee5ce323341dd16af3101ce7",
+      "role": "receiver"
+    },
+    {
+      "address": "mn_addr_preprod1v2gagr9tppc3gxr8zuykxegulf3u3vdemwyz69lqxtq36qx3rm8sz3veuy",
+      "blockHeight": 2600715,
+      "txHash": "4bb2d2ff3e66047b247e6fb944b67db3608ee44d548b24a91a2275a7f990e9b4",
+      "explorerTxUrl": "https://preprod.midnightexplorer.com/transactions/4bb2d2ff3e66047b247e6fb944b67db3608ee44d548b24a91a2275a7f990e9b4",
+      "role": "receiver"
+    },
+    {
+      "address": "mn_addr_preprod175pylj2hdnh2ht40w8jaq0pmquwmxvka2dppurm39kpwuyv49lzqn3rmfc",
+      "blockHeight": 2600584,
+      "txHash": "d0e40e08a17e410cb7947d51a7c47ad27306c1dc184e9c775131c4bd024aca21",
+      "explorerTxUrl": "https://preprod.midnightexplorer.com/transactions/d0e40e08a17e410cb7947d51a7c47ad27306c1dc184e9c775131c4bd024aca21",
+      "role": "receiver"
+    },
+    {
+      "address": "mn_addr_preprod1xt35u3g3nhh7rsvg2zatz2vft42gkq3wcukpkywdffxg50gc2m9sm6ep3r",
+      "blockHeight": 2600412,
+      "txHash": "45cb5a8b83ab361114a4340cfb19319d584a9054b99b7c229bd842dd4d04f7da",
+      "explorerTxUrl": "https://preprod.midnightexplorer.com/transactions/45cb5a8b83ab361114a4340cfb19319d584a9054b99b7c229bd842dd4d04f7da",
+      "role": "receiver"
+    },
+    {
+      "address": "mn_addr_preprod1ajd6rkfewrfzv6pqk3lpcr4q2pasedw9m4rhr8ut5y5rxm3w74kqrw4dqk",
+      "blockHeight": 2600396,
+      "txHash": "ff566c4faf745a2c28e6c6a394798674e1b2290377a62935bcb7c5949db34b7d",
+      "explorerTxUrl": "https://preprod.midnightexplorer.com/transactions/ff566c4faf745a2c28e6c6a394798674e1b2290377a62935bcb7c5949db34b7d",
+      "role": "receiver"
+    },
+    {
+      "address": "mn_addr_preprod1w636cuh72qj9l7dmg4xg5wzake6p3k36qwfrtqd8wdwzv9mv29zqu6w47z",
+      "blockHeight": 2600391,
+      "txHash": "b20efb1e9a21f3a11b4fe1af97a9dd499f74f8c30c9980926c6f3dd0f9346757",
+      "explorerTxUrl": "https://preprod.midnightexplorer.com/transactions/b20efb1e9a21f3a11b4fe1af97a9dd499f74f8c30c9980926c6f3dd0f9346757",
+      "role": "receiver"
+    },
+    {
+      "address": "mn_addr_preprod182qx8xr78h2r6vuheqctnf7fdku3p0awg69frzgscrp0umqsua8qxsvg8g",
+      "blockHeight": 2600382,
+      "txHash": "02ac19ca13396d0eae34ed3cd7524c26109f7a21354da6bfabbeadfb27ba9532",
+      "explorerTxUrl": "https://preprod.midnightexplorer.com/transactions/02ac19ca13396d0eae34ed3cd7524c26109f7a21354da6bfabbeadfb27ba9532",
+      "role": "receiver"
+    },
+    {
+      "address": "mn_addr_preprod1lmzulpkzewrmvjsgv0kucx9z2qa4zcg45l8hgumaw29j9yl4anxsa7uuqh",
+      "blockHeight": 2600378,
+      "txHash": "9963a5d1d0a851c60826b6f63d0ddcab722ec0b070dc2571b9c82efd0189a174",
+      "explorerTxUrl": "https://preprod.midnightexplorer.com/transactions/9963a5d1d0a851c60826b6f63d0ddcab722ec0b070dc2571b9c82efd0189a174",
+      "role": "receiver"
+    },
+    {
+      "address": "mn_addr_preprod1xwalehk2azjstd9yrl697fqfdl3ncd4j4396c485k0qp6ndwhhmqjxr7x8",
+      "blockHeight": 2600369,
+      "txHash": "67e9378a9e23904cdf15363c0cd99063fb0faf9e0bc522a1d84f0368afd3b1a8",
+      "explorerTxUrl": "https://preprod.midnightexplorer.com/transactions/67e9378a9e23904cdf15363c0cd99063fb0faf9e0bc522a1d84f0368afd3b1a8",
+      "role": "receiver"
+    },
+    {
+      "address": "mn_addr_preprod1qdu4a8l9pynxrray7sq6zywuwu2vnvur62fpx2dy342rp69h0xes000sst",
+      "blockHeight": 2600341,
+      "txHash": "4e35ce0582e270183272600691364c6de672f9c9d4d2415851145b05e7db2359",
+      "explorerTxUrl": "https://preprod.midnightexplorer.com/transactions/4e35ce0582e270183272600691364c6de672f9c9d4d2415851145b05e7db2359",
+      "role": "receiver"
+    },
+    {
+      "address": "mn_addr_preprod1m0fxz0az83wgwzncnse6t9dwqfygq3r2s2hlknn0s6jnajd56dgq7wve7f",
+      "blockHeight": 2600329,
+      "txHash": "9a7c6c074127fe1fffec8e47df9ac11ad73864a543ef47287d962d60fbacc317",
+      "explorerTxUrl": "https://preprod.midnightexplorer.com/transactions/9a7c6c074127fe1fffec8e47df9ac11ad73864a543ef47287d962d60fbacc317",
+      "role": "receiver"
+    },
+    {
+      "address": "mn_addr_preprod1uem6pgkpjxv24tm8smchs005tcu9r0c457nmqu6n0mc24lxse4lqgrh94d",
+      "blockHeight": 2600322,
+      "txHash": "4c5dc6d2b76aec81c8621e5731de7fee0b23b0b78442c63f50b90538bfe4566e",
+      "explorerTxUrl": "https://preprod.midnightexplorer.com/transactions/4c5dc6d2b76aec81c8621e5731de7fee0b23b0b78442c63f50b90538bfe4566e",
+      "role": "receiver"
+    },
+    {
+      "address": "mn_addr_preprod1s3dujfg95e3y5ham0sqknrdl63t86y6k3mpn0xewlw7ae3cupflszuc5xw",
+      "blockHeight": 2600321,
+      "txHash": "047c89c386f6fb491901c8a16b4b55dbe226f23e15755891efcd3d79a0748c92",
+      "explorerTxUrl": "https://preprod.midnightexplorer.com/transactions/047c89c386f6fb491901c8a16b4b55dbe226f23e15755891efcd3d79a0748c92",
+      "role": "receiver"
+    },
+    {
+      "address": "mn_addr_preprod1fz8z4znkljxj8l9pp44pkve0seckrp8rxfmtelhsc2dsmvk473nstdf7hg",
+      "blockHeight": 2600308,
+      "txHash": "7bbcc0b29ccd8c038977b8529bae9ec2188674bb4eb51cc0f3fa96988d39ea8f",
+      "explorerTxUrl": "https://preprod.midnightexplorer.com/transactions/7bbcc0b29ccd8c038977b8529bae9ec2188674bb4eb51cc0f3fa96988d39ea8f",
+      "role": "receiver"
+    },
+    {
+      "address": "mn_addr_preprod1ky2n83ccnymj54kydj9fqkkrd8dlrs92tzd4z6wggtamxt3xhdgsyuxhpr",
+      "blockHeight": 2600291,
+      "txHash": "2e2a27df848d5a5e7a9f96b77990830b5e5b204de57e4333d045afd6a3713a15",
+      "explorerTxUrl": "https://preprod.midnightexplorer.com/transactions/2e2a27df848d5a5e7a9f96b77990830b5e5b204de57e4333d045afd6a3713a15",
+      "role": "receiver"
+    },
+    {
+      "address": "mn_addr_preprod1jv4qenyzzq8t9qe4jljgptdf4qlv5cwpyap60j02sy42pes2dj9sg3gsf0",
+      "blockHeight": 2600287,
+      "txHash": "37f92147e844dccf15ac53b74c32683d9e92ccad72580c32a74b163597dfab6d",
+      "explorerTxUrl": "https://preprod.midnightexplorer.com/transactions/37f92147e844dccf15ac53b74c32683d9e92ccad72580c32a74b163597dfab6d",
+      "role": "receiver"
+    },
+    {
+      "address": "mn_addr_preprod17xevpj9knmqz4dldvuf9nuxl2v6j4mj8da4ajmhwa0fq2mprn52qhdesrk",
+      "blockHeight": 2600273,
+      "txHash": "0b2cf4336f5565bf517be8815a5972e0730483bcfa9d906e86ea1a3f908afe82",
+      "explorerTxUrl": "https://preprod.midnightexplorer.com/transactions/0b2cf4336f5565bf517be8815a5972e0730483bcfa9d906e86ea1a3f908afe82",
+      "role": "receiver"
+    },
+    {
+      "address": "mn_addr_preprod1lklvgrhktacjrpt9l4z87k960l4kcuq840t40gnva3gkjgsdsx3sv9aq57",
+      "blockHeight": 2600215,
+      "txHash": "fcb4ac6a06e5fb4e5690fa4c771e188a588774a5ff456c0830694f8967db1419",
+      "explorerTxUrl": "https://preprod.midnightexplorer.com/transactions/fcb4ac6a06e5fb4e5690fa4c771e188a588774a5ff456c0830694f8967db1419",
+      "role": "receiver"
+    },
+    {
+      "address": "mn_addr_preprod1zqtue2ty8xm9asdx06dy4tf8dphdz8jdahu53rzevjj7kpjx49qqx8e7ye",
+      "blockHeight": 2600202,
+      "txHash": "0cf4c462f254fbfc0868b0d57348f83c13abd3ea389f0a644964416e2b96a8b1",
+      "explorerTxUrl": "https://preprod.midnightexplorer.com/transactions/0cf4c462f254fbfc0868b0d57348f83c13abd3ea389f0a644964416e2b96a8b1",
+      "role": "receiver"
+    },
+    {
+      "address": "mn_addr_preprod1htv5sv6fmfattqz6t920z47fehu9d37qrwhar0dlvp50kezrpjwqlk2zs0",
+      "blockHeight": 2600196,
+      "txHash": "7dbebd0495c8dc089461f053d8b2490fbf0d462aeba11eaadabe8424e8a483a6",
+      "explorerTxUrl": "https://preprod.midnightexplorer.com/transactions/7dbebd0495c8dc089461f053d8b2490fbf0d462aeba11eaadabe8424e8a483a6",
+      "role": "receiver"
+    },
+    {
+      "address": "mn_addr_preprod15dyaxnmg99e5x8tu8ascvtwcez2qscdv2hhxn02ux35qt2mx6wvslw2yeq",
+      "blockHeight": 2600178,
+      "txHash": "a17277e5e9025dc1ec5c828185a6246ae330e24d948dd417a65890cc9e587fd9",
+      "explorerTxUrl": "https://preprod.midnightexplorer.com/transactions/a17277e5e9025dc1ec5c828185a6246ae330e24d948dd417a65890cc9e587fd9",
+      "role": "receiver"
+    },
+    {
+      "address": "mn_addr_preprod170xsech804c7ylh5y0l53vgjzcwyffcvz2mppdnhuru7dk6wys7spslt4u",
+      "blockHeight": 2600145,
+      "txHash": "2520985b13db52d2675603634c88e1dcb82572d7f4272a9bda9d7b9ea79e303d",
+      "explorerTxUrl": "https://preprod.midnightexplorer.com/transactions/2520985b13db52d2675603634c88e1dcb82572d7f4272a9bda9d7b9ea79e303d",
+      "role": "receiver"
+    },
+    {
+      "address": "mn_addr_preprod1f9cpvrpa5gww3swmwx9jplemsczxawf663jrp8q2h390d3tskg2qd7uwqa",
+      "blockHeight": 2600121,
+      "txHash": "c480008fb351c619c3c3307fe095db8aa5bb91bb307d6a5a3c0aac50d3cef257",
+      "explorerTxUrl": "https://preprod.midnightexplorer.com/transactions/c480008fb351c619c3c3307fe095db8aa5bb91bb307d6a5a3c0aac50d3cef257",
+      "role": "receiver"
+    },
+    {
+      "address": "mn_addr_preprod1h52959cwtsz06m8nh5ln538wze044gfhykxjyevmkypts6yurvlsa4c3jk",
+      "blockHeight": 2600113,
+      "txHash": "4268222e05a6a522e9db5a038309beb40ecb215a964885f7bfc0cf4864c7145f",
+      "explorerTxUrl": "https://preprod.midnightexplorer.com/transactions/4268222e05a6a522e9db5a038309beb40ecb215a964885f7bfc0cf4864c7145f",
+      "role": "receiver"
+    },
+    {
+      "address": "mn_addr_preprod1xjw0l8e2xymw3v43cq42ajexpvn0mrsx247vuyarused5ekzvmfqcmcl8h",
+      "blockHeight": 2600036,
+      "txHash": "34b588762cb51938ac783deb526d92d337c1e6c067884462c22cdebe40d8b4d8",
+      "explorerTxUrl": "https://preprod.midnightexplorer.com/transactions/34b588762cb51938ac783deb526d92d337c1e6c067884462c22cdebe40d8b4d8",
+      "role": "receiver"
+    },
+    {
+      "address": "mn_addr_preprod1p50vu25jemt8depk0h2eu97pvje6yn5skh6rp97zmhx8r7ud08rsm4sjxe",
+      "blockHeight": 2600002,
+      "txHash": "4d00a62745eee606da66481195a61e6ec7b2f7a390299d3c2c812e0f6551f3b8",
+      "explorerTxUrl": "https://preprod.midnightexplorer.com/transactions/4d00a62745eee606da66481195a61e6ec7b2f7a390299d3c2c812e0f6551f3b8",
+      "role": "receiver"
+    },
+    {
+      "address": "mn_addr_preprod1l9h77ptf85gl9ts49lczq0l0p9n2mtjkz9gwvmjpxd8wacetxyyqf0dtpj",
+      "blockHeight": 2599991,
+      "txHash": "b266116e81d0f6f72dcf4f22d0feef680983a453f1cf6f0165f971535e4079a4",
+      "explorerTxUrl": "https://preprod.midnightexplorer.com/transactions/b266116e81d0f6f72dcf4f22d0feef680983a453f1cf6f0165f971535e4079a4",
+      "role": "receiver"
+    },
+    {
+      "address": "mn_addr_preprod1mul8daujmfrqt0g7q7ckgetavvt27xryp5lxtn0u8xywfj4g3ghqkp63w3",
+      "blockHeight": 2599978,
+      "txHash": "34a48ec43c91df445a1f96bf48db0d4b6eb6897f753baaa6609f5691628b5177",
+      "explorerTxUrl": "https://preprod.midnightexplorer.com/transactions/34a48ec43c91df445a1f96bf48db0d4b6eb6897f753baaa6609f5691628b5177",
+      "role": "receiver"
+    },
+    {
+      "address": "mn_addr_preprod1xtxzn3vfryvzw9y6qylu4f7stx8c9klq6tj9mgtq6pr969dcngqsdh02la",
+      "blockHeight": 2599970,
+      "txHash": "a875341ad57131e421710a53c669af76b96aed9ae438a84d21d9fb1d762b296c",
+      "explorerTxUrl": "https://preprod.midnightexplorer.com/transactions/a875341ad57131e421710a53c669af76b96aed9ae438a84d21d9fb1d762b296c",
+      "role": "receiver"
+    },
+    {
+      "address": "mn_addr_preprod1sjzf7mgu9v7ypa6lwr2ra93999rf58p4kyz7pshez4ls3zgr2alqvleryc",
+      "blockHeight": 2599959,
+      "txHash": "aa960d1d8a0e359f46daff031313b1c824a05e306dc6420016c02c20d82faf75",
+      "explorerTxUrl": "https://preprod.midnightexplorer.com/transactions/aa960d1d8a0e359f46daff031313b1c824a05e306dc6420016c02c20d82faf75",
+      "role": "receiver"
+    },
+    {
+      "address": "mn_addr_preprod17azu2mexmv5fpe38dk2vm2t8lugxshap4fxluet6sjvtwcve53zqlu8f3t",
+      "blockHeight": 2599905,
+      "txHash": "3b880c92f1f92137647b735eab7341075897d1146675e7f1fa2a90b6e9ac67ec",
+      "explorerTxUrl": "https://preprod.midnightexplorer.com/transactions/3b880c92f1f92137647b735eab7341075897d1146675e7f1fa2a90b6e9ac67ec",
+      "role": "receiver"
+    },
+    {
+      "address": "mn_addr_preprod18ceretghv3q7q6sqp5ddfs44uky2c9vf5npxyznnvanqtxhvg2kqnpeul6",
+      "blockHeight": 2599844,
+      "txHash": "693789d6592bd8b4a5f9a7eb2eea0dbdef778b1cc89fa4d66ace238d101ee061",
+      "explorerTxUrl": "https://preprod.midnightexplorer.com/transactions/693789d6592bd8b4a5f9a7eb2eea0dbdef778b1cc89fa4d66ace238d101ee061",
+      "role": "receiver"
+    },
+    {
+      "address": "mn_addr_preprod1lzlfr76k0c6y9secyvpacyw0y26hj5r0xwenqmcq0j5ekq070ukqgyrzqm",
+      "blockHeight": 2599820,
+      "txHash": "7c5d69e9286f2cad4eb6658f303ed4cf206baa3068e4642121098a3828bc4742",
+      "explorerTxUrl": "https://preprod.midnightexplorer.com/transactions/7c5d69e9286f2cad4eb6658f303ed4cf206baa3068e4642121098a3828bc4742",
+      "role": "receiver"
+    },
+    {
+      "address": "mn_addr_preprod1yz9cjq98x64f9rc9g9yvtvvucly2ne7pfnjgvwn4956rvt782m6qa4xzk6",
+      "blockHeight": 2599816,
+      "txHash": "c1e94a79bdf66ab6c0a5afdcc79679a573747125f6cec009136fd7c90543ad00",
+      "explorerTxUrl": "https://preprod.midnightexplorer.com/transactions/c1e94a79bdf66ab6c0a5afdcc79679a573747125f6cec009136fd7c90543ad00",
+      "role": "receiver"
+    },
+    {
+      "address": "mn_addr_preprod1x3jllhu8ugrnnp5k6wyrd4gvxcnnwuz2k2xgngr5u3csll2tphts5kzchk",
+      "blockHeight": 2599784,
+      "txHash": "5b39e3b3dd6f55aa76bbe596f1704465d610a5e330eda9414d8dd8009b541aa0",
+      "explorerTxUrl": "https://preprod.midnightexplorer.com/transactions/5b39e3b3dd6f55aa76bbe596f1704465d610a5e330eda9414d8dd8009b541aa0",
+      "role": "receiver"
+    },
+    {
+      "address": "mn_addr_preprod1l330gua4p8psc6j9fwcpec36a4smx4zhn25rpg8tm0563u6rm2ksa3yf2g",
+      "blockHeight": 2599691,
+      "txHash": "c9a8abb49fdb518844f7b42806dd11269bd20b6c239c26e4540ef8b6b3d05149",
+      "explorerTxUrl": "https://preprod.midnightexplorer.com/transactions/c9a8abb49fdb518844f7b42806dd11269bd20b6c239c26e4540ef8b6b3d05149",
+      "role": "receiver"
+    },
+    {
+      "address": "mn_addr_preprod125dcrdsalkkhl5nf8mr4t0gv0y4sjjt6nl0f5dcxes43wqyxrlfqunh3gf",
+      "blockHeight": 2599691,
+      "txHash": "c9a8abb49fdb518844f7b42806dd11269bd20b6c239c26e4540ef8b6b3d05149",
+      "explorerTxUrl": "https://preprod.midnightexplorer.com/transactions/c9a8abb49fdb518844f7b42806dd11269bd20b6c239c26e4540ef8b6b3d05149",
+      "role": "receiver"
+    },
+    {
+      "address": "mn_addr_preprod1ythdxa6k5a4chdfu7zrjnahhv5hps2nfurgwrrpvk2ys46glmctqjc3jne",
+      "blockHeight": 2599679,
+      "txHash": "d004591748b3ab53019f1001a8bccb748b0c466bb949c77e7303f387612deaa0",
+      "explorerTxUrl": "https://preprod.midnightexplorer.com/transactions/d004591748b3ab53019f1001a8bccb748b0c466bb949c77e7303f387612deaa0",
+      "role": "receiver"
+    },
+    {
+      "address": "mn_addr_preprod1syg3t0qpektyen6gp8hdm5ueh56lavhnajrfy59gs84auaumncesxjrpg4",
+      "blockHeight": 2599670,
+      "txHash": "4ddbedcded0210ba4152148359eb3870942995d3cc6db9e1fdcb425e78faf538",
+      "explorerTxUrl": "https://preprod.midnightexplorer.com/transactions/4ddbedcded0210ba4152148359eb3870942995d3cc6db9e1fdcb425e78faf538",
+      "role": "receiver"
+    },
+    {
+      "address": "mn_addr_preprod1x5arzv64cqjy40hm28ep7n0nc6n6nnc8j6w5n527fptxs6k0ugpswnvjmj",
+      "blockHeight": 2599610,
+      "txHash": "76f372582e4f4c233e88bddccc60d76ff8c38cdcbd8610c9699a6aee7ad323ed",
+      "explorerTxUrl": "https://preprod.midnightexplorer.com/transactions/76f372582e4f4c233e88bddccc60d76ff8c38cdcbd8610c9699a6aee7ad323ed",
+      "role": "receiver"
+    }
+  ],
+  "contractAddresses": [
+    {
+      "contractAddress": "89e233ecf339175aecbc07ba419e998edc8c3115c2bdc23b7cc120e2cc6adcf0",
+      "blockHeight": 2601180,
+      "explorerUrl": "https://preprod.midnightexplorer.com/contracts/89e233ecf339175aecbc07ba419e998edc8c3115c2bdc23b7cc120e2cc6adcf0"
+    },
+    {
+      "contractAddress": "8a5412ca7e89d6dd2d7ac1b86a77b341cc3a5127b19410dbe0a87acae306c54b",
+      "blockHeight": 2601171,
+      "explorerUrl": "https://preprod.midnightexplorer.com/contracts/8a5412ca7e89d6dd2d7ac1b86a77b341cc3a5127b19410dbe0a87acae306c54b"
+    },
+    {
+      "contractAddress": "3fdae88ded450ef8248103659a68972c3aea3d836079cb951606394a4ca743ca",
+      "blockHeight": 2601164,
+      "explorerUrl": "https://preprod.midnightexplorer.com/contracts/3fdae88ded450ef8248103659a68972c3aea3d836079cb951606394a4ca743ca"
+    },
+    {
+      "contractAddress": "9e317d4b45be24e8de513f89c94ec59b7cd9aa8fd2690060ca798827d9c91faa",
+      "blockHeight": 2601156,
+      "explorerUrl": "https://preprod.midnightexplorer.com/contracts/9e317d4b45be24e8de513f89c94ec59b7cd9aa8fd2690060ca798827d9c91faa"
+    },
+    {
+      "contractAddress": "600c95f60e43fb0fffe4e00c5981f0b478728a17a26aa8440bdc43f5c9028ab9",
+      "blockHeight": 2601149,
+      "explorerUrl": "https://preprod.midnightexplorer.com/contracts/600c95f60e43fb0fffe4e00c5981f0b478728a17a26aa8440bdc43f5c9028ab9"
+    },
+    {
+      "contractAddress": "977d87ae8eda24ad6e7d6a15f01c6596da3c65277394f9ee19a07643f2d699b4",
+      "blockHeight": 2601061,
+      "explorerUrl": "https://preprod.midnightexplorer.com/contracts/977d87ae8eda24ad6e7d6a15f01c6596da3c65277394f9ee19a07643f2d699b4"
+    },
+    {
+      "contractAddress": "44b635e5f80ad302d7bb000d087a740dcfd9e682ecdf56f774ddd682c8b17b11",
+      "blockHeight": 2601044,
+      "explorerUrl": "https://preprod.midnightexplorer.com/contracts/44b635e5f80ad302d7bb000d087a740dcfd9e682ecdf56f774ddd682c8b17b11"
+    },
+    {
+      "contractAddress": "d96f15b971d60aa20ce22533e54072871f66a23b6819b0961203437f1a3abf3a",
+      "blockHeight": 2601023,
+      "explorerUrl": "https://preprod.midnightexplorer.com/contracts/d96f15b971d60aa20ce22533e54072871f66a23b6819b0961203437f1a3abf3a"
+    },
+    {
+      "contractAddress": "ff0b01c36ff8ae13c9fadd1a76d73d56bc060d1d03efc58a012d649157d6342f",
+      "blockHeight": 2600969,
+      "explorerUrl": "https://preprod.midnightexplorer.com/contracts/ff0b01c36ff8ae13c9fadd1a76d73d56bc060d1d03efc58a012d649157d6342f"
+    },
+    {
+      "contractAddress": "644ad3d0b452aa4e75328f1e61f8974c99e7da0a55c1b1d885eb5b7d05f3fb50",
+      "blockHeight": 2600945,
+      "explorerUrl": "https://preprod.midnightexplorer.com/contracts/644ad3d0b452aa4e75328f1e61f8974c99e7da0a55c1b1d885eb5b7d05f3fb50"
+    },
+    {
+      "contractAddress": "70faad8d90192de517ef7a8bd609e867edb5e9470972025e5964ddf7db44bddc",
+      "blockHeight": 2600939,
+      "explorerUrl": "https://preprod.midnightexplorer.com/contracts/70faad8d90192de517ef7a8bd609e867edb5e9470972025e5964ddf7db44bddc"
+    },
+    {
+      "contractAddress": "81c8c3fad09e9ce428093c8ac4fc1731c9329b5c2f71f76000161d2026eb9b96",
+      "blockHeight": 2600931,
+      "explorerUrl": "https://preprod.midnightexplorer.com/contracts/81c8c3fad09e9ce428093c8ac4fc1731c9329b5c2f71f76000161d2026eb9b96"
+    },
+    {
+      "contractAddress": "b88d364fcabefdb32dc0f023f1b9e0f2f7a937d602fe997b7ce4d0cd419f021f",
+      "blockHeight": 2600925,
+      "explorerUrl": "https://preprod.midnightexplorer.com/contracts/b88d364fcabefdb32dc0f023f1b9e0f2f7a937d602fe997b7ce4d0cd419f021f"
+    },
+    {
+      "contractAddress": "5e142e0f8e860b62b4a185d266c1b68d651a683674263ee6b72d369657aaba64",
+      "blockHeight": 2600916,
+      "explorerUrl": "https://preprod.midnightexplorer.com/contracts/5e142e0f8e860b62b4a185d266c1b68d651a683674263ee6b72d369657aaba64"
+    },
+    {
+      "contractAddress": "febdc0ac33ec1b8c0816810f2b15931e05c1f882188609f2f9966b992e273c19",
+      "blockHeight": 2600906,
+      "explorerUrl": "https://preprod.midnightexplorer.com/contracts/febdc0ac33ec1b8c0816810f2b15931e05c1f882188609f2f9966b992e273c19"
+    },
+    {
+      "contractAddress": "48291cc6e88b7190da446fbdcbf7671e08b740bc8e679cfe0f21b08dd6120602",
+      "blockHeight": 2600896,
+      "explorerUrl": "https://preprod.midnightexplorer.com/contracts/48291cc6e88b7190da446fbdcbf7671e08b740bc8e679cfe0f21b08dd6120602"
+    },
+    {
+      "contractAddress": "7a22d322cc0a35e0aa3fc4ab0ced9177cc7e5507943de6831e1db44e75f988ad",
+      "blockHeight": 2600890,
+      "explorerUrl": "https://preprod.midnightexplorer.com/contracts/7a22d322cc0a35e0aa3fc4ab0ced9177cc7e5507943de6831e1db44e75f988ad"
+    },
+    {
+      "contractAddress": "c49e6b4f240cb4e913b765aefabd95960fdbfb1876831e425d4ac9e0b408adf2",
+      "blockHeight": 2600883,
+      "explorerUrl": "https://preprod.midnightexplorer.com/contracts/c49e6b4f240cb4e913b765aefabd95960fdbfb1876831e425d4ac9e0b408adf2"
+    },
+    {
+      "contractAddress": "f735bb890f2f309372b2dfa37a22515003bf521a243648c3eff2b36721de8959",
+      "blockHeight": 2600719,
+      "explorerUrl": "https://preprod.midnightexplorer.com/contracts/f735bb890f2f309372b2dfa37a22515003bf521a243648c3eff2b36721de8959"
+    },
+    {
+      "contractAddress": "5d98fa5a8a69222652c81ed14bcc48adca385bef79918fc2edabc28c2159a817",
+      "blockHeight": 2600228,
+      "explorerUrl": "https://preprod.midnightexplorer.com/contracts/5d98fa5a8a69222652c81ed14bcc48adca385bef79918fc2edabc28c2159a817"
+    },
+    {
+      "contractAddress": "c55f49639e578abe3c6f8b781f5cf6025d0a906cbc86c13439f471c82011188a",
+      "blockHeight": 2600211,
+      "explorerUrl": "https://preprod.midnightexplorer.com/contracts/c55f49639e578abe3c6f8b781f5cf6025d0a906cbc86c13439f471c82011188a"
+    },
+    {
+      "contractAddress": "1fe82f185fe7187ef335365c1ccf9fa7bc47b7a03fab84372d70c73262d00249",
+      "blockHeight": 2600199,
+      "explorerUrl": "https://preprod.midnightexplorer.com/contracts/1fe82f185fe7187ef335365c1ccf9fa7bc47b7a03fab84372d70c73262d00249"
+    },
+    {
+      "contractAddress": "e413ff91958079d1ee2e4c792fe19a9c14a5d4ed7eb7966d3526308a3ea2f846",
+      "blockHeight": 2600157,
+      "explorerUrl": "https://preprod.midnightexplorer.com/contracts/e413ff91958079d1ee2e4c792fe19a9c14a5d4ed7eb7966d3526308a3ea2f846"
+    },
+    {
+      "contractAddress": "b55a84eb2b9b096ff6f0985f58e1012bbd008a1e195d25589d1d54b44a66db14",
+      "blockHeight": 2600054,
+      "explorerUrl": "https://preprod.midnightexplorer.com/contracts/b55a84eb2b9b096ff6f0985f58e1012bbd008a1e195d25589d1d54b44a66db14"
+    },
+    {
+      "contractAddress": "a5a67ff1c7f8abd30d5ff0f3cbaedfc1c80fefbda8c7c4e5ca71170b5aceb0df",
+      "blockHeight": 2600035,
+      "explorerUrl": "https://preprod.midnightexplorer.com/contracts/a5a67ff1c7f8abd30d5ff0f3cbaedfc1c80fefbda8c7c4e5ca71170b5aceb0df"
+    },
+    {
+      "contractAddress": "e93c9f389eb84a14767f42a30bf6d3749feb8cae60dfcb7a43de9427c742cee9",
+      "blockHeight": 2599901,
+      "explorerUrl": "https://preprod.midnightexplorer.com/contracts/e93c9f389eb84a14767f42a30bf6d3749feb8cae60dfcb7a43de9427c742cee9"
+    },
+    {
+      "contractAddress": "fb24191c6928e59a9490942d6343fb6facfb5a19965c1f85096c06c78af6fc8e",
+      "blockHeight": 2599874,
+      "explorerUrl": "https://preprod.midnightexplorer.com/contracts/fb24191c6928e59a9490942d6343fb6facfb5a19965c1f85096c06c78af6fc8e"
+    },
+    {
+      "contractAddress": "a43a637158ba4c93d8baf629fafc3efd84416d94738e2aefa5bdf50a3dc8e570",
+      "blockHeight": 2599864,
+      "explorerUrl": "https://preprod.midnightexplorer.com/contracts/a43a637158ba4c93d8baf629fafc3efd84416d94738e2aefa5bdf50a3dc8e570"
+    }
+  ],
+  "validators": [
+    {
+      "validatorKey": "4ad139fe0eda31ae2ad078693fa265cc11a13220dcd12e1c95989e3c14a6c36c",
+      "blockHeight": 2601188,
+      "explorerBlockUrl": "https://preprod.midnightexplorer.com/blocks/2601188"
+    },
+    {
+      "validatorKey": "8c457a4b2383443ff5b30420aea92bfca65971fd0b76d21715529e4e8192be1d",
+      "blockHeight": 2601186,
+      "explorerBlockUrl": "https://preprod.midnightexplorer.com/blocks/2601186"
+    },
+    {
+      "validatorKey": "f6aa16d4c6892575af371fd14e1e40a7c4675876e8f331e2e2466a28e950765f",
+      "blockHeight": 2601185,
+      "explorerBlockUrl": "https://preprod.midnightexplorer.com/blocks/2601185"
+    },
+    {
+      "validatorKey": "8e03c411c3c4b74987311368e5ed5df2a16b54fd687e6226e7abb191a9b5fc19",
+      "blockHeight": 2601184,
+      "explorerBlockUrl": "https://preprod.midnightexplorer.com/blocks/2601184"
+    },
+    {
+      "validatorKey": "8c4ea77592363f52dd57747de418b8ec7cc0cbf4071b2b209a403fece165fa05",
+      "blockHeight": 2601183,
+      "explorerBlockUrl": "https://preprod.midnightexplorer.com/blocks/2601183"
+    },
+    {
+      "validatorKey": "de2306334193be59122367e5a774769e59de84baacfd8e136fba8e18dbcd0833",
+      "blockHeight": 2601181,
+      "explorerBlockUrl": "https://preprod.midnightexplorer.com/blocks/2601181"
+    },
+    {
+      "validatorKey": "60ee9e7b03bb2c0b6c07ac3440fb3bada6b13072998e08e83d5b3ad27cba3d7c",
+      "blockHeight": 2601180,
+      "explorerBlockUrl": "https://preprod.midnightexplorer.com/blocks/2601180"
+    },
+    {
+      "validatorKey": "a014cad5c49d94f7eb634e1ac31d7f27acf3d88e6dc25fd4ef448a655ba95e00",
+      "blockHeight": 2601178,
+      "explorerBlockUrl": "https://preprod.midnightexplorer.com/blocks/2601178"
+    },
+    {
+      "validatorKey": "9ccf481f64f84e298eedb339a05dafc599e8a40c465f6f8e43d53b6534c7541e",
+      "blockHeight": 2601177,
+      "explorerBlockUrl": "https://preprod.midnightexplorer.com/blocks/2601177"
+    },
+    {
+      "validatorKey": "2eac7fc733dc77b682d679abba3a742e0309b42f05b84233dc2155444bcd2240",
+      "blockHeight": 2601174,
+      "explorerBlockUrl": "https://preprod.midnightexplorer.com/blocks/2601174"
+    },
+    {
+      "validatorKey": "cccd6dbd01b95948f56bb84ad441f29608b12b3694a2a71ce4ba0fa8c07f7f4b",
+      "blockHeight": 2601172,
+      "explorerBlockUrl": "https://preprod.midnightexplorer.com/blocks/2601172"
+    },
+    {
+      "validatorKey": "ecf1a722558e7791e9e4c88225cb428c0692c36877d688c23285df83491a0f32",
+      "blockHeight": 2601164,
+      "explorerBlockUrl": "https://preprod.midnightexplorer.com/blocks/2601164"
+    },
+    {
+      "validatorKey": "8aa57a9b7fb04085527c4246b9db446402d7910ec731bee534221a0109dd2305",
+      "blockHeight": 2601162,
+      "explorerBlockUrl": "https://preprod.midnightexplorer.com/blocks/2601162"
+    }
+  ]
+}
