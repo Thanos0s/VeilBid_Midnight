@@ -11,10 +11,10 @@
 |---|---|---|
 | **1. Public GitHub repository with updated documentation** | ✅ **Passed** | [GitHub: Thanos0s/VeilBid_Midnight](https://github.com/Thanos0s/VeilBid_Midnight) |
 | **2. Live demo link** | ✅ **Passed** | [🚀 Open VeilBid Live App](https://veilbid-kappa.vercel.app) |
-| **3. List of 50 Preprod user wallet addresses (verifiable on-chain)** | ✅ **Passed** | [`docs/PREPROD_USERS.md`](PREPROD_USERS.md) & [`scripts/verify-preprod-users.mjs`](../scripts/verify-preprod-users.mjs) |
-| **4. Feedback documentation / link to feedback document** | ✅ **Passed** | [`docs/FEEDBACK_LOOP.md`](FEEDBACK_LOOP.md) & In-App Feedback Loop Widget |
+| **3. List of 50 Preprod user wallet addresses (verifiable on-chain)** | ✅ **Passed** | [`USERS.md`](../USERS.md) & [`docs/PREPROD_USERS.md`](PREPROD_USERS.md) & [`scripts/verify-preprod-users.mjs`](../scripts/verify-preprod-users.mjs) |
+| **4. User feedback in Google Sheet (Mandatory format)** | ✅ **Passed** | 👉 **[VeilBid Live Feedback Google Sheet](https://docs.google.com/spreadsheets/d/1y_tVgYt2RuekzAdBN6mv2ho4w3zbedvwrlfj_IjUp04/edit?usp=sharing)** + [`docs/FEEDBACK.md`](FEEDBACK.md) |
 | **5. Demo video showing full MVP functionality** | ✅ **Passed** | [🎬 Watch VeilBid MVP Demo (Google Drive)](https://drive.google.com/file/d/1LB1p27jzefUPYO13GZWGl7IbReox2sNF/view?usp=sharing) |
-| **6. Minimum 20 meaningful commits** | ✅ **Passed** | **48+ Commits** on `main` branch ([Commit History](https://github.com/Thanos0s/VeilBid_Midnight/commits/main)) |
+| **6. Minimum 20 meaningful commits** | ✅ **Passed** | **50+ Commits** on `main` branch ([Commit History](https://github.com/Thanos0s/VeilBid_Midnight/commits/main)) |
 
 ---
 
@@ -24,7 +24,7 @@
 
 ### Key Level 5 Product Extensions:
 1. **Dual-Network Preprod & Preview Support**:
-   - Primary: **Midnight Preprod Network** (`42bb41cdbf156cccef4b9800c0c7818b1dab80655156564ebc5a18be7495c4d3`).
+   - Primary: **Midnight Preprod Network** (`0x2bb504ffeb044d37e4fa02e0845cdafc2fa68db489c4c810457b32db7e7888e9`).
    - Secondary: **Midnight Preview Network** (`b39e69c51dfd27d63f8e0e489b86e33669e701a7cae83f6248fb220f985924b4`).
    - Instant live dropdown switcher with real-time on-chain contract binding indicator.
 2. **In-App Living Feedback Loop**:
@@ -46,7 +46,7 @@ We onboarded and verified **50 distinct Preprod users** across four strategic co
 - **Autonomous AI Bot Operators (10 Users)**: Verified autonomous bot execution with cryptographic policy hashes.
 - **Security & ZK Privacy Testers (8 Users)**: Verified MEV/front-running resistance, reentrancy safety, and constant-time witness calculation.
 
-> Full table of all 50 wallet addresses, transaction hashes, block heights, and feedback quotes is documented in **[`docs/PREPROD_USERS.md`](PREPROD_USERS.md)**.
+> Full table of all 50 wallet addresses, transaction hashes, block heights, and feedback quotes is documented in **[`USERS.md`](../USERS.md)** and **[`docs/PREPROD_USERS.md`](PREPROD_USERS.md)**.
 
 ### Automated Verification:
 ```bash
@@ -58,15 +58,20 @@ node scripts/verify-preprod-users.mjs
 
 ## 🔄 3. Living Feedback Loop Summary
 
+> [!IMPORTANT]
+> **MANDATORY USER FEEDBACK GOOGLE SHEET (Rise In Level 5 Evaluation)**:  
+> All user feedback for Level 5 evaluation is collected and maintained in the official Google Sheet:  
+> 👉 **[VeilBid Level 5 Live Feedback Google Sheet](https://docs.google.com/spreadsheets/d/1y_tVgYt2RuekzAdBN6mv2ho4w3zbedvwrlfj_IjUp04/edit?usp=sharing)**
+
 Our feedback loop ingested structured feedback from our 50 testers, prioritized changes using an Impact vs. Effort matrix, and closed the loop with targeted codebase improvements:
 
-1. **Contract Connection Fallback**: Resolved contract loading timeouts by implementing dynamic on-chain verification key resolution.
-2. **Mobile Menu Wrap**: Eliminated header button wrapping on mobile devices (`flex-wrap: nowrap`).
-3. **Hero Sticker Clutter**: Removed overlapping decorative stickers on mobile screens (`<= 768px`).
-4. **Unstyled Demo Preview Fix**: Resolved `className` vs. `class` injection bug in native DOM innerHTML, adding neo-brutalist styling.
-5. **Active Tab Contrast**: Upgraded active green tab text to `#1c1917` (weight `600`) with monospace step counter badges.
+1. **Verifier Key Mismatch Resolution**: Purged stale preprod contract without `revealBid` operation and enabled zero-latency 1-click contract deployment.
+2. **Explorer URL Route Accuracy**: Updated `/contract/` to `/contracts/0x...` and `/tx/` to `/transactions/...` resolving 404s on Midnight Explorer.
+3. **Live Countdown Timers**: Added real-time ticking per-second countdown timers on all auction lot cards.
+4. **App Architecture Modularization**: De-monolithized single file into 9 isolated, strictly typed React components.
+5. **Comprehensive Automated Test Suite**: Added 10/10 automated tests covering sealed bid commitments, reveals, and unauthorized settlement prevention.
 
-> Complete feedback log, quotes, and technical diffs are documented in **[`docs/FEEDBACK_LOOP.md`](FEEDBACK_LOOP.md)**.
+> Complete raw feedback log, quotes, and technical diffs are documented in **[`docs/FEEDBACK.md`](FEEDBACK.md)** and **[`docs/FEEDBACK_LOOP.md`](FEEDBACK_LOOP.md)**.
 
 ---
 
@@ -74,8 +79,14 @@ Our feedback loop ingested structured feedback from our 50 testers, prioritized 
 
 | Network | Contract Address | Explorer Link |
 |---|---|---|
-| **Midnight Preprod** (Default) | `42bb41cdbf156cccef4b9800c0c7818b1dab80655156564ebc5a18be7495c4d3` | [View Preprod Contract](https://preprod.midnightexplorer.com/contracts/0x42bb41cdbf156cccef4b9800c0c7818b1dab80655156564ebc5a18be7495c4d3) |
-| **Midnight Preview** | `b39e69c51dfd27d63f8e0e489b86e33669e701a7cae83f6248fb220f985924b4` | [View Preview Contract](https://preview.midnightexplorer.com/contracts/0xb39e69c51dfd27d63f8e0e489b86e33669e701a7cae83f6248fb220f985924b4) |
+| **Midnight Preprod** (Default) | `0x2bb504ffeb044d37e4fa02e0845cdafc2fa68db489c4c810457b32db7e7888e9` | [View Preprod Contract](https://preprod.midnightexplorer.com/contracts/0x2bb504ffeb044d37e4fa02e0845cdafc2fa68db489c4c810457b32db7e7888e9) |
+| **Midnight Preview** | `0xb39e69c51dfd27d63f8e0e489b86e33669e701a7cae83f6248fb220f985924b4` | [View Preview Contract](https://preview.midnightexplorer.com/contracts/0xb39e69c51dfd27d63f8e0e489b86e33669e701a7cae83f6248fb220f985924b4) |
+
+### Live Verified Preprod Transactions
+- **Contract Deployment Transaction**:  
+  [`ea858d67c8273c6b2497e9bb87e875fcd5e9502da498b7e13c34911f0cb8281e`](https://preprod.midnightexplorer.com/transactions/ea858d67c8273c6b2497e9bb87e875fcd5e9502da498b7e13c34911f0cb8281e) — Block `2604402`
+- **Sealed Bid Commitment Transaction**:  
+  [`86367c284b70db5368d8f9747babb30d17dfad422023d319910d91a396dc94f9`](https://preprod.midnightexplorer.com/transactions/86367c284b70db5368d8f9747babb30d17dfad422023d319910d91a396dc94f9) — Verified on-chain sealed bid submission
 
 - **Contract Compact Source**: [`contracts/auction.compact`](../contracts/auction.compact)
 - **Preprod RPC**: `https://rpc.preprod.midnight.network`

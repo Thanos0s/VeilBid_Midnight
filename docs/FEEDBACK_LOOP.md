@@ -2,6 +2,11 @@
 
 > **Level 5 — Full Moon Requirement**: *A living feedback loop documented, showing structured feedback collection, prioritization of changes, and product refinement based on real user input.*
 
+> [!IMPORTANT]
+> **MANDATORY USER FEEDBACK GOOGLE SHEET (Rise In Level 5 Evaluation)**:  
+> As required for Level 5 evaluation, all user feedback is collected and structured in the official Google Sheet:  
+> 👉 **[VeilBid Level 5 Live Feedback Google Sheet](https://docs.google.com/spreadsheets/d/1y_tVgYt2RuekzAdBN6mv2ho4w3zbedvwrlfj_IjUp04/edit?usp=sharing)**
+
 ---
 
 ## 🌟 1. Overview & Feedback Philosophy
@@ -22,13 +27,15 @@ graph LR
 
 ## 📥 2. Feedback Collection Channels
 
-1. **In-App "💬 Feedback Loop" Modal**:
+1. **Official Google Sheet (Mandatory Submission Channel)**:
+   - 👉 **[VeilBid Level 5 Live Feedback Google Sheet](https://docs.google.com/spreadsheets/d/1y_tVgYt2RuekzAdBN6mv2ho4w3zbedvwrlfj_IjUp04/edit?usp=sharing)**: Contains all verified user responses, cohort tagging, feature scores, and timestamps.
+2. **In-App "💬 Feedback Loop" Modal**:
    - Built directly into the VeilBid client at bottom-left and navbar.
    - Testers choose their cohort (*Private Bidder*, *NFT Creator*, *AI Bot Operator*, *Security Tester*), rate experience 1–5 stars, categorize (*UI/UX*, *ZK Proving Speed*, *Wallet Connection*, *AI Agents*, *Bug Report*), and log observations.
    - Submissions persist to browser storage with immediate receipt generation.
-2. **Midnight Ecosystem Developer Testing**:
+3. **Midnight Ecosystem Developer Testing**:
    - Dedicated testing sessions with developers from the Midnight Dev Discord.
-3. **Cardano Testnet Power-Users**:
+4. **Cardano Testnet Power-Users**:
    - Direct user interviews testing mobile responsiveness, 1AM wallet signatures, and royalty distribution.
 
 ---

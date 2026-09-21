@@ -24,9 +24,10 @@ Every address listed below is an authentic unshielded wallet address (`mn_addr_p
 - **Target Network**: Midnight Preprod Network
 - **RPC Endpoint**: `https://rpc.preprod.midnight.network`
 - **GraphQL Indexer**: `https://indexer.preprod.midnight.network/api/v4/graphql`
-- **Deed / Contract Address**: `42bb41cdbf156cccef4b9800c0c7818b1dab80655156564ebc5a18be7495c4d3`
-- **Contract on Explorer**: [View Contract on Midnight Preprod Explorer](https://preprod.midnightexplorer.com/contracts/42bb41cdbf156cccef4b9800c0c7818b1dab80655156564ebc5a18be7495c4d3)
+- **Contract Address**: `0x2bb504ffeb044d37e4fa02e0845cdafc2fa68db489c4c810457b32db7e7888e9`
+- **Contract on Explorer**: [View Contract on Midnight Preprod Explorer](https://preprod.midnightexplorer.com/contracts/0x2bb504ffeb044d37e4fa02e0845cdafc2fa68db489c4c810457b32db7e7888e9)
 - **Explorer Base URL**: [https://preprod.midnightexplorer.com](https://preprod.midnightexplorer.com)
+- **User Feedback Google Sheet**: [👉 Open Mandatory Feedback Google Sheet](https://docs.google.com/spreadsheets/d/1y_tVgYt2RuekzAdBN6mv2ho4w3zbedvwrlfj_IjUp04/edit?usp=sharing)
 
 ---
 

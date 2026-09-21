@@ -15,9 +15,9 @@ VeilBid is the first NFT marketplace built on the [Midnight Network](https://mid
 ## 🌕 Level 5 — Full Moon Submission Highlights
 
 VeilBid has achieved the **Level 5 — Full Moon** milestone!
-- 🚀 **50 Preprod Users Onboarded & Verified**: Full directory of 50 verifiable wallet addresses across 4 cohorts in [`docs/PREPROD_USERS.md`](docs/PREPROD_USERS.md).
-- 🔄 **Living Feedback Loop**: Structured user feedback collection, prioritization matrix, and code iteration log in [`docs/FEEDBACK_LOOP.md`](docs/FEEDBACK_LOOP.md).
-- 📊 **Feedback Data Sheet**: [Google Sheets Live Feedback Tracking](https://docs.google.com/spreadsheets/d/1y_tVgYt2RuekzAdBN6mv2ho4w3zbedvwrlfj_IjUp04/edit?usp=sharing).
+- 📊 **Mandatory User Feedback Google Sheet**: 👉 **[VeilBid Level 5 Live Feedback Google Sheet](https://docs.google.com/spreadsheets/d/1y_tVgYt2RuekzAdBN6mv2ho4w3zbedvwrlfj_IjUp04/edit?usp=sharing)** *(Primary official submission for Rise In Level 5 evaluation)*
+- 🚀 **50 Preprod Users Onboarded & Verified**: Full directory of 50 verifiable wallet addresses across 4 cohorts in [`USERS.md`](USERS.md) & [`docs/PREPROD_USERS.md`](docs/PREPROD_USERS.md).
+- 🔄 **Living Feedback Loop**: Structured user feedback collection, prioritization matrix, and code iteration log in [`docs/FEEDBACK_LOOP.md`](docs/FEEDBACK_LOOP.md) & [`docs/FEEDBACK.md`](docs/FEEDBACK.md).
 - 🏆 **Submission Dossier**: Master checklist alignment and verification references in [`docs/LEVEL_5_SUBMISSION.md`](docs/LEVEL_5_SUBMISSION.md).
 - 🛠️ **In-App Feedback Widget**: Users can submit live feedback and ratings directly inside the dApp.
 
@@ -37,10 +37,16 @@ Connect your [1AM Wallet](https://1am.space) on **Midnight Preprod Network** (or
 | Preprod  | `0x2bb504ffeb044d37e4fa02e0845cdafc2fa68db489c4c810457b32db7e7888e9` |
 
 ## Level 5 — User Validation
-- Target: 50 Preprod users
-- Current: 50 / 50 (See USERS.md and docs/PREPROD_USERS.md)
-- See USERS.md for wallet addresses
-- See docs/FEEDBACK.md for feedback log and changes
+
+> [!IMPORTANT]
+> **MANDATORY USER FEEDBACK GOOGLE SHEET (Rise In Evaluation)**:  
+> 👉 **[VeilBid Level 5 Live Feedback Google Sheet](https://docs.google.com/spreadsheets/d/1y_tVgYt2RuekzAdBN6mv2ho4w3zbedvwrlfj_IjUp04/edit?usp=sharing)**  
+> *(All user feedback is collected and structured in this official Google Sheet as required for Level 5 evaluation)*
+
+- **Target**: 50 Preprod users
+- **Current Status**: **50 / 50 Verified On-Chain**
+- **Wallet Directory**: See [USERS.md](USERS.md) and [docs/PREPROD_USERS.md](docs/PREPROD_USERS.md) for all 50 verified on-chain wallet addresses and explorer transaction links
+- **Feedback & Code Changes**: See [docs/FEEDBACK.md](docs/FEEDBACK.md) and [docs/FEEDBACK_LOOP.md](docs/FEEDBACK_LOOP.md) for raw feedback logs, themes, and codebase iterations
 
 ---
 
