@@ -6,6 +6,8 @@ VeilBid is the first NFT marketplace built on the [Midnight Network](https://mid
 
 [![Level 5 Full Moon](https://img.shields.io/badge/Midnight%20Hackathon-Level%205%20Full%20Moon-F59E0B?style=for-the-badge&logo=moon)](docs/LEVEL_5_SUBMISSION.md)
 ![Network](https://img.shields.io/badge/Network-Midnight%20Preprod-10b981?style=for-the-badge)
+[![Google Form](https://img.shields.io/badge/Google%20Form-Feedback%20Survey-34A853?style=for-the-badge&logo=googleforms&logoColor=white)](https://forms.gle/CqbVWfcZPZJvDoSx6)
+[![Google Sheet](https://img.shields.io/badge/Google%20Sheet-Live%20Feedback-0F9D58?style=for-the-badge&logo=googlesheets&logoColor=white)](https://docs.google.com/spreadsheets/d/1y_tVgYt2RuekzAdBN6mv2ho4w3zbedvwrlfj_IjUp04/edit?usp=sharing)
 [![Preprod Contract](https://img.shields.io/badge/Contract-0x2bb504ff...-8b5cf6?style=for-the-badge)](https://preprod.midnightexplorer.com/contracts/0x2bb504ffeb044d37e4fa02e0845cdafc2fa68db489c4c810457b32db7e7888e9)
 [![CI/CD](https://github.com/Thanos0s/VeilBid_Midnight/actions/workflows/ci.yml/badge.svg)](https://github.com/Thanos0s/VeilBid_Midnight/actions)
 [![X Profile](https://img.shields.io/badge/X-@Veil__Bid-1DA1F2?style=for-the-badge&logo=x)](https://x.com/Veil_Bid)
@@ -15,8 +17,10 @@ VeilBid is the first NFT marketplace built on the [Midnight Network](https://mid
 ## 🌕 Level 5 — Full Moon Submission Highlights
 
 VeilBid has achieved the **Level 5 — Full Moon** milestone!
-- 📊 **Mandatory User Feedback Google Sheet**: 👉 **[VeilBid Level 5 Live Feedback Google Sheet](https://docs.google.com/spreadsheets/d/1y_tVgYt2RuekzAdBN6mv2ho4w3zbedvwrlfj_IjUp04/edit?usp=sharing)** *(Primary official submission for Rise In Level 5 evaluation)*
+- 📋 **Google Form Feedback Survey**: 👉 **[VeilBid Community & Tester Feedback Form](https://forms.gle/CqbVWfcZPZJvDoSx6)** *(Live questionnaire through which tester feedback, wallet addresses & tx hashes are collected)*
+- 📊 **Mandatory User Feedback Google Sheet**: 👉 **[VeilBid Level 5 Live Feedback Google Sheet](https://docs.google.com/spreadsheets/d/1y_tVgYt2RuekzAdBN6mv2ho4w3zbedvwrlfj_IjUp04/edit?usp=sharing)** *(Primary official submission for Rise In Level 5 evaluation with 7 required columns: Timestamp, Name, Email, Wallet Address, Transaction Hash, Feedback, Source Form)*
 - 🚀 **50 Preprod Users Onboarded & Verified**: Full directory of 50 verifiable wallet addresses across 4 cohorts in [`USERS.md`](USERS.md) & [`docs/PREPROD_USERS.md`](docs/PREPROD_USERS.md).
+- 📁 **Complete CSV Dataset**: Full 90-entry on-chain verified dataset available in [`feedback_responses_90_users.csv`](feedback_responses_90_users.csv).
 - 🔄 **Living Feedback Loop**: Structured user feedback collection, prioritization matrix, and code iteration log in [`docs/FEEDBACK_LOOP.md`](docs/FEEDBACK_LOOP.md) & [`docs/FEEDBACK.md`](docs/FEEDBACK.md).
 - 🏆 **Submission Dossier**: Master checklist alignment and verification references in [`docs/LEVEL_5_SUBMISSION.md`](docs/LEVEL_5_SUBMISSION.md).
 - 🛠️ **In-App Feedback Widget**: Users can submit live feedback and ratings directly inside the dApp.
@@ -39,12 +43,16 @@ Connect your [1AM Wallet](https://1am.space) on **Midnight Preprod Network** (or
 ## Level 5 — User Validation
 
 > [!IMPORTANT]
-> **MANDATORY USER FEEDBACK GOOGLE SHEET (Rise In Evaluation)**:  
-> 👉 **[VeilBid Level 5 Live Feedback Google Sheet](https://docs.google.com/spreadsheets/d/1y_tVgYt2RuekzAdBN6mv2ho4w3zbedvwrlfj_IjUp04/edit?usp=sharing)**  
-> *(All user feedback is collected and structured in this official Google Sheet as required for Level 5 evaluation)*
+> **MANDATORY USER FEEDBACK LINKS (Rise In Level 5 Evaluation)**:  
+> - 📋 **Collection Form**: 👉 **[VeilBid Beta Testing Google Form](https://forms.gle/CqbVWfcZPZJvDoSx6)** *(Google Form through which feedback, wallet addresses & tx hashes were collected)*  
+> - 📊 **Feedback Tracking Sheet**: 👉 **[VeilBid Level 5 Live Feedback Google Sheet](https://docs.google.com/spreadsheets/d/1y_tVgYt2RuekzAdBN6mv2ho4w3zbedvwrlfj_IjUp04/edit?usp=sharing)**  
+> *(All user feedback is collected via the Google Form and structured in this official Google Sheet with 7 required columns: Timestamp, Name, Email, Wallet Address, Transaction Hash, Feedback, Source Form)*
 
 - **Target**: 50 Preprod users
-- **Current Status**: **50 / 50 Verified On-Chain**
+- **Current Status**: **50 / 50 Verified On-Chain** (plus 40 extended cohort responses in [`feedback_responses_90_users.csv`](feedback_responses_90_users.csv))
+- **Google Form**: [https://forms.gle/CqbVWfcZPZJvDoSx6](https://forms.gle/CqbVWfcZPZJvDoSx6)
+- **Google Sheet**: [https://docs.google.com/spreadsheets/d/1y_tVgYt2RuekzAdBN6mv2ho4w3zbedvwrlfj_IjUp04/edit?usp=sharing](https://docs.google.com/spreadsheets/d/1y_tVgYt2RuekzAdBN6mv2ho4w3zbedvwrlfj_IjUp04/edit?usp=sharing)
+- **Raw CSV Dataset**: [`feedback_responses_90_users.csv`](feedback_responses_90_users.csv)
 - **Wallet Directory**: See [USERS.md](USERS.md) and [docs/PREPROD_USERS.md](docs/PREPROD_USERS.md) for all 50 verified on-chain wallet addresses and explorer transaction links
 - **Feedback & Code Changes**: See [docs/FEEDBACK.md](docs/FEEDBACK.md) and [docs/FEEDBACK_LOOP.md](docs/FEEDBACK_LOOP.md) for raw feedback logs, themes, and codebase iterations
 

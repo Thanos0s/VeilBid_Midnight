@@ -1,12 +1,15 @@
 # Preprod Users — Level 5
 
 > [!IMPORTANT]
-> **MANDATORY USER FEEDBACK GOOGLE SHEET (Rise In Level 5 Evaluation)**:  
-> All user feedback for Level 5 evaluation is collected and structured in the official Google Sheet:  
-> 👉 **[VeilBid Level 5 Live Feedback Google Sheet](https://docs.google.com/spreadsheets/d/1y_tVgYt2RuekzAdBN6mv2ho4w3zbedvwrlfj_IjUp04/edit?usp=sharing)**
+> **MANDATORY USER FEEDBACK LINKS (Rise In Level 5 Evaluation)**:  
+> - 📋 **Feedback Collection Form**: 👉 **[VeilBid Beta Testing Google Form](https://forms.gle/CqbVWfcZPZJvDoSx6)**  
+> - 📊 **Feedback Tracking Sheet**: 👉 **[VeilBid Level 5 Live Feedback Google Sheet](https://docs.google.com/spreadsheets/d/1y_tVgYt2RuekzAdBN6mv2ho4w3zbedvwrlfj_IjUp04/edit?usp=sharing)**  
+> *(All user feedback is collected via the Google Form and structured in the official Google Sheet with 7 required columns: Timestamp, Name, Email, Wallet Address, Transaction Hash, Feedback, Source Form)*
 
 - **Target**: 50 verified wallet addresses
-- **Current Count**: **50 / 50 Verified On-Chain** ✅
+- **Current Count**: **50 / 50 Verified On-Chain** ✅ (plus 40 extended cohort records in [`feedback_responses_90_users.csv`](feedback_responses_90_users.csv))
+- **Google Form**: [https://forms.gle/CqbVWfcZPZJvDoSx6](https://forms.gle/CqbVWfcZPZJvDoSx6)
+- **Google Sheet**: [https://docs.google.com/spreadsheets/d/1y_tVgYt2RuekzAdBN6mv2ho4w3zbedvwrlfj_IjUp04/edit?usp=sharing](https://docs.google.com/spreadsheets/d/1y_tVgYt2RuekzAdBN6mv2ho4w3zbedvwrlfj_IjUp04/edit?usp=sharing)
 - **Network**: Midnight Preprod (`https://preprod.midnightexplorer.com`)
 - **Contract Address**: [`0x2bb504ffeb044d37e4fa02e0845cdafc2fa68db489c4c810457b32db7e7888e9`](https://preprod.midnightexplorer.com/contracts/0x2bb504ffeb044d37e4fa02e0845cdafc2fa68db489c4c810457b32db7e7888e9)
 

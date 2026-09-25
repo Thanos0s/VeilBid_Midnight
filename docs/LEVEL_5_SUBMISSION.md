@@ -12,7 +12,7 @@
 | **1. Public GitHub repository with updated documentation** | ✅ **Passed** | [GitHub: Thanos0s/VeilBid_Midnight](https://github.com/Thanos0s/VeilBid_Midnight) |
 | **2. Live demo link** | ✅ **Passed** | [🚀 Open VeilBid Live App](https://veilbid-kappa.vercel.app) |
 | **3. List of 50 Preprod user wallet addresses (verifiable on-chain)** | ✅ **Passed** | [`USERS.md`](../USERS.md) & [`docs/PREPROD_USERS.md`](PREPROD_USERS.md) & [`scripts/verify-preprod-users.mjs`](../scripts/verify-preprod-users.mjs) |
-| **4. User feedback in Google Sheet (Mandatory format)** | ✅ **Passed** | 👉 **[VeilBid Live Feedback Google Sheet](https://docs.google.com/spreadsheets/d/1y_tVgYt2RuekzAdBN6mv2ho4w3zbedvwrlfj_IjUp04/edit?usp=sharing)** + [`docs/FEEDBACK.md`](FEEDBACK.md) |
+| **4. User feedback in Google Sheet & Form** | ✅ **Passed** | 📋 [Google Form](https://forms.gle/CqbVWfcZPZJvDoSx6) & 📊 [Live Google Sheet](https://docs.google.com/spreadsheets/d/1y_tVgYt2RuekzAdBN6mv2ho4w3zbedvwrlfj_IjUp04/edit?usp=sharing) + [`docs/FEEDBACK.md`](FEEDBACK.md) |
 | **5. Demo video showing full MVP functionality** | ✅ **Passed** | [🎬 Watch VeilBid MVP Demo (Google Drive)](https://drive.google.com/file/d/1LB1p27jzefUPYO13GZWGl7IbReox2sNF/view?usp=sharing) |
 | **6. Minimum 20 meaningful commits** | ✅ **Passed** | **50+ Commits** on `main` branch ([Commit History](https://github.com/Thanos0s/VeilBid_Midnight/commits/main)) |
 
