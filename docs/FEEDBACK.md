@@ -37,3 +37,11 @@
 | Live Countdown Timers | Added real-time ticking per-second countdown timers on all auction cards | `c2dc12d` |
 | Monolith Refactoring | De-monolithized `App.tsx` into 9 modular React components with strict TypeScript | `a19532d` |
 | 10 Circuit & Unit Tests | Added automated testing suite covering commitments, reveals, and exploit prevention | `0e031da` |
+
+## Level 6 Improvements
+| Change | User Feedback That Triggered It | Status |
+|--------|--------------------------------|--------|
+| Verifier Key & 1-Click Redeployment | `@CryptoPhantom_01`: Stale deployed contract instances lacked `revealBid` operation, throwing verifier key mismatch | ✅ Implemented & Verified |
+| Direct Explorer Routes (`/contracts/0x...` & `/transactions/...`) | `@CardanoKnight_12`: Links to Midnight Explorer returned 404 when using legacy route schema | ✅ Implemented & Verified |
+| Real-Time Ticking Countdown Timers | `@ZkHunter_77`: Wanted live ticking countdown timers with remaining hours/minutes/seconds on auction cards | ✅ Implemented & Verified |
+

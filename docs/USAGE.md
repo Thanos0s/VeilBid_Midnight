@@ -1,166 +1,122 @@
-# 📖 VeilBid — Usage Guide
+# 📖 VeilBid — Usage Guide (Preprod Launch)
 
 > **Bid in the shadows. Win in the light.**
 
-This guide walks you through every feature of VeilBid as a regular user — no developer knowledge required.
+Welcome to VeilBid! This guide walks you through using VeilBid on the **Midnight Preprod Network** as a regular user — no developer experience or coding required.
 
 ---
 
-## Table of Contents
+## 🌟 What's New (Level 5 & 6 Improvements)
 
-1. [What You Need Before You Start](#1-what-you-need-before-you-start)
-2. [Connecting Your Wallet](#2-connecting-your-wallet)
-3. [Browsing the Marketplace](#3-browsing-the-marketplace)
-4. [Placing a Sealed ZK Bid](#4-placing-a-sealed-zk-bid)
-5. [Checking Your Bids](#5-checking-your-bids)
-6. [Deploying an AI Trading Agent](#6-deploying-an-ai-trading-agent)
-7. [Deploying Your Own Auction](#7-deploying-your-own-auction)
-8. [Frequently Asked Questions](#8-frequently-asked-questions)
+Based on community testing with 50+ Preprod users, we've updated VeilBid:
+- ⏱️ **Live Countdown Timers**: Real-time per-second countdown timers on every open auction lot.
+- 🔗 **Direct Midnight Explorer Links**: Instantly inspect your on-chain transactions and contract records on Preprod without 404 errors (`/contracts/0x...` & `/transactions/...`).
+- ⚡ **1-Click Live Auction Deploy**: Launch new verified auctions with your 1AM or Lace wallet directly from the web interface.
+- 🔐 **Private Witness Backup Tool**: Easily export and restore your encrypted private bid receipts, salts, and secret keys across browser sessions.
 
 ---
 
-## 1. What You Need Before You Start
+## 🚀 Getting Started on Preprod
 
-| Requirement | Details |
-|---|---|
-| **Browser** | Chrome or Brave (desktop or mobile) |
-| **1AM Wallet** | Free extension — [download at 1am.space](https://1am.space) |
-| **tNIGHT tokens** | Free test tokens from the [Midnight faucet](https://faucet.midnight.network) |
-| **Network** | Midnight Preview Network (selected inside the 1AM Wallet) |
+To use VeilBid on the Midnight Preprod Network, you only need three things:
 
-> **Note**: tNIGHT tokens have no real monetary value — they are purely for testing on the Preview Network.
+### 1. Web Browser
+Use **Google Chrome** or **Brave** on desktop (or mobile).
 
----
+### 2. Midnight Wallet (1AM Wallet or Lace Wallet)
+- Download and install the **[1AM Wallet](https://1am.space)** or **[Lace Wallet](https://www.lace.io/)** extension for Chrome/Brave.
+- Create a new wallet and securely save your recovery phrase.
+- Open the wallet settings and ensure your network is switched to **Midnight Preprod Network**.
 
-## 2. Connecting Your Wallet
-
-1. Open **[VeilBid](https://veilbid-kappa.vercel.app)** in your browser.
-2. Click the **🔑 Connect Wallet** button in the top-right corner.
-3. Your **1AM Wallet** extension will pop up — click **Connect**.
-4. Once connected, the button updates to show your short wallet address (e.g. `🔑 mn_addr...a62`).
-
-You are now connected to the Midnight Preview Network and ready to bid.
+### 3. Get Free Test Tokens (tNIGHT)
+- Visit the official **[Midnight Faucet](https://faucet.midnight.network)**.
+- Copy your unshielded wallet address (`mn_addr_preprod1...`) from your wallet extension.
+- Paste it into the faucet and request test **tNIGHT** tokens.
+- Wait ~30 seconds for the tokens to arrive. *(Note: tNIGHT tokens are free test tokens with no real financial value).*
 
 ---
 
-## 3. Browsing the Marketplace
+## 🎯 Your First Transaction: Placing a Sealed ZK Bid
 
-1. Click **🛒 Marketplace** in the navigation bar.
-2. Use the **search bar** to find specific NFTs by name or collection.
-3. Use the **filter pills** to browse by category:
-   - `All` — every NFT in the marketplace
-   - `🤖 AI Agents` — autonomous trading agents you can deploy
-   - `Gaming`, `Art`, `PFPs`, `Physical` — NFT categories
+VeilBid uses Zero-Knowledge (ZK) cryptography. Your bid amount is **100% private** — nobody, not even the auction seller or network validators, can see how much you bid until the auction closes.
 
-On mobile, the filter pills scroll horizontally — swipe left/right to see all options.
+### Step-by-Step Walkthrough:
 
----
-
-## 4. Placing a Sealed ZK Bid
-
-This is VeilBid's core feature. Your bid amount is **completely private** — no one can see it until the auction closes.
-
-### Step-by-step
-
-1. Find an NFT you want in the marketplace.
-2. Click the **🔒 Bid** button on the NFT card.
-3. In the modal that appears:
-   - Enter your **bid amount** in tNIGHT tokens.
+1. **Open the VeilBid App**:
+   - Go to [https://veilbid-kappa.vercel.app](https://veilbid-kappa.vercel.app).
+2. **Connect Your Wallet**:
+   - Click the **🔑 Connect Wallet** button in the top right.
+   - Select your wallet (1AM / Lace) and click **Approve** in the popup.
+   - Your wallet address and tNIGHT balance will display in the navbar.
+3. **Choose an NFT**:
+   - Navigate to the **🛒 Marketplace** tab.
+   - Browse the curated listings or use the category filters (Art, Gaming, PFPs, AI Agents).
+   - Find an auction lot you like (e.g. *Midnight Sentinel #042*).
+4. **Enter Your Private Bid**:
+   - Click the green **🔒 Bid** button on the NFT card.
+   - Enter your bid amount in tNIGHT (must meet or exceed the reserve price).
    - Click **🔒 Submit Sealed Bid**.
-4. Watch the three-step progress bar:
-   - **Local Witness** — your bid is encoded privately in your browser.
-   - **ZK Proof** — a zero-knowledge proof is generated (proves your bid is valid without revealing it).
-   - **Broadcast** — the proof is submitted to the Midnight blockchain.
-5. Your **1AM Wallet** will ask you to sign the transaction — click **Approve**.
-6. A **green success screen** shows your real on-chain transaction hash.
-
-> **Privacy guarantee**: Nobody — not VeilBid, not the blockchain validators, not other bidders — can see your bid amount. It remains sealed until the auction owner closes the auction.
-
----
-
-## 5. Checking Your Bids
-
-1. Click **👛 My Wallet & Bids** in the navigation bar (or the button inside the hamburger menu on mobile).
-2. The panel shows:
-   - Your **connected wallet address**
-   - Your **tNIGHT** and **DUST** token balances
-   - A full history of every NFT you have bid on, including:
-     - NFT thumbnail and name
-     - Amount you bid
-     - Date and time
-     - On-chain transaction address
-3. Click **📋 Copy Tx** next to any bid to copy the transaction hash.
-4. Paste it into the [Midnight Explorer](https://preview.midnightexplorer.com) to verify it on-chain.
+5. **ZK Proving & Wallet Approval**:
+   - Your browser generates a zero-knowledge commitment in ~1.1 seconds.
+   - Your wallet popup will ask you to sign the on-chain commitment transaction.
+   - Click **Confirm / Sign**.
+6. **Verify On-Chain**:
+   - Once confirmed, a green success banner displays your real on-chain transaction hash.
+   - Click **🔍 View on Explorer** to see the transaction confirmed on the [Midnight Preprod Explorer](https://preprod.midnightexplorer.com).
+   - Notice: Only a cryptographic commitment hash is recorded on-chain — your actual bid valuation remains completely hidden!
 
 ---
 
-## 6. Deploying an AI Trading Agent
+## 👛 Managing Your Bids & Backups
 
-VeilBid supports **autonomous AI agents** that bid on your behalf — with your strategy kept private on-chain.
-
-1. Click **🤖 AI Agents** in the filter pills on the Marketplace page.
-2. Browse available agents (e.g. *ZK Sniper*, *Floor Hunter*, *Value Accumulator*).
-3. Click **🤖 Deploy Agent** on the agent you want.
-4. Configure your agent's policy:
-   - **Spending Ceiling** — maximum total tNIGHT the agent can spend.
-   - **Max Per Bid** — maximum the agent can bid on any single NFT.
-   - **Strategy Tier** — the decision logic the agent uses.
-   - **Target Collection** — restrict the agent to a specific collection, or leave as "All".
-5. Click **⚡ Deploy AI Agent with ZK Policy Commitment**.
-6. A cryptographic **policy hash** is generated and committed to your contract address on-chain.
-
-> Your agent's strategy remains private. Other bidders cannot see your ceiling or logic — the blockchain only confirms that each action respects the policy you set.
+1. Click **👛 My Wallet & Bids** in the navbar (or drawer on mobile).
+2. Review your full active bidding history with on-chain transaction IDs.
+3. Click **💾 Backup Witnesses** to download an encrypted backup of your secret salts and keys. If you ever clear your browser cache, you can restore your backup in one click!
 
 ---
 
-## 7. Deploying Your Own Auction
+## 🤖 Deploying Autonomous AI Trading Bots
 
-If you are an NFT creator or seller, you can create your own auction:
-
-1. Click **🚀 Deploy Auction** in the navigation bar.
-2. Enter:
-   - **NFT Token ID** — a name or identifier for your NFT.
-   - **Royalty %** — the percentage you receive from every future resale.
-3. Click **Deploy to Midnight Network**.
-4. Sign the transaction in your **1AM Wallet**.
-5. Your contract address is shown on success — save it for your buyers.
+1. Go to the **🤖 AI Agents** section in the Marketplace.
+2. Select a bot profile (*ZK Sniper*, *Floor Hunter*, or *Value Accumulator*).
+3. Set your private policy:
+   - **Spending Ceiling**: Maximum total tNIGHT the agent may bid.
+   - **Max Per Bid**: Highest single valuation.
+4. Click **⚡ Deploy AI Agent**. The policy commitment is cryptographically verified on-chain without revealing your private trading thresholds!
 
 ---
 
-## 8. Frequently Asked Questions
+## 🚀 Creating Your Own Auction
 
-**Q: Is my bid really private?**  
-Yes. Your bid amount is stored as a ZK witness inside your browser only. It is never sent to any server or visible on-chain. Only a cryptographic commitment (a hash) is published on Midnight.
-
-**Q: What happens if I lose the auction?**  
-Your losing bid stays sealed permanently. No one will ever know what you bid — not even the auction winner.
-
-**Q: What tokens do I need?**  
-You need **tNIGHT** tokens (test tokens) available free from the [Midnight faucet](https://faucet.midnight.network). These are not real money.
-
-**Q: Can I use VeilBid on mobile?**  
-Yes. VeilBid is fully mobile-responsive. Use the **☰ hamburger menu** at the top to access all navigation options on a phone.
-
-**Q: What is the Midnight Preview Network?**  
-It is Midnight's public test network where you can build and test real ZK-proven transactions without spending real money. VeilBid's contract is deployed here.
-
-**Q: Where can I verify my transaction?**  
-Paste any transaction hash into [Midnight Explorer](https://preview.midnightexplorer.com) to see it confirmed on-chain.
+1. Click **🚀 Deploy Auction** in the top navigation.
+2. Enter your NFT Title / Token Identifier, Reserve Price, and Royalty percentage (e.g., 5%).
+3. Click **Deploy to Midnight Network** and sign with your wallet.
+4. Your new auction contract address is generated on Preprod instantly.
 
 ---
 
-## 🔗 Links
+## ❓ Frequently Asked Questions (FAQ)
+
+**Q: Can miners or competitors front-run my bid?**  
+No. Your bid is cryptographically sealed inside a Zero-Knowledge commitment hash. Competitors cannot read your valuation, making front-running impossible.
+
+**Q: What happens if I don't win the auction?**  
+Your losing bid stays sealed forever. Only the winning bid is proven and revealed at settlement.
+
+**Q: Where can I give feedback?**  
+Submit ratings and feedback directly in the app via the **💬 Feedback** button, or through our **[Official User Feedback Google Sheet](https://docs.google.com/spreadsheets/d/1y_tVgYt2RuekzAdBN6mv2ho4w3zbedvwrlfj_IjUp04/edit?usp=sharing)**.
+
+---
+
+## 🔗 Quick Resource Directory
 
 | Resource | Link |
 |---|---|
-| Live App | https://veilbid-kappa.vercel.app |
-| GitHub Repo | https://github.com/Thanos0s/VeilBid_Midnight |
-| Contract on Explorer | https://preview.midnightexplorer.com/contracts/0xb39e69c51dfd27d63f8e0e489b86e33669e701a7cae83f6248fb220f985924b4 |
-| 1AM Wallet | https://1am.space |
-| Midnight Faucet | https://faucet.midnight.network |
-| Demo Video | https://drive.google.com/file/d/1LB1p27jzefUPYO13GZWGl7IbReox2sNF/view?usp=sharing |
-| X / Twitter | https://x.com/Veil_Bid |
-
----
-
-*For developer setup instructions, see [README.md](../README.md).*
+| **Live App** | [https://veilbid-kappa.vercel.app](https://veilbid-kappa.vercel.app) |
+| **Preprod Explorer** | [https://preprod.midnightexplorer.com](https://preprod.midnightexplorer.com) |
+| **Midnight Faucet** | [https://faucet.midnight.network](https://faucet.midnight.network) |
+| **1AM Wallet** | [https://1am.space](https://1am.space) |
+| **Lace Wallet** | [https://www.lace.io](https://www.lace.io) |
+| **GitHub Repository** | [https://github.com/Thanos0s/VeilBid_Midnight](https://github.com/Thanos0s/VeilBid_Midnight) |
+| **Official Feedback Sheet** | [VeilBid Google Sheet](https://docs.google.com/spreadsheets/d/1y_tVgYt2RuekzAdBN6mv2ho4w3zbedvwrlfj_IjUp04/edit?usp=sharing) |
+| **X Profile** | [@Veil_Bid](https://x.com/Veil_Bid) |
