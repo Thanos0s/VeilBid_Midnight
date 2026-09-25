@@ -25,6 +25,15 @@ VeilBid has achieved the **Level 5 — Full Moon** milestone!
 - 🏆 **Submission Dossier**: Master checklist alignment and verification references in [`docs/LEVEL_5_SUBMISSION.md`](docs/LEVEL_5_SUBMISSION.md).
 - 🛠️ **In-App Feedback Widget**: Users can submit live feedback and ratings directly inside the dApp.
 
+### 🔗 Official Level 5 Resources & Verification Links
+
+| Resource | Link | Description |
+|---|---|---|
+| 📋 **Google Form** | [https://forms.gle/CqbVWfcZPZJvDoSx6](https://forms.gle/CqbVWfcZPZJvDoSx6) | Live Community & Beta Tester Feedback Survey |
+| 📊 **Google Sheet** | [https://docs.google.com/spreadsheets/d/1y_tVgYt2RuekzAdBN6mv2ho4w3zbedvwrlfj_IjUp04/edit?usp=sharing](https://docs.google.com/spreadsheets/d/1y_tVgYt2RuekzAdBN6mv2ho4w3zbedvwrlfj_IjUp04/edit?usp=sharing) | Mandatory Level 5 Live Feedback & On-Chain Verification Sheet |
+| 🔍 **Midnight Preprod Explorer** | [https://preprod.midnightexplorer.com/](https://preprod.midnightexplorer.com/) | Live Preprod Blockchain Explorer |
+| 📁 **90-User CSV File** | [`feedback_responses_90_users.csv`](feedback_responses_90_users.csv) | Full 90-entry on-chain verified dataset |
+
 ---
 
 ## 🌐 Live Demo
